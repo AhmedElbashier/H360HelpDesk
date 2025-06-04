@@ -1,0 +1,137 @@
+<p-toast></p-toast>
+<p-toolbar styleClass="mb-0 gap-0">
+  <h4 class="m-0">Manage Tickets</h4>
+</p-toolbar>
+
+<p-table #dt
+         [value]="Tickets"
+         [rows]="10"
+         [paginator]="true"
+         [globalFilterFields]="['TicketID','subject','customer_Name', 'department_Name','category_Name','created_By_User_Name','status_Name', 'priority_Name','entry_Date', 'lastUpdated']"
+         [tableStyle]="{ 'min-width': '75rem' }"
+         [(selection)]="selectedTickets"
+         [rowHover]="true"
+         dataKey="id"
+         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         [showCurrentPageReport]="true">
+  <ng-template pTemplate="caption">
+    <div class="flex align-items-center justify-content-between">
+      <h5 class="m-0"></h5>
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" (input)="applyFilterGlobal($event)" placeholder="Search..." />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="exportExcel()"></button>
+      </span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 4rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th pSortableColumn="id" style="min-width:2rem">ID</th>
+      <th pSortableColumn="TicketID" style="min-width:6rem">Ticket ID </th>
+      <th pSortableColumn="department_Name" style="min-width:15rem">Department</th>
+      <th pSortableColumn="subject" style="min-width:15rem">Category</th>
+      <th pSortableColumn="customerName" style="min-width:8rem">Customer Name</th>
+      <th pSortableColumn="userName" style="min-width:8rem">Agent Name</th>
+      <th pSortableColumn="status" style="min-width:4rem">Status</th>
+      <th pSortableColumn="priority" style="min-width:2rem">Priorty </th>
+      <th pSortableColumn="startDate" style="min-width:8rem">Entry Date </th>
+      <th pSortableColumn="lastUpdated" style="min-width:8rem">Last Update Date</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-Ticket>
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="Ticket"></p-tableCheckbox>
+      </td>
+      <td>{{ Ticket.id }}</td>
+      <td>{{ Ticket.ticketID }}</td>
+      <td>{{ Ticket.departmentID }}</td>
+      <td>{{ Ticket.categoryID }}</td>
+      <td>{{ Ticket.customerName }}</td>
+      <td>{{ Ticket.userID }}</td>
+      <td>{{ Ticket.statusID }}</td>
+      <td>{{ Ticket.priority_Name }}</td>
+      <td>{{ Ticket.startDate }}</td>
+      <td>{{ Ticket.lastUpdated }}</td>
+      <td>
+        <!--<button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-warning mr-2" (click)="editTicket(Ticket)"></button>-->
+        <button pButton pRipple icon="pi pi-info" class="p-button-rounded p-button-info mr-2" (click)="detailsTicket(Ticket)"></button>
+      </td>
+      <td>
+        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deleteTicket(Ticket)"></button>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="summary">
+    <div class="flex align-items-center justify-content-between">In total there are {{ Tickets ? Tickets.length : 0 }} Tickets.</div>
+  </ng-template>
+</p-table>
+
+
+
+
+<p-sidebar [(visible)]="visible" [style]="{ 'width': '800px' }" position="right">
+  <div class="grid">
+    <div class="col-12">
+      <div class="card">
+        <h5>Advanced</h5>
+        <div class="p-fluid p-formgrid grid">
+          <div class="field col-12 md:col-6">
+            <label htmlFor="userID">Request No</label>
+            <input pInputText id="userID" type="text" [disabled]="disabled" [(ngModel)]="Ticket.ticketID" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label htmlFor="userID">Entry Date</label>
+            <input pInputText id="userID" type="text" [disabled]="disabled" [(ngModel)]="Ticket.startDate" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label htmlFor="userID">Created by</label>
+            <input pInputText id="userID" type="text" [disabled]="disabled" [(ngModel)]="Ticket.userID" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label htmlFor="firstname">Customer Name</label>
+            <input pInputText id="firstname" type="text" [disabled]="disabled" [(ngModel)]="Ticket.customerName" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label htmlFor="firstname">Phone Number</label>
+            <input pInputText id="firstname" type="text" [disabled]="disabled" [(ngModel)]="Ticket.customerName" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label htmlFor="firstname">Contact Channel</label>
+            <input pInputText id="firstname" type="text" [disabled]="disabled" [(ngModel)]="Ticket.channelID" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label htmlFor="firstname">Department</label>
+            <input pInputText id="firstname" type="text" [disabled]="disabled" [(ngModel)]="Ticket.departmentID" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label htmlFor="firstname">Status</label>
+            <input pInputText id="firstname" type="text" [disabled]="disabled" [(ngModel)]="Ticket.statusID" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label htmlFor="firstname">Service Type</label>
+            <input pInputText id="firstname" type="text" [disabled]="disabled" [(ngModel)]="Ticket.categoryID" />
+          </div>
+          <div class="field col-12 md:col-6">
+            <label htmlFor="firstname">Category</label>
+            <input pInputText id="firstname" type="text" [disabled]="disabled" [(ngModel)]="Ticket.subCategoryID" />
+          </div><br>
+          <div class="field col-6 md:col-6">
+            <label htmlFor="firstname">Customer Care Notes</label>
+            <textarea pKeyFilter="int" rows="2" cols="30"  [(ngModel)]="Ticket.subject" pInputTextarea></textarea>
+          </div>
+          <div class="field col-6 md:col-6">
+            <label htmlFor="state">Department Reply</label>
+            <input pInputText id="notes" type="text" [disabled]="disabled" [(ngModel)]="Ticket.body" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</p-sidebar>

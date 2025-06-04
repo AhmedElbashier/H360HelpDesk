@@ -1,0 +1,320 @@
+<!--                  Admin MENU               -->
+<nz-layout class="app-layout" *ngIf="user.isAdministrator">
+  <nz-sider class="menu-sidebar" nzCollapsible [(nzCollapsed)]="isCollapsed" (mouseenter)="setCollapsed(false)">
+    <div class="sidebar-logo">
+    </div>
+    <ul nz-menu nzTheme="dark" nzIcon="usergroup-add" nzMode="vertical" [nzInlineCollapsed]="isCollapsed">
+      <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter nzIcon="usergroup-add">
+        <i nz-icon nzType="usergroup-add" nzTheme="outline"></i>
+        <span routerLink="admin/users">Users</span>
+      </li>
+      <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter nzIcon="book">
+        <i nz-icon nzType="book" nzTheme="outline"></i>
+        <span routerLink="admin/tickets">Tickets</span>
+      </li>
+      <li *ngIf="user.isAdministrator" nz-submenu nzTitle="Categories" nzMatchRouter nzIcon="tags">
+
+        <ul>
+          <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter>
+            <a routerLink="admin/categories">All Categories</a>
+          </li>
+          <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter>
+            <a routerLink="admin/subcategories">Sub Categories</a>
+          </li>
+        </ul>
+      </li>
+      <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter nzIcon="question">
+        <i nz-icon nzType="question" nzTheme="outline"></i>
+        <span routerLink="admin/status">Status</span>
+      </li>
+      <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter nzIcon="exception">
+        <i nz-icon nzType="exception" nzTheme="outline"></i>
+        <span routerLink="admin/priority">Priority</span>
+      </li>
+      <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter nzIcon="warning">
+        <i nz-icon nzType="warning" nzTheme="outline"></i>
+        <span routerLink="admin/escalations">Escalation</span>
+      </li>
+      <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter nzIcon="field-time">
+        <i nz-icon nzType="field-time" nzTheme="outline"></i>
+        <span (click)="openEscalationTimerDialog()">Escalation Timer</span>
+      </li>
+      <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter nzIcon="shop">
+        <i nz-icon nzType="shop" nzTheme="outline"></i>
+        <span routerLink="admin/companies">Companies</span>
+      </li>
+      <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter nzIcon="apartment">
+        <i nz-icon nzType="apartment" nzTheme="outline"></i>
+        <span routerLink="admin/departments">Departments</span>
+      </li>
+      <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter nzIcon="folder-open">
+        <i nz-icon nzType="folder-open" nzTheme="outline"></i>
+        <span routerLink="admin/requests">Requests</span>
+      </li>
+      <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter nzIcon="notification">
+        <i nz-icon nzType="notification" nzTheme="outline"></i>
+        <span routerLink="admin/channels">Channels</span>
+      </li>
+      <li nz-menu-item nzMatchRouter nzIcon="mail">
+        <i nz-icon nzType="mail" nzTheme="outline"></i>
+        <span (click)="openSMTPDialog()">SMTP</span>
+      </li>
+      <li nz-menu-item nzMatchRouter nzIcon="file-protect">
+        <i nz-icon nzType="file-protect" nzTheme="outline"></i>
+        <span (click)="openLicenseDialog()">License</span>
+      </li>
+      <li nz-menu-item nzMatchRouter nzIcon="file-search">
+        <i nz-icon nzType="file-search" nzTheme="outline"></i>
+        <span (click)="checkAdminRole()">Download User logs</span>
+      </li>
+      <li nz-menu-item nzMatchRouter nzIcon="logout">
+        <i nz-icon nzType="logout" nzTheme="outline"></i>
+        <span (click)="logout()">Logout</span>
+      </li>
+
+    </ul>
+  </nz-sider>
+  <nz-layout>
+    <nz-header>
+      <div class="app-header">
+        <img src="assets/logo-vocalcom.svg" height="30" class="mr-2" />
+      </div>
+    </nz-header>
+    <nz-content>
+      <router-outlet>
+      </router-outlet>
+    </nz-content>
+  </nz-layout>
+
+</nz-layout>
+<div class="card" *ngIf="!user.isAdministrator">
+  <router-outlet>
+    <p-menubar [model]="items">
+      <ng-template pTemplate="start">
+        <img src="../../assets/logo-vocalcom.svg" height="40" class="mr-2" />
+      </ng-template>
+      <ng-template pTemplate="end">
+        <!--                   OTHER USERS MENU               -->
+        <p-menubar [model]="items2">
+        </p-menubar>
+      </ng-template>
+    </p-menubar>
+  </router-outlet>
+
+</div>
+
+<!--                   DOWNLAOD LOGS Admin CREDINITALS DIALOG               -->
+
+<p-dialog [(visible)]="adminDialog" [style]="{width: '450px'}" header="Enter Admin Credinitials" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Projectname">Username</label>
+      <input type="text" pInputText id="Username" [(ngModel)]="Username" autofocus />
+    </div>
+    <div class="p-field">
+      <label for="Projectname">Password</label>
+      <input type="password" pInputText id="Password" [(ngModel)]="Password" autofocus />
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Confirm" icon="pi pi-check" class="p-button-text" (click)="confirmRole()"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+<p-toast></p-toast>
+
+<!--                           Profile Panel                      -->
+
+
+<p-overlayPanel #op>
+  <ng-template pTemplate="content">
+    <div class="card">
+      <div class="flex align-items-center justify-content-between mb-4">
+        <h5>Notifications</h5>
+        <div>
+          <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text p-button-plain" (click)="menu.toggle($event)"></button>
+          <p-menu #menu [popup]="true" [model]="items"></p-menu>
+        </div>
+      </div>
+
+      <span class="block text-600 font-medium mb-3">TODAY</span>
+      <ul class="p-0 mx-0 mt-0 mb-4 list-none">
+        <li class="flex align-items-center py-2 border-bottom-1 surface-border">
+          <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
+            <i class="pi pi-dollar text-xl text-blue-500"></i>
+          </div>
+          <span class="text-900 line-height-3">
+            Richard Jones
+            <span class="text-700"> has purchased a blue t-shirt for <span class="text-blue-500">79$</span></span>
+          </span>
+        </li>
+        <li class="flex align-items-center py-2">
+          <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-orange-100 border-circle mr-3 flex-shrink-0">
+            <i class="pi pi-download text-xl text-orange-500"></i>
+          </div>
+          <span class="text-700 line-height-3">Your request for withdrawal of <span class="text-blue-500 font-medium">2500$</span> has been initiated.</span>
+        </li>
+      </ul>
+
+      <span class="block text-600 font-medium mb-3">YESTERDAY</span>
+      <ul class="p-0 m-0 list-none">
+        <li class="flex align-items-center py-2 border-bottom-1 surface-border">
+          <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
+            <i class="pi pi-dollar text-xl text-blue-500"></i>
+          </div>
+          <span class="text-900 line-height-3">
+            Keyser Wick
+            <span class="text-700"> has purchased a black jacket for <span class="text-blue-500">59$</span></span>
+          </span>
+        </li>
+        <li class="flex align-items-center py-2 border-bottom-1 surface-border">
+          <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-pink-100 border-circle mr-3 flex-shrink-0">
+            <i class="pi pi-question text-xl text-pink-500"></i>
+          </div>
+          <span class="text-900 line-height-3">Jane Davis<span class="text-700"> has posted a new questions about your product.</span></span>
+        </li>
+      </ul>
+    </div>
+  </ng-template>
+</p-overlayPanel>
+
+<p-overlayPanel #op2>
+  <ng-template pTemplate="content">
+    <div class="card">
+      <div class="flex align-items-center justify-content-between mb-4">
+        <h5>Profile</h5>
+      </div>
+      <div class="flex align-items-center py-2 border-bottom-1 surface-border">
+        <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
+          <i class="pi pi-user text-xl text-blue-500"></i>
+        </div>
+        <span class="text-900 line-height-3">
+          {{userInfo.firstname}} {{userInfo.lastname}}
+          <span class="text-700"> joined the platform on <span class="text-blue-500">JoinDate</span></span>
+        </span>
+      </div>
+      <div class="flex align-items-center py-2 border-bottom-1 surface-border">
+        <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-orange-100 border-circle mr-3 flex-shrink-0">
+          <i class="pi pi-envelope text-xl text-orange-500"></i>
+        </div>
+        <span class="text-700 line-height-3">You have <span class="text-blue-500 font-medium">5</span> unread messages.</span>
+      </div>
+
+    </div>
+  </ng-template>
+</p-overlayPanel>
+
+<!-- ALL OTHER DIALOGS (SMTP, USER LOGS, ESCALATION TIMERS) -->
+
+
+<p-dialog [(visible)]="smtpDialog" [style]="{width: '450px'}" header="SMTP Server" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Categoryname">Host</label>
+      <input type="text" pInputText id="Categoryname" [(ngModel)]="smtp.host" autofocus />
+    </div>
+    <div class="p-field">
+      <label for="Categoryname">Port</label>
+      <input type="number" pInputText id="Categoryname" [(ngModel)]="smtp.port" autofocus />
+    </div>
+    <div class="p-field">
+      <label for="Categoryname">Username</label>
+      <input type="text" pInputText id="Categoryname" [(ngModel)]="smtp.username" autofocus />
+    </div>
+    <div class="p-field">
+      <label for="Categoryname">Password</label>
+      <input type="password" pInputText id="Categoryname" [(ngModel)]="smtp.password" autofocus />
+    </div>
+    <div class="p-field">
+      <label for="Categoryname">Default Email Address</label>
+      <input type="text" pInputText id="Categoryname" [(ngModel)]="smtp.fromAddress" autofocus />
+    </div>
+    <div class="p-field">
+      <label for="Categoryname">Display Name</label>
+      <input type="text" pInputText id="Categoryname" [(ngModel)]="smtp.displayName" autofocus />
+    </div>
+    <div class="p-field">
+      <p-checkbox [(ngModel)]="smtp.useSsl" value="SSL\TLS" [binary]="true" inputId="binary"></p-checkbox>
+      <label for="ny">SSL\TLS</label>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="SMTPSave(smtp)"></button>
+    <button pButton pRipple label="Test" icon="pi pi-envelope" class="p-button-text" (click)="testEmailDialog()"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="smtpTestDialog" [style]="{width: '450px'}" header="Email SMTP Server Test" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Categoryname">Receiptient</label>
+      <input type="text" pInputText id="testEmail" [(ngModel)]="testEmail" autofocus />
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="sendTestEmail()"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>
+
+
+<p-dialog [(visible)]="escalationTimerDialog" [style]="{width: '450px'}" header="Escalations Hours Schedule" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Categoryname">Hours</label>
+      <input type="number" pInputText id="hours" [(ngModel)]="escalationTimer.hours" autofocus />
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveEscalationTimer()"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>
+
+
+<p-dialog [(visible)]="licenseDialog" [style]="{width: '650px'}" header="License" [modal]="true"
+          styleClass="p-fluid">
+    <div class="text-900 font-bold text-6xl mb-4 text-center">H360 Helpdesk</div>
+    <div class="text-700 text-xl mb-6 text-center line-height-3">License Granted To {{license.licenseInfo.company}}</div>
+
+    <div class="grid">
+      <div class="col-12 lg:col-12">
+        <div class="p-3 h-full">
+          <div class="shadow-2 p-3 h-full flex flex-column surface-card" style="border-radius: 6px">
+            <div class="text-900 font-medium text-xl mb-2">License Vendor: {{license.licenseInfo.vendor}}</div>
+            <div class="text-600">Version: v1.0</div>
+            <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
+            <div class="flex align-items-center">
+              <span class="font-bold text-2xl text-900">{{allLicenseUserLimit}}</span>
+              <span class="ml-2 font-medium text-600">users</span>
+            </div>
+            <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
+            <ul class="list-none p-0 m-0 flex-grow-1">
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                <span class="text-900">Administartors: {{allAdminsCount}}/{{license.licenseInfo.adminsLimit}}</span>
+              </li>
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                <span class="text-900">Agents: {{allAgentsCount}}/{{license.licenseInfo.agentsLimit}}</span>
+              </li>
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                <span class="text-900">Supervisors: {{allSupervisorsCount}}/{{license.licenseInfo.supervisorsLimit}}</span>
+              </li>
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                <span class="text-900">Back-Office: {{allBackOfficeCount}}/{{license.licenseInfo.backOfficeLimit}}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      </div>
+</p-dialog>

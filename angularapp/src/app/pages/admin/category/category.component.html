@@ -1,0 +1,112 @@
+
+<p-toast></p-toast>
+<p-toolbar styleClass="mb-0 gap-0">
+  <h4 class="m-0">Manage Categories</h4>
+
+</p-toolbar>
+
+<p-table #dt
+         [value]="Categories"
+         [rows]="10"
+         [paginator]="true"
+         [globalFilterFields]="['id', 'name','description','days']"
+         [tableStyle]="{ 'min-width': '75rem' }"
+         [(selection)]="selectedCategories"
+         [rowHover]="true"
+         dataKey="id"
+         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         [showCurrentPageReport]="true">
+  <ng-template pTemplate="caption">
+    <div class="flex align-items-center justify-content-between">
+      <h5 class="m-0"></h5>
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" (input)="applyFilterGlobal($event)" placeholder="Search..." />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button pButton pRipple label="Add" class="p-button-success mr-2" icon="pi pi-plus" (click)="openNew()"></button>
+        <button pButton pRipple [label]="Delete" icon="pi pi-trash" class="p-button-danger"
+                (click)="deleteSelectedCategories()" [disabled]="!selectedCategories || !selectedCategories.length">
+        </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="exportExcel()"></button>
+
+      </span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 4rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th pSortableColumn="id" style="min-width:15rem">ID </th>
+      <th pSortableColumn="description" style="min-width:15rem">Department Name</th>
+      <th pSortableColumn="name" style="min-width:15rem">Description </th>
+      <th></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-Category>
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="Category"></p-tableCheckbox>
+      </td>
+      <td>{{ Category.categoryID }}</td>
+      <td>{{ getCategoryDepartmentName(Category.departmentID) }}</td> <!-- Use a function to get department name -->
+      <td>{{ Category.description }}</td>
+      <td>
+        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-warning mr-2" (click)="editCategory(Category)"></button>
+        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deleteCategory(Category)"></button>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="summary">
+    <div class="flex align-items-center justify-content-between">In total there are {{ Categories ? Categories.length : 0 }} Categories.</div>
+  </ng-template>
+</p-table>
+
+
+
+
+<p-dialog [(visible)]="CategoriesDialog" [style]="{width: '450px'}" header="Add Category" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Categoryname">Name</label>
+      <input type="text" pInputText id="Categoryname" [(ngModel)]="Category.description"  autofocus />
+    </div>
+    <div class="p-field">
+      <label for="Categoryname">Department</label>
+      <select id="state" [(ngModel)]="Department" Value="Department.description" pInputText>
+        <option *ngFor="let Department of Departments" [ngValue]="Department">
+          {{Department.description}}
+        </option>
+      </select>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveCategories(Category,Department)"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="CategoriesEditDialog" [style]="{width: '450px'}" header="Edit Category" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Categoryname">Name</label>
+      <input type="text" pInputText id="Categoryname" [(ngModel)]="Category.description"  autofocus />
+    </div>
+    <div class="p-field">
+      <label for="Categoryname">Department</label>
+      <select id="state" [(ngModel)]="Category.description" pInputText>
+        <option *ngIf="selectedDepartment" [ngValue]="Category.description">
+          {{ Category.departmentID }}
+        </option>
+        <option *ngFor="let Department of Departments" [ngValue]="Department">
+          {{ Department.description }}
+        </option>
+      </select>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="editCategoriesD(Category)"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>

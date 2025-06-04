@@ -1,0 +1,79 @@
+
+<p-toast></p-toast>
+<p-toolbar styleClass="mb-4 gap-2">
+  <h4>Manage Sub-Categories</h4>
+  <ng-template pTemplate="left">
+    <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="exportExcel()"></button>
+  </ng-template>
+</p-toolbar>
+<div class="p-field">
+  <label for="DepartmentName" style="font-size:20px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">Select Department</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <select id="state" [(ngModel)]="selectedDepartment" pInputText (change)="onDepartmentChange()">
+    <option *ngFor="let Department of Departments" [ngValue]="Department">
+      <br />
+      {{ Department.description }}
+    </option>
+  </select>
+</div>
+<div class="p-field">
+  <label for="Categoryname" style="font-size:20px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">Select Category</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <select id="state" [(ngModel)]="selectedCategory" pInputText (change)="getSelectedCategory()">
+    <option *ngFor="let Category of Categories" [ngValue]="Category">
+      <br />
+      {{ Category.description }}
+    </option>
+  </select>
+</div>
+<div class="p-field">
+  <label for="Categoryname" style="font-size:20px;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">Add new Sub-Category</label>&nbsp;
+  <input type="text" pInputText [(ngModel)]="newSubCategory" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <button pButton pRipple label="Add" class="p-button-success mr-2" icon="pi pi-plus" (click)="addNew()"></button>
+</div>
+
+<p-table #dt
+         [value]="subCategories"
+         [rows]="10"
+         [paginator]="true"
+         [globalFilterFields]="['id', 'name']"
+         [tableStyle]="{ 'min-width': '75rem' }"
+         [(selection)]="selectedCategories"
+         [rowHover]="true"
+         dataKey="id"
+         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         [showCurrentPageReport]="true">
+
+  <ng-template pTemplate="caption"> Sub Categories </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th></th>
+      <th></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-SubCategory>
+    <tr>
+      <td>{{ SubCategory.description }}</td>
+      <td>
+        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-warning mr-2" (click)="editCategory(SubCategory)"></button>
+        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deleteCategory(SubCategory)"></button>
+      </td>
+  </ng-template>
+  <ng-template pTemplate="summary">
+    <div class="flex align-items-center justify-content-between">In total there are {{ subCategories ? subCategories.length : 0 }} Categories.</div>
+  </ng-template>
+</p-table>
+
+
+
+<p-dialog [(visible)]="EditDialog" [style]="{width: '450px'}" header="Edit Sub-Category" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Categoryname">Name</label>
+      <input type="text" pInputText id="Categoryname" [(ngModel)]="SubCategory.description"  autofocus />
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="editSubCategoriesD(SubCategory)"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>

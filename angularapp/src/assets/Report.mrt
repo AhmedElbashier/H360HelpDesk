@@ -1,0 +1,334 @@
+{
+  "ReportVersion": "2023.3.1",
+  "ReportGuid": "44e32861119235f3712b2c1c008caed6",
+  "ReportName": "Report",
+  "ReportAlias": "Report",
+  "ReportCreated": "/Date(1691691720000+0400)/",
+  "ReportChanged": "/Date(1691691816000+0400)/",
+  "EngineVersion": "EngineV2",
+  "CalculationMode": "Interpretation",
+  "ReportUnit": "Centimeters",
+  "Dictionary": {
+    "DataSources": {
+      "0": {
+        "Ident": "StiDataTableSource",
+        "Name": "root",
+        "Alias": "root",
+        "Columns": {
+          "0": {
+            "Name": "companyID",
+            "NameInSource": "companyID",
+            "Alias": "companyID",
+            "Type": "System.Decimal"
+          },
+          "1": {
+            "Name": "companyName",
+            "NameInSource": "companyName",
+            "Alias": "companyName",
+            "Type": "System.String"
+          },
+          "2": {
+            "Name": "created_at",
+            "NameInSource": "created_at",
+            "Alias": "created_at",
+            "Type": "System.DateTime"
+          },
+          "3": {
+            "Name": "darkMode",
+            "NameInSource": "darkMode",
+            "Alias": "darkMode",
+            "Type": "System.Boolean"
+          },
+          "4": {
+            "Name": "deleted",
+            "NameInSource": "deleted",
+            "Alias": "deleted",
+            "Type": "System.Boolean"
+          },
+          "5": {
+            "Name": "disabled",
+            "NameInSource": "disabled",
+            "Alias": "disabled",
+            "Type": "System.Boolean"
+          },
+          "6": {
+            "Name": "email",
+            "NameInSource": "email",
+            "Alias": "email",
+            "Type": "System.String"
+          },
+          "7": {
+            "Name": "firstName",
+            "NameInSource": "firstName",
+            "Alias": "firstName",
+            "Type": "System.String"
+          },
+          "8": {
+            "Name": "greeting",
+            "NameInSource": "greeting",
+            "Alias": "greeting",
+            "Type": "System.String"
+          },
+          "9": {
+            "Name": "groupID",
+            "NameInSource": "groupID",
+            "Alias": "groupID",
+            "Type": "System.Decimal"
+          },
+          "10": {
+            "Name": "groupName",
+            "NameInSource": "groupName",
+            "Alias": "groupName",
+            "Type": "System.String"
+          },
+          "11": {
+            "Name": "hostName",
+            "NameInSource": "hostName",
+            "Alias": "hostName",
+            "Type": "System.String"
+          },
+          "12": {
+            "Name": "id",
+            "NameInSource": "id",
+            "Alias": "id",
+            "Type": "System.Decimal"
+          },
+          "13": {
+            "Name": "ipAddress",
+            "NameInSource": "ipAddress",
+            "Alias": "ipAddress",
+            "Type": "System.String"
+          },
+          "14": {
+            "Name": "isAdministrator",
+            "NameInSource": "isAdministrator",
+            "Alias": "isAdministrator",
+            "Type": "System.Boolean"
+          },
+          "15": {
+            "Name": "isAgent",
+            "NameInSource": "isAgent",
+            "Alias": "isAgent",
+            "Type": "System.Boolean"
+          },
+          "16": {
+            "Name": "isBackOffice",
+            "NameInSource": "isBackOffice",
+            "Alias": "isBackOffice",
+            "Type": "System.Boolean"
+          },
+          "17": {
+            "Name": "isManager",
+            "NameInSource": "isManager",
+            "Alias": "isManager",
+            "Type": "System.Boolean"
+          },
+          "18": {
+            "Name": "isSuperVisor",
+            "NameInSource": "isSuperVisor",
+            "Alias": "isSuperVisor",
+            "Type": "System.Boolean"
+          },
+          "19": {
+            "Name": "lang",
+            "NameInSource": "lang",
+            "Alias": "lang",
+            "Type": "System.String"
+          },
+          "20": {
+            "Name": "lastLogoutDate",
+            "NameInSource": "lastLogoutDate",
+            "Alias": "lastLogoutDate",
+            "Type": "System.DateTime"
+          },
+          "21": {
+            "Name": "lastName",
+            "NameInSource": "lastName",
+            "Alias": "lastName",
+            "Type": "System.String"
+          },
+          "22": {
+            "Name": "lastPasswordChange",
+            "NameInSource": "lastPasswordChange",
+            "Alias": "lastPasswordChange",
+            "Type": "System.DateTime"
+          },
+          "23": {
+            "Name": "lastSeen",
+            "NameInSource": "lastSeen",
+            "Alias": "lastSeen",
+            "Type": "System.DateTime"
+          },
+          "24": {
+            "Name": "location",
+            "NameInSource": "location",
+            "Alias": "location",
+            "Type": "System.String"
+          },
+          "25": {
+            "Name": "notes",
+            "NameInSource": "notes",
+            "Alias": "notes",
+            "Type": "System.String"
+          },
+          "26": {
+            "Name": "outOfOffice",
+            "NameInSource": "outOfOffice",
+            "Alias": "outOfOffice",
+            "Type": "System.Boolean"
+          },
+          "27": {
+            "Name": "password",
+            "NameInSource": "password",
+            "Alias": "password",
+            "Type": "System.String"
+          },
+          "28": {
+            "Name": "phone",
+            "NameInSource": "phone",
+            "Alias": "phone",
+            "Type": "System.String"
+          },
+          "29": {
+            "Name": "sendEmail",
+            "NameInSource": "sendEmail",
+            "Alias": "sendEmail",
+            "Type": "System.Boolean"
+          },
+          "30": {
+            "Name": "signature",
+            "NameInSource": "signature",
+            "Alias": "signature",
+            "Type": "System.String"
+          },
+          "31": {
+            "Name": "status",
+            "NameInSource": "status",
+            "Alias": "status",
+            "Type": "System.String"
+          },
+          "32": {
+            "Name": "updated_at",
+            "NameInSource": "updated_at",
+            "Alias": "updated_at",
+            "Type": "System.DateTime"
+          },
+          "33": {
+            "Name": "userAgent",
+            "NameInSource": "userAgent",
+            "Alias": "userAgent",
+            "Type": "System.String"
+          },
+          "34": {
+            "Name": "userID",
+            "NameInSource": "userID",
+            "Alias": "userID",
+            "Type": "System.Decimal"
+          },
+          "35": {
+            "Name": "userName",
+            "NameInSource": "userName",
+            "Alias": "userName",
+            "Type": "System.String"
+          }
+        },
+        "NameInSource": "User.root"
+      }
+    },
+    "Databases": {
+      "0": {
+        "Ident": "StiODataDatabase",
+        "Name": "Connection",
+        "Alias": "Connection",
+        "ConnectionStringEncrypted": "2ER1K2gJUYxiXqHoznXhFs3szUDFVGH0bBK8iGEI42fRdMsPRkw="
+      },
+      "1": {
+        "Ident": "StiJsonDatabase",
+        "Name": "User",
+        "Alias": "User",
+        "PathData": "https://localhost:7135/api/v1/User"
+      }
+    }
+  },
+  "Pages": {
+    "0": {
+      "Ident": "StiPage",
+      "Name": "Page1",
+      "Guid": "37f9b87e3c6e643e71b75c777313f4d7",
+      "Interaction": {
+        "Ident": "StiInteraction"
+      },
+      "Border": ";;2;;;;;solid:Black",
+      "Brush": "solid:",
+      "Components": {
+        "0": {
+          "Ident": "StiText",
+          "Name": "Text1",
+          "ClientRectangle": "5.2,1.4,3,0.6",
+          "Interaction": {
+            "Ident": "StiInteraction"
+          },
+          "Text": {
+            "Value": "{root.lastPasswordChange}"
+          },
+          "Border": ";;;;;;;solid:Black",
+          "Brush": "solid:",
+          "TextBrush": "solid:Black"
+        },
+        "1": {
+          "Ident": "StiText",
+          "Name": "Text2",
+          "ClientRectangle": "0.4,0.6,3,0.6",
+          "Interaction": {
+            "Ident": "StiInteraction"
+          },
+          "Text": {
+            "Value": "{root.companyName}"
+          },
+          "Border": ";;;;;;;solid:Black",
+          "Brush": "solid:",
+          "TextBrush": "solid:Black"
+        },
+        "2": {
+          "Ident": "StiText",
+          "Name": "Text3",
+          "ClientRectangle": "0.4,1.6,3,0.6",
+          "Interaction": {
+            "Ident": "StiInteraction"
+          },
+          "Text": {
+            "Value": "{root.firstName}"
+          },
+          "Border": ";;;;;;;solid:Black",
+          "Brush": "solid:",
+          "TextBrush": "solid:Black"
+        },
+        "3": {
+          "Ident": "StiText",
+          "Name": "Text4",
+          "ClientRectangle": "0.4,2.8,3,0.6",
+          "Interaction": {
+            "Ident": "StiInteraction"
+          },
+          "Text": {
+            "Value": "{root.ipAddress}"
+          },
+          "Border": ";;;;;;;solid:Black",
+          "Brush": "solid:",
+          "TextBrush": "solid:Black"
+        }
+      },
+      "PageWidth": 21.01,
+      "PageHeight": 29.69,
+      "Watermark": {
+        "TextBrush": "solid:50,0,0,0"
+      },
+      "Margins": {
+        "Left": 1,
+        "Right": 1,
+        "Top": 1,
+        "Bottom": 1
+      }
+    }
+  }
+}

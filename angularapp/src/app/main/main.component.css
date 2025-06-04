@@ -1,0 +1,88 @@
+:host {
+  display: flex;
+  flex-direction: column; /* Stack the children vertically */
+  min-height: 100vh;
+}
+
+.app-layout {
+  display: flex;
+  flex-grow: 1; /* Allow the layout to grow and take up remaining space */
+}
+
+.menu-sidebar {
+  position: relative;
+  z-index: 10;
+  width: 2%;
+  min-width: 150px;
+  box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
+}
+
+.header-trigger {
+  height: 64px;
+  padding: 20px 24px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all .3s,padding 0s;
+}
+
+.trigger:hover {
+  color: #1890ff;
+}
+
+.sidebar-logo {
+  position: relative;
+  height: 64px;
+  padding-left: 20px;
+  overflow: hIdden;
+  line-height: 1px;
+  background: #001529;
+  transition: all .3s;
+}
+
+  .sidebar-logo img {
+    display: inline-block;
+    height: 65px;
+    width: 65px;
+    vertical-align: mIddle;
+  }
+
+  .sidebar-logo h1 {
+    display: inline-block;
+    margin: 0;
+    color: #fff;
+    font-weight: 600;
+    font-size: 18px;
+    font-family: Avenir, Helvetica Neue, Arial, sans-serif;
+    line-height: 64px;
+    /*vertical-align: mIddle;*/
+  }
+
+
+nz-header {
+  padding: 0;
+  width: 100%;
+  z-index: 2;
+}
+
+.app-header {
+  position: relative;
+  height: 64px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+}
+
+nz-content {
+  margin: 20px;
+}
+
+nz-layout {
+  flex-grow: 1; /* Allow the layout to grow and take up remaining space */
+}
+
+.inner-content {
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
+  padding: 24px;
+  background: #fff;
+  flex-grow: 1; /* Allow content to grow and take up remaining space */
+}

@@ -1,0 +1,97 @@
+<p-toast></p-toast>
+<p-toolbar styleClass="mb-0 gap-0">
+  <h4 class="m-0">Manage SLA</h4>
+</p-toolbar>
+
+<p-table #dt
+         [value]="Priorities"
+         [rows]="10"
+         [paginator]="true"
+         [globalFilterFields]="['id', 'name','department_Name','days']"
+         [tableStyle]="{ 'min-width': '75rem' }"
+         [(selection)]="selectedPriorities"
+         [rowHover]="true"
+         dataKey="id"
+         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         [showCurrentPageReport]="true">
+  <ng-template pTemplate="caption">
+    <div class="flex align-items-center justify-content-between">
+      <h5 class="m-0"></h5>
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" (input)="applyFilterGlobal($event)" placeholder="Search..." />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <!--<button pButton pRipple label="Add" class="p-button-success mr-2" icon="pi pi-plus" (click)="openNew()"></button>
+        <button pButton pRipple [label]="Delete" icon="pi pi-trash" class="p-button-danger"
+                (click)="deleteSelectedPriorities()" [disabled]="!selectedPriorities || !selectedPriorities.length">
+        </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+        <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="exportExcel()"></button>
+
+      </span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 4rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th pSortableColumn="id" style="min-width:15rem">ID </th>
+      <th pSortableColumn="department_Name" style="min-width:15rem">Description </th>
+      <th></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-Priority>
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="Priority"></p-tableCheckbox>
+      </td>
+      <td>{{ Priority.levelID }}</td>
+      <td>{{ Priority.description }}</td>
+      <!--<td>
+        <button pButton pRipple icon="pi pi-envelope" class="p-button-rounded p-button-primary mr-2" (click)="editEmails(Priority)"></button>
+      </td>
+      <td>
+        <button pButton pRipple icon="pi pi-calendar-times" class="p-button-rounded p-button-secondary mr-2" (click)="dueDate(Priority)"></button>
+      </td>-->
+      <td>
+        <!--<button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-warning mr-2" (click)="editPriority(Priority)"></button>
+        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deletePriority(Priority)"></button>-->
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="summary">
+    <div class="flex align-items-center justify-content-between">In total there are {{ Priorities ? Priorities.length : 0 }} Priorities.</div>
+  </ng-template>
+</p-table>
+
+
+
+
+<p-dialog [(visible)]="PrioritiesDialog" [style]="{width: '450px'}" header="Add Priority" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Categoryname">Description</label>
+      <input type="text" pInputText id="Categoryname" [(ngModel)]="Priority.description"  autofocus />
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="savePriorities(Priority)"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="PrioritiesEditDialog" [style]="{width: '450px'}" header="Edit Priority" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Categoryname">Description</label>
+      <input type="text" pInputText id="Categoryname" [(ngModel)]="Priority.description"  autofocus />
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="editPrioritiesD(Priority)"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>
+
+

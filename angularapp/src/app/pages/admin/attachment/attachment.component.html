@@ -1,0 +1,77 @@
+<p-toast></p-toast>
+<p-toolbar styleClass="mb-0 gap-2">
+  <h4 class="m-0">Manage Folders</h4>
+</p-toolbar>
+
+<p-table #dt
+         [value]="Attachments"
+         [rows]="10"
+         [paginator]="true"
+         [globalFilterFields]="['id', 'name','fileName','size','issue_Id']"
+         [tableStyle]="{ 'min-width': '75rem' }"
+         [(selection)]="selectedAttachments"
+         [rowHover]="true"
+         dataKey="id"
+         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         [showCurrentPageReport]="true">
+  <ng-template pTemplate="caption">
+    <div class="flex align-items-center justify-content-between">
+      <h5 class="m-0"></h5>
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" (input)="applyFilterGlobal($event)" placeholder="Search..." /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button pButton pRipple label="Add" class="p-button-success mr-2" icon="pi pi-plus" (click)="openNew()"></button>
+        <button pButton pRipple [label]="Delete" icon="pi pi-trash" class="p-button-danger"
+                (click)="deleteSelectedAttachments()" [disabled]="!selectedAttachments || !selectedAttachments.length">
+        </button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="exportExcel()"></button>
+      </span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 4rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th pSortableColumn="id" style="min-width:15rem">ID </th>
+      <th pSortableColumn="issue_Id" style="min-width:15rem">Issue Id></th>
+      <th pSortableColumn="fileName" style="min-width:15rem">File Name</th>
+      <th pSortableColumn="size" style="min-width:15rem">Size </th>
+      <th></th>
+      <!--<th></th>-->
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-Attachment>
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="Attachment"></p-tableCheckbox>
+      </td>
+      <td>{{ Attachment.id }}</td>
+      <td>{{ Attachment.ticket_Id }}</td>
+      <td>{{ Attachment.fileName }}</td>
+      <td>{{ (Attachment.size / 1048576).toFixed(2) }} MB</td>
+      <td>
+        <button pButton pRipple icon="pi pi-download" class="p-button-rounded p-button-success mr-2" (click)="downloadAttachment(Attachment.id,Attachment.fileName)"></button>
+        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deleteAttachment(Attachment)"></button>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="summary">
+    <div class="flex align-items-center justify-content-between">In total there are {{ Attachments ? Attachments.length : 0 }} Categories.</div>
+  </ng-template>
+</p-table>
+
+
+<p-dialog [(visible)]="uploadDialog" [style]="{width: '450px'}" header="Upload Attachment" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Categoryname">SelectFile</label>
+      <input type="file" class="block text-900 font-medium mb-2" (change)="onFileSelected($event)" accept=".pptx, .xlsx, .pdf, .docx,.txt" />
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="onSaveAttachments()"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,50 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card">
+      <h5>Advanced</h5>
+      <div class="p-fluid p-formgrid grid">
+        <div class="field col-12 md:col-6">
+          <label htmlFor="userID">User ID</label>
+          <input pInputText id="userID" type="text" [(ngModel)]="User.user_Id" />
+        </div><div class="field col-12 md:col-6">
+          <label htmlFor="firstname">Firstname</label>
+          <input pInputText id="firstname" type="text" [(ngModel)]="User.firstname" />
+        </div>
+        <div class="field col-12 md:col-6">
+          <label htmlFor="lastname">Lastname</label>
+          <input pInputText id="lastname" type="text" [(ngModel)]="User.lastname" />
+        </div>
+        <div class="field col-12 md:col-6">
+          <label htmlFor="username">Username</label>
+          <input pInputText id="username" type="text" [(ngModel)]="User.username" />
+        </div>
+        <div class="field col-12 md:col-6">
+          <label htmlFor="email">Email</label>
+          <input pInputText id="email" type="email" [(ngModel)]="User.email" />
+        </div>
+        <div class="field col-12 md:col-6">
+          <label htmlFor="password">Password</label>
+          <input pInputText id="password" type="password" [(ngModel)]="User.password" />
+        </div>
+        <div class="field col-12 md:col-6">
+          <label htmlFor="phone">Phone</label>
+          <input pInputText id="phone" type="text" [(ngModel)]="User.phone" />
+        </div>
+        <div class="field col-12 md:col-3">
+          <label htmlFor="state">User Type</label>
+          <p-dropdown [options]="roles" optionLabel="name" [(ngModel)]="selectedRole"></p-dropdown>
+        </div>
+        <div class="field col-12 md:col-3">
+          <label htmlFor="state">Department</label>
+          <select id="state" [(ngModel)]="selectedDepartment" pInputText>
+            <option *ngFor="let Department of Departments" [ngValue]="Department">
+              {{ Department.description }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <p-button label="Back" icon="pi pi-arrow-left" (click)="onTryAgainClick()" styleClass="p-button"></p-button> &nbsp;
+    <p-button label="Submit" icon="pi pi-check" (click)="submit(User)" styleClass="p-button-success"></p-button>
+  </div>
+</div>

@@ -1,0 +1,297 @@
+<nz-layout class="app-layout">
+  <nz-content>
+    <div class="col-24">
+      <nz-skeleton [nzLoading]="skeleton" [nzActive]="true">
+        <div class="card">
+          <h5 class="field col-12 md:col-12">Ticket No:#{{ticket.id}}</h5>
+          <div class="grid">
+            <div class="col-7 flex">
+              <div class="field col-16 md:col-12">
+                <div class="card">
+                  <p-toolbar>
+                    <div class="p-toolbar-group-start">
+                      <p-button label="Takeover" styleClass="p-button-raised p-button-warning" icon="pi pi-check" (click)="takeoverTicket()" *ngIf="ticket.assingedToUserID?.toString() !== this.user.user_Id && ticket.statusID !== 3 && ticket.statusID !== 2"></p-button>&nbsp;&nbsp;&nbsp;
+                      <!--<p-button label="Send to other agent" styleClass="p-button-raised p-button-warning" icon="pi pi-sync" (click)="assignToOtherAgent()" *ngIf="ticket.assingedToUserID === this.user.user_Id  && ticket.statusID !== 3"></p-button>-->&nbsp;&nbsp;&nbsp;
+                      <p-button label="Close" styleClass="p-button-raised p-button-secondary" (click)="closeTicket()" *ngIf="ticket.statusID !== 3"></p-button>
+                      <p-button label="Re-open" styleClass="p-button-raised p-button-secondary" (click)="reOpenTicket()" *ngIf="ticket.statusID === 3"></p-button>
+                      <!--<button nz-button nzType="primary" (click)="takeoverTicket()">Takeover</button> &nbsp;&nbsp;&nbsp;-->
+                      <!--<button nz-button nzType="default" nzDanger (click)="closeTicket()">Close</button>-->
+                    </div>
+                  </p-toolbar>
+                  <p-fieldset legend={{ticket.subject}} class="field col-12 md:col-12">
+                    <p class="mt-0">
+                      {{ticket.body}}
+                    </p>
+                  </p-fieldset>
+
+                </div>
+                <div class="field col-16 md:col-12">
+                  <label for="password"></label><br />
+                  <ckeditor [(ngModel)]="reply" [editor]="Editor"></ckeditor>
+                </div>
+
+                <div class="field col-12 md:col-3">
+                  <div class="clearfix">
+                    <nz-upload class="upload-list-inline" [(nzFileList)]="fileList2">
+                      <button nz-button>
+                        <span>
+                          <span nz-icon nzType="upload"></span>
+                          Upload Attachments
+                        </span>
+                      </button>
+                    </nz-upload>
+                  </div>
+                </div>
+                <div class="p-toolbar-group-start">
+                  <!--<button nz-button nzType="primary" (click)="createComment()">Reply</button>-->
+                  &nbsp;&nbsp;<p-button label="Reply" styleClass="p-button-outlined" icon="pi pi-comment" (click)="createComment()"></p-button>&nbsp;&nbsp;&nbsp;
+                  <p-button label="Reply & close" styleClass="p-button-outlined p-button-danger" (click)="createCommentAndClose()" *ngIf="ticket.statusID === 1 || ticket.statusID === 2 || ticket.statusID === 4"></p-button>
+
+                  <!--<button nz-button nzType="default" nzDanger (click)="createCommentAndClose()">Reply & close</button>-->
+                </div>
+
+              </div>
+            </div>
+            <div class="col-1">
+              <p-divider layout="vertical">
+                <!--<b>OR</b>-->
+              </p-divider>
+            </div>
+            <div class="col-3 flex align-items-center justify-content-center">
+              <p-card [style]="{ width: '600px'}">
+
+                <div class="surface-section">
+                  <div class="font-medium text-3xl text-900 mb-3">
+                    <p-tag [severity]="getSeverity(ticket.statusID)">
+                      {{ getTicketStatusDescription(ticket.statusID) }}
+                    </p-tag>
+                  </div>
+                  <ul class="list-none p-0 m-0">
+                    <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                      <div class="text-500 w-6 md:w-2 font-medium">Priority</div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1" *ngIf="editFlag !== 'priority'">{{ getTicketPriorityDescription(ticket.priority) }}</div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1" *ngIf="editFlag === 'priority'">
+                        <div class="p-fluid">
+                          <select id="state" [(ngModel)]="selectedPriority" Value="selectedPriority.description" pInputText name="selectedPriority">
+                            <option *ngFor="let priority of priorities" [ngValue]="priority">
+                              {{priority.description}}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="w-6 md:w-2 flex justify-content-end">
+                        <button pButton pRipple label="Edit" icon="pi pi-pencil" class="p-button-text" (click)="editFlagChange('priority')" *ngIf="editFlag !== 'priority'"></button>
+                        <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveNewPriority()" *ngIf="editFlag === 'priority'"></button>
+                      </div>
+                    </li>
+                    <li class="flex align-items-center py-3 px-2 border-top-1 border-bottom-1 surface-border flex-wrap">
+                      <div class="text-500 w-6 md:w-2 font-medium">Department</div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1 line-height-3" *ngIf="editFlag !== 'department'">
+                        {{ getTicketDepartmentDescription(ticket.departmentID) }}
+                      </div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1" *ngIf="editFlag === 'department'">
+                        <div class="p-fluid">
+                          <select id="state" [(ngModel)]="selectedDepartment" Value="selectedDepartment.description" pInputText name="selectedDepartment">
+                            <option *ngFor="let department of departments" [ngValue]="department">
+                              {{department.description}}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="w-6 md:w-2 flex justify-content-end">
+                        <button pButton pRipple label="Edit" icon="pi pi-pencil" class="p-button-text" (click)="editFlagChange('department')" *ngIf="editFlag !== 'department'"></button>
+                        <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveNewDepartment()" *ngIf="editFlag === 'department'"></button>
+                      </div>
+                    </li>
+                    <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                      <div class="text-500 w-6 md:w-2 font-medium">Category</div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1" *ngIf="editFlag !== 'category'">
+                        {{ getTicketCategoryDescription(ticket.categoryID) }} / {{ getTicketSubCategoryDescription(ticket.subCategoryID) }}
+                      </div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1" *ngIf="editFlag === 'category'">
+                        <div class="p-fluid">
+                          <select id="state" [(ngModel)]="selectedCategory" Value="selectedCategory.description" pInputText (change)="onCategoryChange()">
+                            <option *ngFor="let category of categories" [ngValue]="category">
+                              {{category.description}}
+                            </option>
+                          </select>
+                        </div>
+                        <div class="p-fluid">
+                          <select id="state" [(ngModel)]="selectedSubCategory" Value="selectedSubCategory.description" pInputText name="selectedSubCategory">
+                            <option *ngFor="let subCategory of listSubCategories" [ngValue]="subCategory">
+                              {{subCategory.description}}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="w-6 md:w-2 flex justify-content-end">
+                        <button pButton pRipple label="Edit" icon="pi pi-pencil" class="p-button-text" (click)="editFlagChange('category')" *ngIf="editFlag !== 'category'"></button>
+                        <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveNewCategory()" *ngIf="editFlag === 'category'"></button>
+                      </div>
+                    </li>
+
+                    <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                      <div class="text-500 w-6 md:w-2 font-medium">Channel</div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1" *ngIf="editFlag !== 'channel'">{{ getTicketChannelDescription(ticket.channelID) }}</div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1" *ngIf="editFlag === 'channel'">
+                        <div class="p-fluid">
+                          <select id="state" [(ngModel)]="selectedChannel" Value="selectedChannel.description" pInputText name="selectedChannel">
+                            <option *ngFor="let channel of channels" [ngValue]="channel">
+                              {{channel.description}}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="w-6 md:w-2 flex justify-content-end">
+                        <button pButton pRipple label="Edit" icon="pi pi-pencil" class="p-button-text" (click)="editFlagChange('channel')" *ngIf="editFlag !== 'channel'"></button>
+                        <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveNewChannel()" *ngIf="editFlag === 'channel'"></button>
+                      </div>
+                    </li>
+
+
+                    <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                      <div class="text-500 w-6 md:w-2 font-medium">Reason</div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1" *ngIf="editFlag !== 'category'">
+                        {{ getReasonDescription(ticket.requestID) }}
+                      </div>
+                    </li>
+
+                    <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                      <div class="text-600 w-7 md:w-2 font-medium">Customer Name</div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{ticket.customerName}}</div>
+                      <div class="w-6 md:w-2 flex justify-content-end">
+                        <!--<button pButton pRipple label="Edit" icon="pi pi-pencil" class="p-button-text" (click)="editFlagChange('customername')"></button>-->
+                      </div>
+                    </li>
+                    <li class="flex align-items-center py-3 px-2 border-top-1 border-bottom-1 surface-border flex-wrap">
+                      <div class="text-500 w-6 md:w-2 font-medium">Created By</div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1 line-height-3">
+                        {{ getTicketAssignedUserDescription(ticket.userID) }}
+                      </div>
+                      <div class="w-6 md:w-2 flex justify-content-end">
+                        <!--<button pButton pRipple label="Edit" icon="pi pi-pencil" class="p-button-text"></button>-->
+                      </div>
+                    </li>
+                    <li class="flex align-items-center py-3 px-2 border-top-1 border-bottom-1 surface-border flex-wrap">
+                      <div class="text-500 w-6 md:w-2 font-medium">Assigned Agent</div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1 line-height-3">
+                        {{ getTicketAssignedUserDescription(ticket.assingedToUserID) }}
+                      </div>
+                      <div class="w-6 md:w-2 flex justify-content-end">
+                        <!--<button pButton pRipple label="Edit" icon="pi pi-pencil" class="p-button-text"></button>-->
+                      </div>
+                    </li>
+                    <li class="flex align-items-center py-3 px-2 border-top-1 border-bottom-1 surface-border flex-wrap">
+                      <div class="text-500 w-6 md:w-2 font-medium">Assigned Back-Office</div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1 line-height-3">
+                        {{ getTicketAssignedUserDescription(ticket.assingedToBackOfficeID) }}
+                      </div>
+                      <div class="w-6 md:w-2 flex justify-content-end">
+                        <!--<button pButton pRipple label="Edit" icon="pi pi-pencil" class="p-button-text"></button>-->
+                      </div>
+                    </li>
+
+                    <li class="flex align-items-center py-3 px-2 border-top-1 border-bottom-1 surface-border flex-wrap">
+                      <div class="text-500 w-6 md:w-2 font-medium">Entry Date</div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1 line-height-3">
+                        {{ticket.startDate | date:'short'}}
+                      </div>
+                      <div class="w-6 md:w-2 flex justify-content-end">
+                        <!--<button pButton pRipple label="Edit" icon="pi pi-pencil" class="p-button-text"></button>-->
+                      </div>
+                    </li>
+                    <li class="flex align-items-center py-3 px-2 border-top-1 border-bottom-1 surface-border flex-wrap">
+                      <div class="text-500 w-6 md:w-2 font-medium">Due Date</div>
+                      <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1 line-height-3">
+                        {{ ticket.dueDate ? (ticket.dueDate | date:'short') : 'N/A' }}
+                      </div>
+                      <div class="w-6 md:w-2 flex justify-content-end">
+                        <!--<button pButton pRipple label="Edit" icon="pi pi-pencil" class="p-button-text"></button>-->
+                      </div>
+                    </li>
+                  </ul>
+</div>
+              </p-card>
+            </div>
+
+
+            <div class="col-6">
+              <p-divider layout="horizontal" align="center">
+                <b>Comments</b>
+              </p-divider>
+              <div class="col-12 align-items-center justify-content-center">
+                <ng-container *ngFor="let comment of comments">
+                  <nz-comment [nzAuthor]="getTicketAssignedUserDescription(comment.userID)" [nzDatetime]="formatCommentDate(comment.commentDate)">
+                    <nz-avatar nz-comment-avatar nzIcon="user" style="background-color: #3E3E40;">
+                    </nz-avatar>
+                    <nz-comment-content>
+                      <p>{{ comment.body }}</p>
+                    </nz-comment-content>
+                    <!--<nz-comment-action></nz-comment-action>-->
+                    <ng-container *ngIf="comment.children && comment.children.length">
+                      <ng-template ngFor let-child [ngForOf]="comment.children">
+                        <nz-comment *ngIf="child.commentDate" [nzAuthor]="child.userID">
+                          <nz-avatar nz-comment-avatar nzIcon="user"></nz-avatar>
+                          <nz-comment-content>
+                            <p>{{ child.body }}</p>
+                          </nz-comment-content>
+                        </nz-comment>
+                      </ng-template>
+                    </ng-container>
+                  </nz-comment>
+                </ng-container>
+                <ng-template [ngTemplateOutlet]="commentTemplateRef" [ngTemplateOutletContext]="{ comment: data }"></ng-template>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <p-divider layout="horizontal" align="center">
+                <b>Files</b>
+              </p-divider>
+              <p-table [paginator]="true"
+                       [value]="files"
+                       [rows]="5"
+                       [tableStyle]="{ 'min-width': '1rem' }">
+                <ng-template pTemplate="header">
+                  <tr>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-file>
+                  <tr>
+                    <td style="min-width: 1rem">
+                      <img src="../../../../assets/icon_pdf.png" alt="File Icon" class="file-icon" style="width:40px;height:40px">
+                      {{file.fileName}}
+                    </td>
+
+                    <td style="min-width: 1rem">
+                      <button pButton pRipple icon="pi pi-download" class="p-button-rounded p-button-info mr-2" (click)="download(file.fileID,file.fileName)"></button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </nz-skeleton>
+    </div>
+  </nz-content>
+</nz-layout>
+
+
+<p-dialog [(visible)]="assignAgentDialog" [style]="{width: '450px',height: '450px'}" header="Assign Agent" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Categoryname">Agent Name</label>
+      <select id="state" [(ngModel)]="selectedAgent" Value="selectedAgent.lastname + selectedAgent.firstname" pInputText name="selectedAgent">
+        <option *ngFor="let agent of agents" [ngValue]="agent">
+          {{agent.lastname}}  {{agent.firstname}} , {{agent.username}}
+        </option>
+      </select>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Assign" icon="pi pi-check" class="p-button-text" (click)="assignNewAgent()"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>

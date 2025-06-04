@@ -1,0 +1,153 @@
+
+<p-toast></p-toast>
+<p-toolbar styleClass="mb-0 gap-0">
+  <h4 class="m-0">Manage Escalations</h4>
+
+</p-toolbar>
+
+<p-table #dt
+         [value]="Escalations"
+         [rows]="10"
+         [paginator]="true"
+         [globalFilterFields]="['id', 'name','description','days']"
+         [tableStyle]="{ 'min-width': '75rem' }"
+         [(selection)]="selectedEscalations"
+         [rowHover]="true"
+         dataKey="id"
+         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         [showCurrentPageReport]="true">
+  <ng-template pTemplate="caption">
+    <div class="flex align-items-center justify-content-between">
+      <h5 class="m-0"></h5>
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" (input)="applyFilterGlobal($event)" placeholder="Search..." />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button pButton pRipple label="Add" class="p-button-success mr-2" icon="pi pi-plus" (click)="openNew()"></button>
+        <button pButton pRipple [label]="Delete" icon="pi pi-trash" class="p-button-danger"
+                (click)="deleteSelectedEscalations()" [disabled]="!selectedEscalations || !selectedEscalations.length">
+        </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="exportExcel()"></button>
+
+      </span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 4rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th pSortableColumn="id" style="min-width:15rem">ID </th>
+      <th pSortableColumn="description" style="min-width:15rem">Department Name</th>
+      <th pSortableColumn="description" style="min-width:15rem">Priority</th>
+      <th pSortableColumn="name" style="min-width:15rem">Days </th>
+      <th pSortableColumn="name" style="min-width:15rem">Emails </th>
+      <th></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-Escalation>
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="Escalation"></p-tableCheckbox>
+      </td>
+      <td>{{ Escalation.escalationID }}</td>
+      <td>{{ getEscalationDepartmentName(Escalation.departmentID) }}</td> <!-- Use a function to get department name -->
+      <td>{{ getEscalationPriorityName(Escalation.levelID) }}</td> <!-- Use a function to get department name -->
+      <td>{{ Escalation.days }}</td>
+      <td>{{ Escalation.emails }}</td>
+      <td>
+        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-warning mr-2" (click)="editEscalation(Escalation)"></button>
+        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deleteEscalation(Escalation)"></button>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="summary">
+    <div class="flex align-items-center justify-content-between">In total there are {{ Escalations ? Escalations.length : 0 }} Escalations.</div>
+  </ng-template>
+</p-table>
+
+
+
+
+<p-dialog [(visible)]="EscalationsDialog" [style]="{width: '450px'}" header="Add Escalation" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Escalationname">Emails</label>
+      <input type="text" pInputText id="Escalationname" [(ngModel)]="Escalation.emails" autofocus />
+    </div>
+    <div class="p-field">
+      <label for="Escalationname">Days</label>
+      <input type="number" pInputText id="Escalationname" [(ngModel)]="Escalation.days" autofocus />
+    </div>
+    <div class="p-field">
+      <label for="Escalationname">Department</label>
+      <select id="state" [(ngModel)]="Department" Value="Department.description" pInputText>
+        <option *ngFor="let Department of Departments" [ngValue]="Department">
+          {{Department.description}}
+        </option>
+      </select>
+    </div>
+    <div class="p-field">
+      <label for="Escalationname">Priority</label>
+      <select id="state" [(ngModel)]="selectedPriority" Value="selectedPriority.description" pInputText>
+        <option *ngFor="let Priority of Priorities" [ngValue]="Priority">
+          {{Priority.description}}
+        </option>
+      </select>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveEscalations(Escalation,Department)"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="EscalationsEditDialog" [style]="{width: '450px'}" header="Edit Escalation" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Escalationname">Name</label>
+      <input type="text" pInputText id="Escalationname" [(ngModel)]="Escalation.emails" autofocus />
+    </div>
+    <div class="p-field">
+      <label for="Escalationname">Days</label>
+      <input type="number" pInputText id="Escalationname" [(ngModel)]="Escalation.days" autofocus />
+    </div>
+    <div class="p-field">
+      <label for="Escalationname">Department</label>
+      <select id="state" [(ngModel)]="selectedDepartment" pInputText>
+        <!-- Display the currently selected company -->
+        <option *ngIf="selectedDepartment" [ngValue]="selectedDepartment">
+          {{ getDepartmentNameById(Escalation.departmentID) }}
+        </option>
+
+        <!-- Display all other companies, but skip the one that's already selected -->
+        <ng-container *ngFor="let Department of Departments">
+          <option [ngValue]="selectedDepartment">
+            {{ Department.description }}
+          </option>
+        </ng-container>
+      </select>
+    </div>
+    <div class="p-field">
+      <label for="Escalationname">Priority</label>
+      <select id="state" [(ngModel)]="selectedPriority" pInputText>
+        <!-- Display the currently selected company -->
+        <option *ngIf="selectedPriority" [ngValue]="selectedPriority">
+          {{ getPriorityNameById(Escalation.levelID) }}
+        </option>
+
+        <!-- Display all other companies, but skip the one that's already selected -->
+        <ng-container *ngFor="let Priority of Priorities">
+          <option [ngValue]="selectedPriority">
+            {{ Priority.description }}
+          </option>
+        </ng-container>
+      </select>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="editEscalationsD(Escalation)"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>

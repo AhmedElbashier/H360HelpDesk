@@ -1,0 +1,15 @@
+.app-layout {
+  display: flex;
+  flex-grow: 1;
+}
+
+nz-content {
+  margin: 30px;
+}
+nz-avatar {
+  margin-top: 10px;
+  margin-right: 10px;
+}
+:host ::ng-deep .ck-editor__editable_inline {
+  min-height: 200px !important;
+}

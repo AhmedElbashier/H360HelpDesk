@@ -1,0 +1,120 @@
+<p-toolbar>
+  <div class="p-fluid p-formgrid grid">
+    <div class="field col-6 md:col-2">
+      <label htmlFor="firstname2">Ticket Status</label>
+      <select id="state" [(ngModel)]="selectedStatus" Value="status.description" pInputText name="selectedStatus">
+        <option *ngFor="let status of statuses" [ngValue]="status">
+          {{status.description}}
+        </option>
+      </select>
+    </div>
+    <div class="field col-6 md:col-2">
+      <label htmlFor="firstname2">Priorities</label>
+      <select id="state" [(ngModel)]="selectedPriority" Value="priority.description" pInputText name="selectedPriority">
+        <option *ngFor="let priority of priorities" [ngValue]="priority">
+          {{priority.description}}
+        </option>
+      </select>
+    </div>
+      <div class="field col-6 md:col-2">
+        <label htmlFor="firstname2">From</label>
+        <p-calendar [(ngModel)]="startDate"></p-calendar>
+      </div>
+      <div class="field col-6 md:col-2">
+        <label htmlFor="firstname2">To</label>
+        <p-calendar  [(ngModel)]="endDate"></p-calendar>
+      </div>
+      <div class="field col-6 md:col-2">
+        <label htmlFor="firstname2">Department</label>
+        <select id="state" [(ngModel)]="selectedDepartment" Value="Department.description" pInputText (change)="onDepartmentChange()" name="selectedDepartment">
+          <option *ngFor="let Department of departments" [ngValue]="Department">
+            {{Department.description}}
+          </option>
+        </select>
+      </div>
+      <div class="field col-6 md:col-2">
+        <label htmlFor="firstname2">Categories</label>
+        <select id="state" [(ngModel)]="selectedCategory" Value="category.description" pInputText  name="selectedCategory">
+          <option *ngFor="let category of categories" [ngValue]="category">
+            {{category.description}}
+          </option>
+        </select>
+      </div>
+        <p-button (click)="generateReport()" label="Generate"></p-button>
+    </div>
+</p-toolbar>
+
+
+
+
+
+
+
+
+
+
+<p-table #dt *ngIf="isTableVisible"
+         [value]="tickets"
+         [rows]="10"
+         [paginator]="true"
+         [globalFilterFields]="['id', 'user_Id', 'companyName', 'firstName' ,'lastName', 'userName', 'email']"
+         [tableStyle]="{ 'min-width': '75rem' }"
+         [rowHover]="true"
+         dataKey="id"
+         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         [showCurrentPageReport]="true">
+  <ng-template pTemplate="caption">
+    <div class="flex align-items-center justify-content-between">
+      <h5 class="m-0"></h5>
+      <span class="p-input-icon-left">
+        <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="exportExcel()"></button>
+      </span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="TicketNo" style="min-width:5rem">Ticket No</th>
+      <th pSortableColumn="firstName" style="min-width:10rem">Subject </th>
+      <th pSortableColumn="lastName" style="min-width:10rem">Details</th>
+      <th pSortableColumn="lastName" style="min-width:10rem">Created By</th>
+      <th pSortableColumn="lastName" style="min-width:10rem">Assigned Agent</th>
+      <th pSortableColumn="lastName" style="min-width:10rem">BackOffice User</th>
+      <th pSortableColumn="userName" style="min-width:10rem">Department </th>
+      <th pSortableColumn="userName" style="min-width:10rem">Category </th>
+      <th pSortableColumn="userName" style="min-width:10rem">Start Date </th>
+      <th pSortableColumn="userName" style="min-width:10rem">Due Date </th>
+      <th pSortableColumn="userName" style="min-width:10rem">Resolved Date </th>
+      <th pSortableColumn="userName" style="min-width:10rem">Closed Date </th>
+      <th pSortableColumn="userName" style="min-width:10rem">Level </th>
+      <th pSortableColumn="userName" style="min-width:10rem">Status </th>
+      <th pSortableColumn="email" style="min-width:10rem">Customer Name </th>
+      <th pSortableColumn="email" style="min-width:10rem">Customer Email </th>
+      <th pSortableColumn="email" style="min-width:10rem">Customer Mobile </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-Ticket>
+    <tr>
+      <td style="min-width:5rem">{{ Ticket.id }}</td>
+      <td>{{ Ticket.subject }}</td>
+      <td>{{ Ticket.body }}</td>
+      <td>{{ getTicketAssignedUserDescription(Ticket.userID) }}</td>
+      <td>{{ getTicketAssignedUserDescription(Ticket.assingedToUserID) }}</td>
+      <td>{{ getTicketAssignedUserDescription(Ticket.assingedToBackOfficeID) }}</td>
+      <td>{{ getTicketDepartmentDescription(Ticket.departmentID) }}</td>
+      <td>{{ getTicketCategoryDescription(Ticket.categoryID) }}</td>
+      <td>{{ Ticket.startDate | date:'M/d/yy, h:mm:ss a'}}</td>
+      <td>{{ Ticket.dueDate | date:'M/d/yy, h:mm:ss a'}}</td>
+      <td>{{ Ticket.resolvedDate | date:'M/d/yy, h:mm:ss a'}}</td>
+      <td>{{ Ticket.closedDate | date:'M/d/yy, h:mm:ss a'}}</td>
+      <td>{{ getTicketPriorityDescription(Ticket.priority) }}</td>
+      <td>{{ getTicketStatusDescription(Ticket.statusID) }}</td>
+      <td>{{ Ticket.customerName }}</td>
+      <td>{{ Ticket.email }}</td>
+      <td>{{ Ticket.mobile }}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="summary">
+    <div class="flex align-items-center justify-content-between">In total there are {{ tickets ? tickets.length : 0 }} Tickets.</div>
+  </ng-template>
+</p-table>
+

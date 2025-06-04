@@ -1,0 +1,83 @@
+<p-toast></p-toast>
+<p-toolbar styleClass="mb-0 gap-0">
+  <h4 class="m-0">Manage Users</h4>
+</p-toolbar>
+
+<p-table #dt
+         [value]="Users"
+         [rows]="10"
+         [paginator]="true"
+         [globalFilterFields]="['id', 'user_Id', 'companyName', 'firstName' ,'lastName', 'userName', 'email']"
+         [tableStyle]="{ 'min-width': '75rem' }"
+         [(selection)]="selectedUsers"
+         [rowHover]="true"
+         dataKey="id"
+         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         [showCurrentPageReport]="true">
+  <ng-template pTemplate="caption">
+    <div class="flex align-items-center justify-content-between">
+      <h5 class="m-0"></h5>
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" (input)="applyFilterGlobal($event)" placeholder="Search..." />&nbsp;&nbsp;&nbsp;&nbsp;
+        <button pButton pRipple label="Add" class="p-button-success mr-2" icon="pi pi-plus" (click)="openNew()"></button>
+        <button pButton pRipple [label]="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedUsers()" [disabled]="!selectedUsers || !selectedUsers.length"></button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="exportExcel()"></button>
+
+      </span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 4rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th pSortableColumn="userID" style="min-width:10rem">User ID</th>
+      <th pSortableColumn="firstName" style="min-width:10rem">First Name </th>
+      <th pSortableColumn="lastName" style="min-width:10rem">Last Name</th>
+      <th pSortableColumn="userName" style="min-width:10rem">Username </th>
+      <th pSortableColumn="email" style="min-width:10rem">Email </th>
+      <th>Options</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-User>
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="User"></p-tableCheckbox>
+      </td>
+      <td>{{ User.user_Id }}</td>
+      <td>{{ User.firstname }}</td>
+      <td>{{ User.lastname }}</td>
+      <td>{{ User.username }}</td>
+      <td>{{ User.email }}</td>
+      <td style="min-width:10rem">
+        <button pButton pRipple icon="pi pi-info" class="p-button-rounded p-button-info mr-1" (click)="detailsUser(User)"></button>
+        <button pButton pRipple icon="pi pi-key" class="p-button-rounded p-button-success mr-1" (click)="resetPasswordDialog(User)"></button>
+        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-warning mr-1" (click)="editUser(User)"></button>
+        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deleteUser(User)"></button>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="summary">
+    <div class="flex align-items-center justify-content-between">In total there are {{ Users ? Users.length : 0 }} Users.</div>
+  </ng-template>
+</p-table>
+
+
+<p-dialog [(visible)]="resetDialog" [style]="{width: '450px'}" header="Password Reset" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Categoryname">Password</label>
+      <input type="password" pInputText id="testEmail" [(ngModel)]="password" autofocus />
+    </div>
+    <div class="p-field">
+      <label for="Categoryname">Confirm Password</label>
+      <input type="password" pInputText id="testEmail" [(ngModel)]="c_password" autofocus />
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="reset(User)"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>

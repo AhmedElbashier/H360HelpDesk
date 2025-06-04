@@ -1,0 +1,453 @@
+<div class="surface-ground px-4 py-5 md:px-6 lg:px-8">
+  <div class="grid">
+    <div class="col-12 md:col-6 lg:col-3">
+      <div class="surface-card shadow-2 p-3 border-round">
+        <div class="flex justify-content-between mb-3">
+          <div>
+            <span class="block text-500 font-medium mb-3">تقرير الموظف الشهري</span>
+            <div class="text-900 font-medium text-xl">
+              <button pButton Status="button" label="Generate" (click)="EmpMonthlyReport()" class="p-button-raised p-button-rounded"></button>
+            </div>
+          </div>
+          <div class="flex align-items-center justify-content-center bg-blue-100 border-round" style="width:2.5rem;height:2.5rem">
+            <i class="pi pi-users text-blue-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3">
+      <div class="surface-card shadow-2 p-3 border-round">
+        <div class="flex justify-content-between mb-3">
+          <div>
+            <span class="block text-500 font-medium mb-3">تقرير الموظف السنوي</span>
+            <div class="text-900 font-medium text-xl">
+              <button pButton Status="button" label="Generate" (click)="EmpYearlyReport()" class="p-button-raised p-button-rounded"></button>
+            </div>
+          </div>
+          <div class="flex align-items-center justify-content-center bg-orange-100 border-round" style="width:2.5rem;height:2.5rem">
+            <i class="pi pi-building text-orange-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3">
+      <div class="surface-card shadow-2 p-3 border-round">
+        <div class="flex justify-content-between mb-3">
+          <div>
+            <span class="block text-500 font-medium mb-3">تقرير بكل بيانات الموظفين الإداريين</span>
+            <div class="text-900 font-medium text-xl">
+              <button pButton Status="button" label="Generate" (click)="adminReport()" class="p-button-raised p-button-rounded"></button>
+            </div>
+          </div>
+          <div class="flex align-items-center justify-content-center bg-cyan-100 border-round" style="width:2.5rem;height:2.5rem">
+            <i class="pi pi-inbox text-cyan-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3">
+      <div class="surface-card shadow-2 p-3 border-round">
+        <div class="flex justify-content-between mb-3">
+          <div>
+            <span class="block text-500 font-medium mb-3">تقرير بكل بيانات الموظفين الأكاديميين</span>
+            <div class="text-900 font-medium text-xl">
+              <button pButton Status="button" label="Generate" (click)="academicReport()" class="p-button-raised p-button-rounded"></button>
+            </div>
+          </div>
+          <div class="flex align-items-center justify-content-center bg-purple-100 border-round" style="width:2.5rem;height:2.5rem">
+            <i class="pi pi-paperclip text-purple-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3">
+      <div class="surface-card shadow-2 p-3 border-round">
+        <div class="flex justify-content-between mb-3">
+          <div>
+            <span class="block text-500 font-medium mb-3">تقرير بكل بيانات مدرسي الحزم</span>
+            <div class="text-900 font-medium text-xl">
+              <button pButton Status="button" label="Generate" (click)="packageReport()" class="p-button-raised p-button-rounded"></button>
+            </div>
+          </div>
+          <div class="flex align-items-center justify-content-center bg-purple-100 border-round" style="width:2.5rem;height:2.5rem">
+            <i class="pi pi-paperclip text-purple-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3">
+      <div class="surface-card shadow-2 p-3 border-round">
+        <div class="flex justify-content-between mb-3">
+          <div>
+            <span class="block text-500 font-medium mb-3">تقرير بكل منصرفات مدرسي الحزم</span>
+            <div class="text-900 font-medium text-xl">
+              <button pButton Status="button" label="Generate" (click)="packagePayRollReport()" class="p-button-raised p-button-rounded"></button>
+            </div>
+          </div>
+          <div class="flex align-items-center justify-content-center bg-purple-100 border-round" style="width:2.5rem;height:2.5rem">
+            <i class="pi pi-paperclip text-purple-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3">
+      <div class="surface-card shadow-2 p-3 border-round">
+        <div class="flex justify-content-between mb-3">
+          <div>
+            <span class="block text-500 font-medium mb-3">تقرير بكل بيانات الجزئيين</span>
+            <div class="text-900 font-medium text-xl">
+              <button pButton Status="button" label="Generate" (click)="trainingReport()" class="p-button-raised p-button-rounded"></button>
+            </div>
+          </div>
+          <div class="flex align-items-center justify-content-center bg-purple-100 border-round" style="width:2.5rem;height:2.5rem">
+            <i class="pi pi-paperclip text-purple-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3">
+      <div class="surface-card shadow-2 p-3 border-round">
+        <div class="flex justify-content-between mb-3">
+          <div>
+            <span class="block text-500 font-medium mb-3">تقرير بكل بيانات منصرفات الجزئيين</span>
+            <div class="text-900 font-medium text-xl">
+              <button pButton Status="button" label="Generate" (click)="trainingPayRollReport()" class="p-button-raised p-button-rounded"></button>
+            </div>
+          </div>
+          <div class="flex align-items-center justify-content-center bg-purple-100 border-round" style="width:2.5rem;height:2.5rem">
+            <i class="pi pi-paperclip text-purple-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3">
+      <div class="surface-card shadow-2 p-3 border-round">
+        <div class="flex justify-content-between mb-3">
+          <div>
+            <span class="block text-500 font-medium mb-3">تقرير بكل بيانات المتدربين</span>
+            <div class="text-900 font-medium text-xl">
+              <button pButton Status="button" label="Generate" (click)="trainingReport()" class="p-button-raised p-button-rounded"></button>
+            </div>
+          </div>
+          <div class="flex align-items-center justify-content-center bg-purple-100 border-round" style="width:2.5rem;height:2.5rem">
+            <i class="pi pi-paperclip text-purple-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3">
+      <div class="surface-card shadow-2 p-3 border-round">
+        <div class="flex justify-content-between mb-3">
+          <div>
+            <span class="block text-500 font-medium mb-3">تقرير بكل بيانات منصرفات المتدربين</span>
+            <div class="text-900 font-medium text-xl">
+              <button pButton Status="button" label="Generate" (click)="trainingPayRollReport()" class="p-button-raised p-button-rounded"></button>
+            </div>
+          </div>
+          <div class="flex align-items-center justify-content-center bg-purple-100 border-round" style="width:2.5rem;height:2.5rem">
+            <i class="pi pi-paperclip text-purple-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<p-toast></p-toast>
+
+<p-dialog [(visible)]="EmpMonthlyDialog" [style]="{width: '450px'}" header="Report Requierments" [modal]="true" styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="state">اسم الموظف</label>
+      <select id="state" (change)="EmpGet()" [(ngModel)]="Emp" Value="Emp.name" class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary" style="appearance: auto">
+        <option *ngFor="let Emp of Emps" [ngValue]="Emp">
+          {{Emp.name}}
+        </option>
+      </select>
+    </div>
+    <div class="p-field">
+      <label for="state">الشهر</label>
+      <select id="state" [(ngModel)]="month" Value="month" class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary" style="appearance: auto">
+        <option>
+          1
+        </option>
+        <option>
+          2
+        </option>
+        <option>
+          3
+        </option>
+        <option>
+          4
+        </option>
+        <option>
+          5
+        </option>
+        <option>
+          7
+        </option>
+        <option>
+          8
+        </option>
+        <option>
+          9
+        </option>
+        <option>
+          10
+        </option>
+        <option>
+          11
+        </option>
+        <option>
+          12
+        </option>
+      </select>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Generate" icon="pi pi-check" class="p-button-text" (click)="buildingExpenseReportD()"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>
+
+
+<p-dialog [(visible)]="EmpYearlyDialog" [style]="{width: '450px'}" header="Report Requierments" [modal]="true" styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="state">اسم الموظف</label>
+      <select id="state" (change)="EmpGet()" [(ngModel)]="Emp" Value="Emp.name" class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary" style="appearance: auto">
+        <option *ngFor="let Emp of Emps" [ngValue]="Emp">
+          {{Emp.name}}
+        </option>
+      </select>
+    </div>
+    <div class="p-field">
+      <label for="state">السنة</label>
+      <select id="state" [(ngModel)]="year" Value="year" class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary" style="appearance: auto">
+        <option>
+          2023
+        </option>
+        <option>
+          2024
+        </option>
+        <option>
+          2025
+        </option>
+      </select>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Generate" icon="pi pi-check" class="p-button-text" (click)="buildingAmountReportD()"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>
+
+
+<p-dialog [(visible)]="DeptReportDialog" [style]="{width: '450px'}" header="Report Requierments" [modal]="true" styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="state">اسم القسم</label>
+      <select id="state" (change)="DeptGet()" [(ngModel)]="Dept" Value="Dept.name" class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary" style="appearance: auto">
+        <option *ngFor="let Dept of Depts" [ngValue]="Dept">
+          {{Emp.name}}
+        </option>
+      </select>
+    </div>
+    <div class="p-field">
+      <label for="state">الشهر</label>
+      <select id="state" [(ngModel)]="month" Value="month" class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary" style="appearance: auto">
+        <option>
+          1
+        </option>
+        <option>
+          2
+        </option>
+        <option>
+          3
+        </option>
+        <option>
+          4
+        </option>
+        <option>
+          5
+        </option>
+        <option>
+          7
+        </option>
+        <option>
+          8
+        </option>
+        <option>
+          9
+        </option>
+        <option>
+          10
+        </option>
+        <option>
+          11
+        </option>
+        <option>
+          12
+        </option>
+      </select>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Generate" icon="pi pi-check" class="p-button-text" (click)="caseReportD()"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="DeptDetailedReportDialog" [style]="{width: '450px'}" header="Report Requierments" [modal]="true" styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="state">اسم القسم</label>
+      <select id="state" (change)="DeptGet()" [(ngModel)]="Dept" Value="Dept.name" class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary" style="appearance: auto">
+        <option *ngFor="let Dept of Depts" [ngValue]="Dept">
+          {{Emp.name}}
+        </option>
+      </select>
+    </div>
+    <div class="p-field">
+      <label for="state">الشهر</label>
+      <select id="state" [(ngModel)]="month" Value="month" class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary" style="appearance: auto">
+        <option>
+          1
+        </option>
+        <option>
+          2
+        </option>
+        <option>
+          3
+        </option>
+        <option>
+          4
+        </option>
+        <option>
+          5
+        </option>
+        <option>
+          7
+        </option>
+        <option>
+          8
+        </option>
+        <option>
+          9
+        </option>
+        <option>
+          10
+        </option>
+        <option>
+          11
+        </option>
+        <option>
+          12
+        </option>
+      </select>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Generate" icon="pi pi-check" class="p-button-text" (click)="caseReportD()"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>
+<p-dialog [(visible)]="trainingDialog" [style]="{width: '450px'}" header="Report Requierments" [modal]="true" styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="state">الشهر</label>
+      <select id="state" [(ngModel)]="month" Value="month" class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary" style="appearance: auto">
+        <option>
+          1
+        </option>
+        <option>
+          2
+        </option>
+        <option>
+          3
+        </option>
+        <option>
+          4
+        </option>
+        <option>
+          5
+        </option>
+        <option>
+          7
+        </option>
+        <option>
+          8
+        </option>
+        <option>
+          9
+        </option>
+        <option>
+          10
+        </option>
+        <option>
+          11
+        </option>
+        <option>
+          12
+        </option>
+      </select>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Generate" icon="pi pi-check" class="p-button-text" (click)="trainingPayRollReportD()"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>
+
+
+
+
+
+<p-dialog [(visible)]="packageDialog" [style]="{width: '450px'}" header="Report Requierments" [modal]="true" styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="state">الشهر</label>
+      <select id="state" [(ngModel)]="month" Value="month" class="w-full text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round outline-none focus:border-primary" style="appearance: auto">
+        <option>
+          1
+        </option>
+        <option>
+          2
+        </option>
+        <option>
+          3
+        </option>
+        <option>
+          4
+        </option>
+        <option>
+          5
+        </option>
+        <option>
+          7
+        </option>
+        <option>
+          8
+        </option>
+        <option>
+          9
+        </option>
+        <option>
+          10
+        </option>
+        <option>
+          11
+        </option>
+        <option>
+          12
+        </option>
+      </select>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Generate" icon="pi pi-check" class="p-button-text" (click)="packagePayRollReportD()"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>

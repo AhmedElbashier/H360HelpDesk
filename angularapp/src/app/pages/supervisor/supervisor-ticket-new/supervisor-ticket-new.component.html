@@ -1,0 +1,100 @@
+<nz-layout class="app-layout">
+  <nz-content>
+    <h5>Ticket Info</h5>
+    <div class="p-fluid p-formgrid grid">
+      <div class="field col-6 md:col-2">
+        <label htmlFor="firstname2">Customer Name</label>
+        <input pInputText id="firstname2" type="text" [(ngModel)]="name" name="name" required />
+      </div>
+      <div class="field col-12 md:col-2">
+        <label htmlFor="lastname2">Customer Email</label>
+        <input pInputText id="lastname2" type="text" [(ngModel)]="email" />
+      </div>
+      <div class="field col-12 md:col-2">
+        <label htmlFor="lastname2">Customer Phone</label>
+        <input pInputText id="lastname2" type="text" [(ngModel)]="phone" />
+      </div>
+      <div class="field col-12 md:col-4">
+      </div>
+      <div class="field col-12 md:col-3">
+        <label htmlFor="state">Department</label>
+        <select id="state" [(ngModel)]="selectedDepartment" Value="Department.description" pInputText (change)="onDepartmentChange()" name="selectedDepartment">
+          <option *ngFor="let Department of departments" [ngValue]="Department">
+            {{Department.description}}
+          </option>
+        </select>
+      </div>
+      <div class="field col-12 md:col-3">
+        <label htmlFor="state">Category</label>
+        <select id="state" [(ngModel)]="selectedCategory" Value="Category.description" pInputText (change)="onCategoryChange()" name="selectedCategory">
+          <option *ngFor="let Category of categories" [ngValue]="Category">
+            {{Category.description}}
+          </option>
+        </select>
+      </div>
+      <div class="field col-12 md:col-3">
+        <label htmlFor="state">Sub-Category</label>
+        <select id="state" [(ngModel)]="selectedSubcategory" Value="SubCategory.description" pInputText name="selectedSubcategory">
+          <option *ngFor="let SubCategory of subcategories" [ngValue]="SubCategory">
+            {{SubCategory.description}}
+          </option>
+        </select>
+      </div>
+      <div class="field col-12 md:col-3">
+        <label htmlFor="state">Reason</label>
+        <select id="state" [(ngModel)]="selectedRequest" Value="selectedRequest.description" pInputText name="selectedRequest">
+          <option *ngFor="let Request of requests" [ngValue]="Request">
+            {{Request.description}}
+          </option>
+        </select>
+      </div>
+      <div class="field col-12 md:col-3">
+        <label htmlFor="state">Channel</label>
+        <select id="state" [(ngModel)]="selectedChannel" Value="selectedChannel.description" pInputText name="selectedChannel">
+          <option *ngFor="let channel of channels" [ngValue]="channel">
+            {{channel.description}}
+          </option>
+        </select>
+      </div>
+      <div class="field col-12 md:col-3">
+        <label htmlFor="state">Level</label>
+        <select id="state" [(ngModel)]="selectedPriority" Value="selectedPriority.description" pInputText name="selectedPriority">
+          <option *ngFor="let priority of priorities" [ngValue]="priority">
+            {{priority.description}}
+          </option>
+        </select>
+      </div>
+      <div class="field col-6">
+      </div>
+      <div class="field col-3">
+        <label htmlFor="address">Subject</label>
+        <input pInputTextarea id="address" rows="4" [(ngModel)]="subject" name="subject" />
+      </div>
+      <div class="field col-12 md:col-10">
+        <label htmlFor="city">Body</label>
+        <!--<input pInputText id="city" type="text" />-->
+        <div class="field col-12 md:col-8">
+          <!--<textarea rows="8" cols="45" placeholder="Your Message" pInputTextarea></textarea>-->
+          <ckeditor [editor]="Editor" data="" [(ngModel)]="body"></ckeditor>
+        </div>
+      </div>
+
+      <div class="field col-12 md:col-3">
+        <div class="clearfix">
+          <nz-upload class="upload-list-inline" [(nzFileList)]="fileList2">
+            <button nz-button>
+              <span>
+                <span nz-icon nzType="upload"></span>
+                Upload Attachments
+              </span>
+            </button>
+          </nz-upload>
+        </div>
+      </div>
+    </div>
+    <ng-template ptemplate="end">
+    </ng-template>
+    <p-button label="Submit" (click)="createTicket()"></p-button>
+
+  </nz-content>
+</nz-layout>

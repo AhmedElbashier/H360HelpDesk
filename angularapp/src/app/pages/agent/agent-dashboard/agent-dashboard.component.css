@@ -1,0 +1,15 @@
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px; /* Adjust the margin as needed */
+}
+
+.top-left {
+  position: absolute;
+  top: 10;
+  left: 20;
+  margin: 20px; /* Adjust this value as needed for spacing */
+}
+
+
