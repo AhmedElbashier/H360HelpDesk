@@ -15,6 +15,11 @@ export class PolicyService {
       .toPromise()
       .catch(this.handleError);
   }
+  callClaimApi(phoneNumber: string): Promise<any> {
+    return this.http.get<any>(this.common.ProxyClaimUrl, { params: { P_LOOKUP_TYPE: '1', P_MOBILE: phoneNumber } })
+      .toPromise()
+      .catch(this.handleError);
+  }
 
   private handleError(error: HttpErrorResponse) {
     console.error('An error occurred:', error.error);

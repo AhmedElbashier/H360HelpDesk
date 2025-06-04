@@ -43,6 +43,9 @@ namespace webapi.Domain.Models
 
         public int CompanyID { get; set; }
         public string DepartmentReply { get; set; }
+        public string ReferenceType { get; set; }  // e.g., "Policy No" or "Claim No"
+        public string ReferenceNumber { get; set; } // actual ID
+
 
     }
 }

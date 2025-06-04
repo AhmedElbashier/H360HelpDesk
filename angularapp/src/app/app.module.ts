@@ -60,12 +60,14 @@ import { NzLayoutModule } from "ng-zorro-antd/layout"
 import { NzFormModule } from "ng-zorro-antd/form"
 import { NzInputModule } from "ng-zorro-antd/input"
 import { NzSkeletonModule} from "ng-zorro-antd/skeleton"
-import { NzDrawerModule } from "ng-zorro-antd/drawer"
 import { NzSelectModule } from "ng-zorro-antd/select"
 import { NzCardModule } from "ng-zorro-antd/card"
 import { NzDividerModule } from "ng-zorro-antd/divider"
 import { NzSwitchModule } from "ng-zorro-antd/switch"
 import { NzCommentModule } from "ng-zorro-antd/comment"
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzSpaceModule } from 'ng-zorro-antd/space';
+import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzAutocompleteModule } from "ng-zorro-antd/auto-complete"
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker'; // Import the module
@@ -231,6 +233,7 @@ const JWT_Module_Options: JwtModuleOptions = {
     NzInputModule,
     NzSelectModule,
     NzDrawerModule,
+    NzSpaceModule,
     NzDatePickerModule,
     NzSwitchModule,
     NzSkeletonModule,
@@ -246,6 +249,7 @@ const JWT_Module_Options: JwtModuleOptions = {
     NzAutocompleteModule,
     NzCommentModule,
     NzAvatarModule,
+    NzRadioModule,
     NzDividerModule,
     JwtModule.forRoot(JWT_Module_Options),
     NzIconModule.forRoot([MailOutline, AppstoreOutline, SettingOutline, MenuFoldOutline, MenuUnfoldOutline, HomeOutline, LogoutOutline, DownloadOutline, UserOutline]),

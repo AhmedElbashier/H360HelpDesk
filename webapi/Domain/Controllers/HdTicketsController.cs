@@ -41,7 +41,7 @@ namespace webapi.Domain.Controllers
             DateTime? dueDate = null; // Initialize it as null
  
             dueDate = HdTicketsReq.StartDate.AddDays(escalationLevel.Days);
- 
+
 
             var HdTikcet = new HdTickets
             {
@@ -74,6 +74,8 @@ namespace webapi.Domain.Controllers
                 ClosedDate = HdTicketsReq.ClosedDate,
                 DepartmentReply = HdTicketsReq.DepartmentReply,
                 DueDate = dueDate,
+                ReferenceNumber = HdTicketsReq.ReferenceNumber,
+                ReferenceType = HdTicketsReq.ReferenceType,
             };
             _context.HdTickets.Add(HdTikcet);
             this._context.SaveChanges();
@@ -198,6 +200,9 @@ namespace webapi.Domain.Controllers
                 ResolvedDate = HdTicketsReq.Ticket.ResolvedDate,
                 ClosedDate = HdTicketsReq.Ticket.ClosedDate,
                 DueDate = dueDate,
+                ReferenceNumber = HdTicketsReq.Ticket.ReferenceNumber,
+                ReferenceType = HdTicketsReq.Ticket.ReferenceType,
+
             };
             _context.HdTickets.Add(HdTikcet);
             this._context.SaveChanges();

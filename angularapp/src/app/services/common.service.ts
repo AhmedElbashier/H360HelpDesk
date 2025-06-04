@@ -49,6 +49,7 @@ export class CommonService {
     EscalationTimerUrl = this.APIUrl + "/hdescalationtimers";
     LicenseUrl = this.APIUrl + "/licensedetails";
     ProxyUrl = this.APIUrl + "/Proxy/GetPolData";
+    ProxyClaimUrl = this.APIUrl + "/Proxy/GetClaimsData";
   countries: any[] = [
     { name: 'United Arab Emirates' },
     { name: 'Afghanistan' },

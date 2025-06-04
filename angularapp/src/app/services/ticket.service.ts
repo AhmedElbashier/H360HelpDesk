@@ -36,6 +36,8 @@ export interface Ticket {
   smsAlert?: boolean;
   requestID?: string;
   departmentReply?: string;
+  referenceType?: string;
+  referenceNumber?: string;
 }
 
 
