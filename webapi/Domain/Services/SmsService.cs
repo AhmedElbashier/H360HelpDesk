@@ -1,0 +1,171 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using webapi.Domain.Helpers;
+using webapi.Domain.Models;
+
+namespace webapi.Domain.Services
+{
+    public class SmsService
+    {
+        private readonly AppDbContext _context;
+
+        public SmsService(AppDbContext context)
+            {
+            _context = context;
+            }
+
+        public async Task<string> SendSmsAsync(string phoneNumber, string message)
+        {
+            // Replace these with your Mobishastra API credentials and settings
+            var mobishastraBaseUrl = "https://mshastra.com/sendurl.aspx";
+            var user = "CustomerCA";
+            var password = "_bu19jh6";
+            var senderId = "BURUJ";
+            var priority = "High";
+            var countryCode = "ALL";
+
+            // Build the URL with the parameters
+            var apiUrl = $"{mobishastraBaseUrl}?user={user}&pwd={password}&senderid={senderId}&mobileno={phoneNumber}&msgtext={message}&priority={priority}&CountryCode={countryCode}";
+
+            using (var client = new HttpClient())
+            {
+                // Send a GET request to the API URL
+                var response = await client.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // SMS sent successfully
+                    return "SMS sent successfully.";
+                }
+                else
+                {
+                    // Handle error
+                    return "Failed to send SMS.";
+                }
+            }
+        }
+
+
+        public async Task<string> SendSmsAsync([FromBody] SmsRequest smsRequest)
+        {
+            try
+            {
+                // Construct the URL with the phone number from the request body
+                string baseurl = $"https://mshastra.com/sendurl.aspx?user=CustomerCA&pwd=_bu19jh6&senderid=BURUJ&mobileno={smsRequest.PhoneNumber}&msgtext=Hello&CountryCode=ALL";
+
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.GetAsync(baseurl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        return ("SMS Sent Successfully");
+                    }
+                    else
+                    {
+                        return ($"Failed to send SMS. Status Code: {response.StatusCode}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions that may occur during the HTTP request
+                return ($"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("send-open-notification-sms")]
+        public async Task<string> SendOpenSmsAsync([FromBody] SmsRequest smsRequest, int TicketID, string Category, string WorkingDays)
+        {
+            try
+            {
+                var Body1 = "Dear Custromer, a ticket has been opened with the number " + TicketID + " to " + Category + ". You will be contacted within " + WorkingDays + " working days.\n";
+                var Body2 = "عميلنا العزيز، تم فتح تذكرة برقم " + TicketID + " لـ" + Category + " وسيتم التواصل معكم خلال " + WorkingDays + " أيام عمل.\n";
+                var Body3 = "Buruj Cooperative Insurance - Company Customer Care Department \n شركة بروج للتامين التعاوني - ادارة العناية بالعملاء";
+                var Body = Body1 + Body2 + Body3;
+                // Construct the URL with the phone number from the request body
+                string baseurl = $"https://mshastra.com/sendurl.aspx?user=CustomerCA&pwd=_bu19jh6&senderid=BURUJ&mobileno={smsRequest.PhoneNumber}&msgtext={Body}&CountryCode=ALL";
+
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.GetAsync(baseurl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        DateTime commentDate = DateTime.Now;
+                        var Comment = new HdComments
+                        {
+                            TicketID = TicketID,
+                            CommentDate = commentDate,
+                            UserID = 0,
+                            Body = "SMS notification Sent to the Client (Ticket opened)",
+                            TicketFlag = true
+                        };
+                        _context.HdComments.Add(Comment);
+                        this._context.SaveChanges();
+                        return ("SMS Sent Successfully");
+                    }
+                    else
+                    {
+                        return ($"Failed to send SMS. Status Code: {response.StatusCode}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions that may occur during the HTTP request
+                return ($"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("send-close-notification-sms")]
+        public async Task<string> SendCloseSmsAsync([FromBody] SmsRequest smsRequest, int TicketID, string Reply)
+        {
+            try
+            {
+                var Body1 = "Dear customer , your request with ticket number " + TicketID + " has been closed. We would like to inform you that " + Reply + " . For more information, you can contact us via our toll-free number 8001240201 or through email at customercare@burujinsurance.com\n";
+                var Body2 = "عزيزي العميل   لقد تم إغلاق طلبكم رقم " + TicketID + ". ونود افادتكم بان " + Reply + " وللمزيد من المعلومات يمكنكم  التواصل معنا عبر الهاتف المجاني 8001240201 او عبر البريد الالكتروني customercare@burujinsurance.com\n";
+                var Body3 = "Buruj Cooperative Insurance - Company Customer Care Department \n شركة بروج للتامين التعاوني - ادارة العناية بالعملاء";
+                var Body = Body1 + Body2 + Body3;
+                // Construct the URL with the phone number from the request body
+                string baseurl = $"https://mshastra.com/sendurl.aspx?user=CustomerCA&pwd=_bu19jh6&senderid=BURUJ&mobileno={smsRequest.PhoneNumber}&msgtext={Body}&CountryCode=ALL";
+
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.GetAsync(baseurl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        DateTime commentDate = DateTime.Now;
+                        var Comment = new HdComments
+                        {
+                            TicketID = TicketID,
+                            CommentDate = commentDate,
+                            UserID = 0,
+                            Body = "SMS notification Sent to the Client (Ticket closed)",
+                            TicketFlag = true
+                        };
+                        _context.HdComments.Add(Comment);
+                        this._context.SaveChanges();
+                        return ("SMS Sent Successfully");
+                    }
+                    else
+                    {
+                        return ($"Failed to send SMS. Status Code: {response.StatusCode}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions that may occur during the HTTP request
+                return ($"Internal server error: {ex.Message}");
+            }
+        }
+    }
+}
