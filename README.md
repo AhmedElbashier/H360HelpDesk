@@ -25,25 +25,29 @@ Follow these steps to set up and run the project:
 git clone https://github.com/VCL-MEA/H360_Helpdesk.git
 
 # Navigate to the repository directory
-cd /H360_Helpdesk
+cd H360_Helpdesk
 
 # Navigate to the Angular project directory and install dependencies
-cd AngularApp
+cd angularapp
 npm install
 
 # Serve the Angular app
 ng serve
 
 # Open a new terminal, navigate to the ASP.NET Core project directory
-cd /H360_Helpdesk/webapi
+cd ../webapi
 
 # Restore the .NET Core packages and run the project
 dotnet restore
 dotnet run
-Running the Tests
-cd AngularApp
+
+# Running the tests
+cd ../angularapp
 ng test
 
 # Running tests in ASP.NET Core
-cd path/to/AspNetCoreWebAPI
+cd ../webapi
 dotnet test
+```
+
+At this point the Angular frontend should be accessible at `http://localhost:4200/` and the ASP.NET Core API will be running on the port specified in the console output.
