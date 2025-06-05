@@ -1,0 +1,48 @@
+@page
+@model LicenseGeneratorApi.Pages.ManageModel
+@{
+    ViewData["Title"] = "License Manager";
+}
+
+<h1>Generate License</h1>
+<form method="post">
+    <div>
+        <label asp-for="Input.Vendor">Vendor</label>
+        <input asp-for="Input.Vendor" />
+    </div>
+    <div>
+        <label asp-for="Input.Company">Company</label>
+        <input asp-for="Input.Company" />
+    </div>
+    <div>
+        <label asp-for="Input.AdminsLimit">Admins Limit</label>
+        <input asp-for="Input.AdminsLimit" type="number" />
+    </div>
+    <div>
+        <label asp-for="Input.AgentsLimit">Agents Limit</label>
+        <input asp-for="Input.AgentsLimit" type="number" />
+    </div>
+    <div>
+        <label asp-for="Input.SupervisorsLimit">Supervisors Limit</label>
+        <input asp-for="Input.SupervisorsLimit" type="number" />
+    </div>
+    <div>
+        <label asp-for="Input.BackOfficeLimit">BackOffice Limit</label>
+        <input asp-for="Input.BackOfficeLimit" type="number" />
+    </div>
+    <div>
+        <label asp-for="Input.MacAddress">MAC Address</label>
+        <input asp-for="Input.MacAddress" />
+    </div>
+    <div>
+        <label asp-for="Input.Secret">Secret</label>
+        <input asp-for="Input.Secret" />
+    </div>
+    <button type="submit">Generate</button>
+</form>
+
+@if(Model.GeneratedLicense != null)
+{
+    <h2>Generated License</h2>
+    <pre>@Model.GeneratedLicense</pre>
+}

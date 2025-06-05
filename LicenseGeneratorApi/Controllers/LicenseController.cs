@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
 using System.Text;
+using System.Security.Cryptography;
 using Microsoft.Net.Http.Headers;
 using LicenseGeneratorApi.Models;
 
@@ -23,8 +24,10 @@ namespace LicenseGeneratorApi.Controllers
             {
                 return BadRequest("User limit must be greater than zero.");
             }
-            // Generate a unique license key (you can use any logic you prefer)
+            // Generate a unique license key
             string licenseKey = Guid.NewGuid().ToString("N");
+
+            string hardwareId = ComputeHardwareId(request.MacAddress ?? request.Secret);
 
             // Create a license object
             var license = new License
@@ -36,7 +39,8 @@ namespace LicenseGeneratorApi.Controllers
                 AgentsLimit = request.AgentsLimit,
                 SupervisorsLimit = request.SupervisorsLimit,
                 BackOfficeLimit = request.BackOfficeLimit,
-                ExpirationDate = DateTime.UtcNow.AddYears(1) // Example: License expires in 1 year
+                ExpirationDate = DateTime.UtcNow.AddYears(1), // License expires in 1 year
+                HardwareId = hardwareId
             };
 
             // Serialize the license object to a .lic file content
@@ -60,6 +64,15 @@ namespace LicenseGeneratorApi.Controllers
             string serializedLicense = Newtonsoft.Json.JsonConvert.SerializeObject(license);
             return serializedLicense;
         }
+
+        private string ComputeHardwareId(string? source)
+        {
+            if (string.IsNullOrEmpty(source))
+                return string.Empty;
+            using var sha = SHA256.Create();
+            var hash = sha.ComputeHash(Encoding.UTF8.GetBytes(source));
+            return Convert.ToBase64String(hash);
+        }
     }
 
     public class LicenseRequest
@@ -70,6 +83,8 @@ namespace LicenseGeneratorApi.Controllers
         public int AgentsLimit { get; set; }
         public int SupervisorsLimit { get; set; }
         public int BackOfficeLimit { get; set; }
+        public string? MacAddress { get; set; }
+        public string? Secret { get; set; }
     }
 
 
