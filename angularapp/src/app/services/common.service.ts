@@ -23,8 +23,8 @@ export class CommonService {
 
 
 
-    //APIUrl = "https://call-srv-app.burujinsurance.com/ticketing-api/api/v1";
-    APIUrl = "https://localhost:7012/api/v1";
+    APIUrl = "https://call-srv-app.burujinsurance.com/ticketing-api/api/v1";
+    //APIUrl = "https://localhost:7012/api/v1";
     AuthUrl = this.APIUrl + "/auth/login";
     ClientInfoUrl = this.APIUrl + "/clientinfo";
     UserUrl = this.APIUrl + "/hdusers";

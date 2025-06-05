@@ -80,7 +80,8 @@ export class TicketNewComponent {
       // Optionally patch the form
       this.userform.patchValue({
         name: this.name,
-        phone: this.phone
+        phone: this.phone,
+        email: this.email  
       });
     } else {
       this.customerDetails = [];
@@ -246,8 +247,8 @@ export class TicketNewComponent {
       this.newTicket.companyID = this.selectedDepartment.companyID;
       this.newTicket.updateByUser = this.user.user_Id;
       this.newTicket.departmentReply = "no reply";
-      this.newTicket.referenceNumber = this.refNo;
-      this.newTicket.referenceType = this.refType;
+      this.newTicket.referenceNumber = this.refNo?.trim() || 'Not specified - Non Customer Ticket';
+      this.newTicket.referenceType = this.refType?.trim() || 'Not specified';
       const currentDate = new Date();
       this.newTicket.startDate = currentDate;
       if (this.checkIfAnyFieldIsEmpty(this.newTicket)) {
@@ -394,25 +395,25 @@ export class TicketNewComponent {
     const binary = Array.from(bytes).map((byte) => String.fromCharCode(byte)).join('');
     return btoa(binary);
   }
-  checkIfAnyFieldIsEmpty(item: { [key: string]: any }): boolean {
-    const optionalFields = ['subCategoryID', 'requestID', 'departmentReply'];
+checkIfAnyFieldIsEmpty(item: { [key: string]: any }): boolean {
+  const optionalFields = ['subCategoryID', 'requestID', 'departmentReply'];
 
-    for (const key in item) {
-      if (item.hasOwnProperty(key) && !optionalFields.includes(key)) {
-        const value = item[key];
+  for (const key in item) {
+    if (item.hasOwnProperty(key) && !optionalFields.includes(key)) {
+      const value = item[key];
 
-        if (
-          value === null ||
-          value === undefined ||
-          value === '' ||
-          value === "[object Object]"
-        ) {
-          return true;
-        }
+      if (
+        value === null ||
+        value === undefined ||
+        value === '' ||
+        value === "[object Object]"
+      ) {
+        return true;
       }
     }
-    return false;
   }
+  return false;
+}
 
 
 

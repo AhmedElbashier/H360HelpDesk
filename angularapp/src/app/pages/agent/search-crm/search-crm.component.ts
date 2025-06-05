@@ -141,7 +141,8 @@ export class SearchCrmComponent {
   size: 'large' = 'large'; // Always large
   title!: any;
 
-    nonCustomer() {
+  nonCustomer() {
+    localStorage.removeItem("CustomerDetails"); // ✅ Keep login session
       this.router.navigateByUrl("main/agent/tickets/new");
     }
 
@@ -179,24 +180,19 @@ export class SearchCrmComponent {
     if (this.radioValue === 'P') {
       return [
         'Policy No',        // POLICY_NUMBER
-        '',                 // Empty placeholder for Claim File No
         'Insured Name',     // INSURED_NAME
         'Mobile No',        // MBILE_NO
         'Policy Status',    // POLICY_STATUS
-        '',                 // No Accident Date
-        '',                 // No Claimant
-        'Action'
       ];
     } else {
       return [
-        '',                    // No Policy No
         'Claim File No',       // CLAIM_FILE_NO
         'Owner Name',          // OWNER_NAME
         'Mobile No',           // OWNER_MOBILE_NO
-        'Claim Status',        // from REJECTION_REASON or logic
-        'Accident Date',       // ACCIDENT_DATE
+        'Date',        // from REJECTION_REASON or logic
+        'Claim No',       // ACCIDENT_DATE
         'Claimant',            // APPLIER_NAME
-        'Action'
+        'Status',            // Status
       ];
     }
   }

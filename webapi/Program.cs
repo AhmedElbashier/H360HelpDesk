@@ -102,21 +102,21 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/swagger"), appB
 {
     appBuilder.UseMiddleware<BasicAuthMiddleware>();
 });
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.DefaultModelsExpandDepth(-1);
-    });
-}
-//app.UseSwagger();
-//app.UseSwaggerUI(c =>
+//if (app.Environment.IsDevelopment())
 //{
-//    c.RoutePrefix = "api-docs"; // Ensure this matches your expected path
-//    c.SwaggerEndpoint("/ticketing-api/swagger/v1/swagger.json", "VOCALCOM MEA Ticketing API V1");
-//    //c.DefaultModelsExpandDepth(-1);
-//});
+//    app.UseSwagger();
+//    app.UseSwaggerUI(c =>
+//    {
+//        c.DefaultModelsExpandDepth(-1);
+//    });
+//}
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.RoutePrefix = "api-docs"; // Ensure this matches your expected path
+    c.SwaggerEndpoint("/ticketing-api/swagger/v1/swagger.json", "VOCALCOM MEA Ticketing API V1");
+    //c.DefaultModelsExpandDepth(-1);
+});
 
 
 app.UseExceptionHandler(errorApp =>
