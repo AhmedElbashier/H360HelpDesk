@@ -10,5 +10,6 @@ namespace LicenseGeneratorApi.Models
         public int SupervisorsLimit { get; set; }
         public int BackOfficeLimit { get; set; }
         public DateTime ExpirationDate { get; set; }
+        public string? HardwareId { get; set; }
     }
 }
