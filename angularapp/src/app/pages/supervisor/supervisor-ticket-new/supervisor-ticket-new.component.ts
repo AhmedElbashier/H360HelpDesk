@@ -46,7 +46,8 @@ export class SupervisorTicketNewComponent {
   title = 'customEditor';
   customerDetails: any;
   public Editor = Editor;
-
+  refNo: any;
+  refType: any;
   defaultFileList: NzUploadFile[] = [];
   fileList2 = [...this.defaultFileList];
   constructor(private loggerService: LoggerService, private fb: FormBuilder, private settingService: SettingsService, private logger: LoggerService, private router: Router, private cdr: ChangeDetectorRef, private ticketService: TicketService, private messageService: MessageService) { }
@@ -57,11 +58,30 @@ export class SupervisorTicketNewComponent {
       'email': new FormControl('', Validators.required),
       'phone': new FormControl('', [Validators.required, Validators.minLength(6)]),
     });
-    this.customerDetails = JSON.parse(localStorage.getItem("CustomerDetails") || "{}") as any;
+    his.customerDetails = JSON.parse(localStorage.getItem("CustomerDetails") || "[]");
 
-    if (this.customerDetails && this.customerDetails.length > 0) {
-      this.name = this.customerDetails[0].INSURED_NAME;
-      this.phone = this.customerDetails[0].MBILE_NO;
+    if (this.customerDetails.length > 0) {
+      const customer = this.customerDetails[0];
+      const type = customer.type;
+
+      if (type === 'P') {
+        this.name = customer.INSURED_NAME;
+        this.phone = customer.MBILE_NO;
+        this.refNo = customer.POLICY_NUMBER;
+        this.refType = 'Policy No';
+      } else if (type === 'C') {
+        this.name = customer.OWNER_NAME;
+        this.phone = customer.OWNER_MOBILE_NO;
+        this.refNo = customer.CLAIM_NO;
+        this.refType = 'Claim No';
+      }
+
+      // Optionally patch the form
+      this.userform.patchValue({
+        name: this.name,
+        phone: this.phone,
+        email: this.email
+      });
     } else {
       this.customerDetails = [];
     }
@@ -206,7 +226,10 @@ export class SupervisorTicketNewComponent {
       this.newTicket.assingedToBackOfficeID = 0;
       this.newTicket.assingedToUserID = 0;
       this.newTicket.categoryID = this.selectedCategory.categoryID;
-      this.newTicket.subCategoryID = this.selectedSubcategory.subCategoryID;
+      const subCategoryNote = this.selectedSubcategory ? this.selectedSubcategory.description : 'Not specified';
+      const requestNote = this.selectedRequest ? this.selectedRequest.description : 'Not specified';
+      this.newTicket.subCategoryID = subCategoryNote;
+      this.newTicket.requestID = requestNote;
       this.newTicket.departmentID = this.selectedDepartment.departmentID;
       this.newTicket.channelID = this.selectedChannel.channelID;
       this.newTicket.priority = this.selectedPriority.levelID;
@@ -223,6 +246,8 @@ export class SupervisorTicketNewComponent {
       this.newTicket.mobile = this.phone
       this.newTicket.companyID = this.selectedDepartment.companyID;
       this.newTicket.departmentReply = "no reply";
+      this.newTicket.referenceNumber = this.refNo?.trim() || 'Not specified - Non Customer Ticket';
+      this.newTicket.referenceType = this.refType?.trim() || 'Not specified';
       const currentDate = new Date();
       this.newTicket.startDate = currentDate;
       this.newTicket.updateByUser = this.user.user_Id;

@@ -142,7 +142,7 @@ export class SearchCrmComponent {
   title!: any;
 
   nonCustomer() {
-    localStorage.removeItem("CustomerDetails"); // ✅ Keep login session
+    localStorage.removeItem("CustomerDetails"); 
       this.router.navigateByUrl("main/agent/tickets/new");
     }
 
@@ -203,15 +203,6 @@ export class SearchCrmComponent {
     this.visible = true;
   }
 
-showDefault(): void {
-  this.size = 'large';
-  this.open();
-}
-
-showLarge(): void {
-  this.size = 'large';
-  this.open();
-}
 
 open(): void {
   this.visible = true;

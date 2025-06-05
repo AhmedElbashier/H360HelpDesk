@@ -230,6 +230,8 @@ export class TicketNewComponent {
       this.newTicket.categoryID = this.selectedCategory.categoryID;
       const subCategoryNote = this.selectedSubcategory ? this.selectedSubcategory.description : 'Not specified';
       const requestNote = this.selectedRequest ? this.selectedRequest.description : 'Not specified';
+      this.newTicket.subCategoryID = subCategoryNote;
+      this.newTicket.requestID = requestNote;
       this.newTicket.departmentReply = `Subcategory: ${subCategoryNote}, Reason: ${requestNote}`;
       this.newTicket.departmentID = this.selectedDepartment.departmentID;
       this.newTicket.channelID = this.selectedChannel.channelID;
