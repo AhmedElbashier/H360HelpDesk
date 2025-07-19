@@ -31,7 +31,18 @@ Global
 		{9997381E-B715-4944-9463-B50EC83290F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9997381E-B715-4944-9463-B50EC83290F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9997381E-B715-4944-9463-B50EC83290F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+<<<<<<< Updated upstream
 		{9997381E-B715-4944-9463-B50EC83290F9}.Release|Any CPU.Build.0 = Release|Any CPU
+=======
+		{B948D1FA-6B5D-49BB-9BC5-A739955976A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B948D1FA-6B5D-49BB-9BC5-A739955976A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B948D1FA-6B5D-49BB-9BC5-A739955976A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B948D1FA-6B5D-49BB-9BC5-A739955976A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5D8B96B-0F0F-4385-9353-73E73435E991}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5D8B96B-0F0F-4385-9353-73E73435E991}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5D8B96B-0F0F-4385-9353-73E73435E991}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5D8B96B-0F0F-4385-9353-73E73435E991}.Release|Any CPU.Build.0 = Release|Any CPU
+>>>>>>> Stashed changes
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
