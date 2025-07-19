@@ -25,3 +25,16 @@ nz-content {
 :host ::ng-deep .ck-editor__editable_inline {
   min-height: 200px !important;
 }
+::ng-deep .custom-editor .ck-editor__editable_inline {
+  min-height: 200px;
+}
+
+.nz-upload-list-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+:host ::ng-deep .nz-select {
+  width: 100% !important;
+}
+

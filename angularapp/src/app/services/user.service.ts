@@ -31,6 +31,7 @@ export interface User {
   darkMode?: any;
   status?: any;
   deleted?: any;
+  isDepartmentRestrictedSupervisor?: boolean;
 }
 
 @Injectable({

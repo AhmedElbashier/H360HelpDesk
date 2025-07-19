@@ -25,12 +25,14 @@ export class UserEditComponent {
   selectedDepartment: Department = {};
   Departments!: Department[];
   Languages: any;
+  isDepartmentRestrictedSupervisor: boolean = false;
+
   constructor(private router: Router, private location: Location, private settingService: SettingsService, private userService: UserService, private logger: LoggerService, private messageService: MessageService) { }
 
   ngOnInit() {
     this.roles =
       [
-        { id: 1, name: "Administartor" },
+        { id: 1, name: "Administrator" },
         { id: 2, name: "Supervisor" },
         { id: 3, name: "BackOffice" },
         { id: 4, name: "Agent" },
@@ -40,6 +42,17 @@ export class UserEditComponent {
         { id: 1, name: "English" },
         { id: 2, name: "Arabic" },
       ];
+    this.User = JSON.parse(localStorage.getItem("adminUserEdit") || "{}") as User;
+    if (this.User.isAdministrator === true) {
+      this.selectedRole = this.roles.find((r: { name: string; }) => r.name === "Administrator");
+    } else if (this.User.isSuperVisor === true) {
+      this.selectedRole = this.roles.find((r: { name: string; }) => r.name === "Supervisor");
+    } else if (this.User.isBackOffice === true) {
+      this.selectedRole = this.roles.find((r: { name: string; }) => r.name === "BackOffice");
+    } else if (this.User.isAgent === true) {
+      this.selectedRole = this.roles.find((r: { name: string; }) => r.name === "Agent");
+    }
+
     this.settingService.getCompanies().subscribe(
       (res: any) => {
         this.Companies = res;
@@ -53,26 +66,23 @@ export class UserEditComponent {
     this.settingService.getDepartments().subscribe(
       (res: any) => {
         this.Departments = res;
+
+        // ✅ Set selectedDepartment here
+        if (this.User.department_Id) {
+          this.selectedDepartment = this.Departments.find(
+            d => Number(d.departmentID) === Number(this.User.department_Id)
+          ) || {};
+        }
       },
       (error) => {
-        
         this.logger.logError(error);
         this.router.navigateByUrl("error");
       }
     );
-    this.User = JSON.parse(localStorage.getItem("adminUserEdit") || "{}") as User;
-    if (this.User.isAdministrator) {
-      this.selectedRole = "Administrator";
-    }
-    else if (this.User.isSuperVisor) {
-      this.selectedRole = "Supervisor";
-    }
-    else if (this.User.isBackOffice) {
-      this.selectedRole = "BackOffice";
-    }
-    else if (this.User.isAgent) {
-      this.selectedRole = "Agent";
-    }
+
+    this.isDepartmentRestrictedSupervisor = this.User.isDepartmentRestrictedSupervisor ?? false;
+
+
   }
   onTryAgainClick() {
     this.location.back();
@@ -111,8 +121,10 @@ export class UserEditComponent {
     User.darkMode = false;
     User.status = "Offline";
     User.deleted = false;
-    User.department_Id = this.selectedDepartment.departmentID;
+    User.department_Id = String(this.selectedDepartment.departmentID);
     User.department_Name = this.selectedDepartment.description;
+    User.isDepartmentRestrictedSupervisor = this.isDepartmentRestrictedSupervisor;
+
     this.userService.editUser(User).then(
       (res: any) => {
         this.messageService.add({ severity: 'success', summary: 'done ', detail: 'User edited succesfully', life: 3000 });

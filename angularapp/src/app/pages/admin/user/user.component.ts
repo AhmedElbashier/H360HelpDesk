@@ -39,6 +39,18 @@ export class UserComponent {
   c_password: any = '';
   resetDialog: boolean = false;
   @ViewChild('dt') dt!: Table;
+  roles = [
+    { name: 'All Roles', value: null },
+    { name: 'Administrator', value: 'admin' },
+    { name: 'Supervisor', value: 'supervisor' },
+    { name: 'Agent', value: 'agent' },
+    { name: 'Back Office', value: 'backoffice' },
+  ];
+
+
+  selectedRole: string | null = null;
+  allUsers: User[] = []; // Store unfiltered full list
+
   constructor(private logger: LoggerService, private common: CommonService, private cdr: ChangeDetectorRef, private userService: UserService, private messageService: MessageService, private confirmationService: ConfirmationService, private router: Router) { }
   applyFilterGlobal(event: any) {
     const searchTerm = (event.target as HTMLInputElement).value;
@@ -52,26 +64,53 @@ export class UserComponent {
     this.countries = this.common.countries;
     this.regions = this.common.regions;
   }
+
   getData() {
     this.userService.getUsers().subscribe(
       (res: any) => {
-        this.Users = res;
+        this.allUsers = res;          // ✅ Keep full list
+        this.filterByRole();          // ✅ Apply role filter immediately after load
         this.cdr.detectChanges();
       },
       (error) => {
-        
         this.logger.logError(error);
-        this.router.navigateByUrl("error")
+        this.router.navigateByUrl("error");
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail:
-            "An error occurred while connection to the database",
+          detail: "An error occurred while connecting to the database",
           life: 3000,
         });
       }
     );
   }
+  filterByRole() {
+    switch (this.selectedRole) {
+      case 'admin':
+        this.Users = this.allUsers.filter(user => user.isAdministrator === true);
+        break;
+      case 'supervisor':
+        this.Users = this.allUsers.filter(user => user.isSuperVisor === true);
+        break;
+      case 'agent':
+        this.Users = this.allUsers.filter(user => user.isAgent === true);
+        break;
+      case 'backoffice':
+        this.Users = this.allUsers.filter(user => user.isBackOffice === true);
+        break;
+      default:
+        this.Users = [...this.allUsers];
+    }
+  }
+
+  getUserRole(user: User): string {
+    if (user.isAdministrator) return 'Administrator';
+    if (user.isSuperVisor) return 'Supervisor';
+    if (user.isAgent) return 'Agent';
+    if (user.isBackOffice) return 'Back Office';
+    return 'N/A';
+  }
+
   openNew() {
     this.router.navigateByUrl('main/admin/user-add');
   }

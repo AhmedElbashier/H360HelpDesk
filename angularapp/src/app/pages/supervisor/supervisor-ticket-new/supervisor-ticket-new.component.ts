@@ -19,6 +19,9 @@ import * as pako from 'pako';
 })
 export class SupervisorTicketNewComponent {
 
+  loading: boolean = false;
+  smsAlertControl!: FormControl;
+  emailAlertControl!: FormControl;
 
   departments: Department[] = [];
   categories: Category[] = [];
@@ -54,11 +57,13 @@ export class SupervisorTicketNewComponent {
 
   ngOnInit() {
     this.userform = this.fb.group({
-      'name': new FormControl('', Validators.required),
-      'email': new FormControl('', Validators.required),
-      'phone': new FormControl('', [Validators.required, Validators.minLength(6)]),
+      name: new FormControl('', Validators.required),
+      email: new FormControl('', Validators.required),
+      phone: new FormControl('', [Validators.required, Validators.minLength(6)]),
+      smsAlert: new FormControl('Yes'),
+      emailAlert: new FormControl('Yes'),
     });
-    his.customerDetails = JSON.parse(localStorage.getItem("CustomerDetails") || "[]");
+    this.customerDetails = JSON.parse(localStorage.getItem("CustomerDetails") || "[]");
 
     if (this.customerDetails.length > 0) {
       const customer = this.customerDetails[0];
@@ -228,7 +233,7 @@ export class SupervisorTicketNewComponent {
       this.newTicket.categoryID = this.selectedCategory.categoryID;
       const subCategoryNote = this.selectedSubcategory ? this.selectedSubcategory.description : 'Not specified';
       const requestNote = this.selectedRequest ? this.selectedRequest.description : 'Not specified';
-      this.newTicket.subCategoryID = subCategoryNote;
+      this.newTicket.subCategoryID = this.selectedSubcategory.subCategoryID; // ✅ must be a number
       this.newTicket.requestID = requestNote;
       this.newTicket.departmentID = this.selectedDepartment.departmentID;
       this.newTicket.channelID = this.selectedChannel.channelID;
@@ -238,8 +243,6 @@ export class SupervisorTicketNewComponent {
       this.newTicket.requestID = this.selectedRequest.requestID;
       this.newTicket.subject = this.subject;
       this.newTicket.body = textWithoutTags;
-      this.newTicket.emailAlert = true;
-      this.newTicket.smsAlert = true;
       this.newTicket.flag = true;
       this.newTicket.customerName = this.name
       this.newTicket.email = this.email
@@ -251,6 +254,8 @@ export class SupervisorTicketNewComponent {
       const currentDate = new Date();
       this.newTicket.startDate = currentDate;
       this.newTicket.updateByUser = this.user.user_Id;
+      this.newTicket.smsAlert = this.userform.value.smsAlert === 'Yes';
+      this.newTicket.emailAlert = this.userform.value.emailAlert === 'Yes';
       if (this.checkIfAnyFieldIsEmpty(this.newTicket)) {
         console.error(this.newTicket);
         console.error('Error: One or more fields are empty.');
@@ -271,7 +276,7 @@ export class SupervisorTicketNewComponent {
                   this.customRequest(this.fileList2);
                 }
                 localStorage.setItem("TicketDetails", JSON.stringify(this.newTicket));
-                this.router.navigateByUrl("/main/agent/tickets/details");
+                this.router.navigateByUrl("/main/supervisor/tickets/details");
               });
           },
           (error) => {

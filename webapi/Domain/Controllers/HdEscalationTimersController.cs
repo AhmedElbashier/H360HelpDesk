@@ -29,14 +29,14 @@ namespace webapi.Domain.Controllers
 
             var HdEscalationTimer = new HdEscalationTimers
             {
-                TimerID = HdEscalationTimerReq.TimerID,
+                Id = HdEscalationTimerReq.Id,
                 Hours = HdEscalationTimerReq.Hours,
 
             };
             _context.HdEscalationTimers.Add(HdEscalationTimer);
             this._context.SaveChanges();
 
-            return CreatedAtAction(nameof(GetHdEscalationTimer), new { id = HdEscalationTimer.TimerID }, HdEscalationTimer);
+            return CreatedAtAction(nameof(GetHdEscalationTimer), new { id = HdEscalationTimer.Id }, HdEscalationTimer);
         }
 
         [HttpGet]
@@ -106,7 +106,7 @@ namespace webapi.Domain.Controllers
         [HttpPut("{Id}")]
         public async Task<IActionResult> PutHdEscalationTimer(int Id, HdEscalationTimers HdEscalationTimer)
         {
-            if (Id != HdEscalationTimer.TimerID)
+            if (Id != HdEscalationTimer.Id)
             {
                 ClientInfo client = new ClientInfo();
 
@@ -180,7 +180,7 @@ namespace webapi.Domain.Controllers
       
         private bool HdEscalationTimerExists(int Id)
         {
-            return _context.HdEscalationTimers.Any(e => e.TimerID == Id);
+            return _context.HdEscalationTimers.Any(e => e.Id == Id);
         }
 
     }

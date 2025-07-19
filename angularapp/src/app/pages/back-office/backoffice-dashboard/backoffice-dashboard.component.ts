@@ -5,7 +5,9 @@ import { Router } from '@angular/router';
 import { LoggerService } from '../../../services/logger.service';
 import { Table } from 'primeng/table';
 import { Priority, SettingsService } from '../../../services/settings.service';
-import { User } from '../../../services/user.service';
+import { User, UserService } from '../../../services/user.service';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 @Component({
   selector: 'app-backoffice-dashboard',
   templateUrl: './backoffice-dashboard.component.html',
@@ -46,8 +48,13 @@ export class BackofficeDashboardComponent {
   endDate: any;
   filteredPriorities: any[] = [];
   selectedPriority: any;
+  agents: any[] = [];
+  backofficeUsers: any[] = [];
 
-  constructor(private settingService: SettingsService, private logger: LoggerService, private router: Router, private cdr: ChangeDetectorRef, private ticketService: TicketService, private messageService: MessageService) {
+  selectedAgent: any = null;
+  selectedBackoffice: any = null;
+
+  constructor(private settingService: SettingsService, private logger: LoggerService, private router: Router, private cdr: ChangeDetectorRef, private ticketService: TicketService, private messageService: MessageService, private userService : UserService) {
   }
 
   ngOnInit() {
@@ -64,6 +71,24 @@ export class BackofficeDashboardComponent {
       { name: 'Stephen Shaw', image: 'stephenshaw.png' },
       { name: 'Xuxue Feng', image: 'xuxuefeng.png' }
     ];
+    this.userService.getBackOfficeUsers().subscribe(res => {
+      this.backofficeUsers = res.map(user => ({
+        ...user,
+        id: user.user_Id,
+        fullname: `${user.firstname} ${user.lastname}`
+      }));
+      this.cdr.detectChanges();
+    });
+
+    this.userService.getAgentUsers().subscribe(res => {
+      this.agents = res.map(agent => ({
+        ...agent,
+        id: agent.user_Id,
+        fullname: `${agent.firstname} ${agent.lastname}`
+      }));
+      this.cdr.detectChanges();
+    });
+
     this.getTotals(this.user.department_Id, this.user.user_Id);
     this.settingService.getStatuses().subscribe(
       (res: any) => {
@@ -173,7 +198,7 @@ export class BackofficeDashboardComponent {
       return 'danger';
     }
     else if (priority === 4) {
-      return 'seconday';
+      return 'secondary';
     }
     else {
       return 'unknown'; // You can choose an appropriate value for unhandled cases
@@ -214,6 +239,7 @@ export class BackofficeDashboardComponent {
                       (res: any) => {
                         if (res === null) {
                           this.assignedTickets = "0";
+
                         }
                         this.assignedTickets = res;
                       });
@@ -369,5 +395,62 @@ export class BackofficeDashboardComponent {
       }
     )
   }
+  filterTickets() {
+    this.tickets = this.tickets.filter(ticket => {
+      const priorityMatch = !this.selectedPriority || ticket.priority === this.selectedPriority.levelID;
+      const dateMatch = !this.startDate || (ticket.startDate && new Date(ticket.startDate) >= new Date(this.startDate));
+      const agentMatch = !this.selectedAgent || +(ticket?.assingedToUserID ?? 0) === +this.selectedAgent.id;
+      const backofficeMatch = !this.selectedBackoffice || +(ticket?.assingedToBackOfficeID ?? 0) === +this.selectedBackoffice.id;
+      return priorityMatch && dateMatch && agentMatch && backofficeMatch;
+    });
+    this.cdr.detectChanges();
+  }
+
+
+  resetFilters() {
+    this.selectedPriority = null;
+    this.selectedAgent = null;
+    this.selectedBackoffice = null;
+    this.startDate = null;
+    this.getAllTickets();
+  }
+
+
+  exportExcel() {
+    const exportData = this.tickets.map(ticket => ({
+      'ID': ticket.id,
+      'Subject': ticket.subject,
+      'Priority': this.getTicketPriorityDescription(ticket.priority),
+      'Status': this.getTicketStatusDescription(ticket.statusID),
+      'Entry Date': ticket.startDate ? new Date(ticket.startDate).toLocaleString() : '',
+      'Due Date': ticket.dueDate ? new Date(ticket.dueDate).toLocaleString() : '',
+      'Category': this.getTicketCategoryDescription(ticket.categoryID)
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = {
+      Sheets: { 'Tickets': worksheet },
+      SheetNames: ['Tickets'],
+    };
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    this.saveAsExcelFile(excelBuffer, `Tickets_${new Date().toISOString().split('T')[0]}.xlsx`);
+  }
+
+  saveAsExcelFile(buffer: any, fileName: string) {
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    FileSaver.saveAs(blob, fileName);
+  }
+  getUserName(userID: number): string {
+    const user = [...this.agents, ...this.backofficeUsers].find(u => +u.user_Id === +userID);
+    return user ? `${user.firstname} ${user.lastname}` : 'N/A';
+  }
 
 }
+

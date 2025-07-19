@@ -13,3 +13,33 @@
 }
 
 
+// fix if PrimeNG theme overrides severity
+.p-button-success {
+  background-color: #22c55e !important;
+  border-color: #22c55e !important;
+}
+
+.p-button-warning {
+  background-color: #f59e0b !important;
+  border-color: #f59e0b !important;
+}
+
+.p-button-danger {
+  background-color: #ef4444 !important;
+  border-color: #ef4444 !important;
+}
+
+.p-button-info {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.hover\:bg-gray-100:hover {
+  background-color: #f3f4f6;
+}
+.p-dropdown, .p-calendar {
+  min-width: 200px;
+}

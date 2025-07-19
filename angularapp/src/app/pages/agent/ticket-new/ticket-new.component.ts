@@ -18,6 +18,7 @@ import * as pako from 'pako';
   styleUrls: ['./ticket-new.component.css']
 })
 export class TicketNewComponent {
+  loading: boolean = false;
 
 
   departments: Department[] = [];
@@ -41,6 +42,8 @@ export class TicketNewComponent {
   email: any;
   phone: any;
   subject: any;
+  smsAlertControl!: FormControl;
+  emailAlertControl!: FormControl;
   body?: any = {};
   userform!: FormGroup;
   title = 'customEditor';
@@ -54,10 +57,15 @@ export class TicketNewComponent {
 
   ngOnInit() {
     this.userform = this.fb.group({
-      'name': new FormControl('', Validators.required),
-      'email': new FormControl('', Validators.required),
-      'phone': new FormControl('', [Validators.required, Validators.minLength(6)]),
+      name: new FormControl('', Validators.required),
+      email: new FormControl('', Validators.required),
+      phone: new FormControl('', [Validators.required, Validators.minLength(6)]),
+      smsAlert: new FormControl('Yes'),
+      emailAlert: new FormControl('Yes'),
     });
+
+    this.smsAlertControl = this.userform.get('smsAlert') as FormControl;
+    this.emailAlertControl = this.userform.get('emailAlert') as FormControl;
 
     this.customerDetails = JSON.parse(localStorage.getItem("CustomerDetails") || "[]");
 
@@ -212,7 +220,7 @@ export class TicketNewComponent {
   }
   createTicket() {
 
-    this.user = JSON.parse(localStorage.getItem("user") || "{}") as User;
+     this.user = JSON.parse(localStorage.getItem("user") || "{}") as User;
     const textWithoutTags = this.stripHtmlTags(this.body);
     if (textWithoutTags === "" || textWithoutTags === "undefined") {
       this.messageService.add({
@@ -230,8 +238,8 @@ export class TicketNewComponent {
       this.newTicket.categoryID = this.selectedCategory.categoryID;
       const subCategoryNote = this.selectedSubcategory ? this.selectedSubcategory.description : 'Not specified';
       const requestNote = this.selectedRequest ? this.selectedRequest.description : 'Not specified';
-      this.newTicket.subCategoryID = subCategoryNote;
-      this.newTicket.requestID = requestNote;
+      this.newTicket.subCategoryID = this.selectedSubcategory.subCategoryID; // ✅ must be a number
+      this.newTicket.requestID = this.selectedRequest?.requestID ?? 'Not specified';
       this.newTicket.departmentReply = `Subcategory: ${subCategoryNote}, Reason: ${requestNote}`;
       this.newTicket.departmentID = this.selectedDepartment.departmentID;
       this.newTicket.channelID = this.selectedChannel.channelID;
@@ -240,12 +248,10 @@ export class TicketNewComponent {
       this.newTicket.statusID = 1;
       this.newTicket.subject = this.subject;
       this.newTicket.body = textWithoutTags;
-      this.newTicket.emailAlert = true;
-      this.newTicket.smsAlert = true;
       this.newTicket.flag = true;
-      this.newTicket.customerName = this.name
-      this.newTicket.email = this.email
-      this.newTicket.mobile = this.phone
+      this.newTicket.customerName = this.name;
+      this.newTicket.email = this.email;
+      this.newTicket.mobile = this.phone;
       this.newTicket.companyID = this.selectedDepartment.companyID;
       this.newTicket.updateByUser = this.user.user_Id;
       this.newTicket.departmentReply = "no reply";
@@ -253,6 +259,9 @@ export class TicketNewComponent {
       this.newTicket.referenceType = this.refType?.trim() || 'Not specified';
       const currentDate = new Date();
       this.newTicket.startDate = currentDate;
+      this.newTicket.smsAlert = this.userform.value.smsAlert === 'Yes';
+      this.newTicket.emailAlert = this.userform.value.emailAlert === 'Yes';
+
       if (this.checkIfAnyFieldIsEmpty(this.newTicket)) {
         console.error(this.newTicket);
         console.error('Error: One or more fields are empty.');

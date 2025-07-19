@@ -42,10 +42,12 @@ export interface Priority {
 
 }
 export interface EscalationTimer {
-  timerID?: number;
+  id?: number;
+  days?: number;
   hours?: number;
-
+  minutes?: number;
 }
+
 export interface License {
   licenseFile: string;
   licenseInfo: {
@@ -68,6 +70,34 @@ export interface Escalation {
   emails?: string;
 
 }
+export interface EscalationProfile {
+  profileID?: number;
+  name: string;
+  email: string;
+  title?: string;
+  escalationLevelID: number;
+
+}
+export interface EscalationLevel {
+  levelID?: number;
+  levelName: string;
+  profiles?: EscalationProfile[]; // Add this to support EF navigation
+}
+export interface EscalationMapping {
+  mappingID?: number;
+  departmentID: number;
+  categoryID: number;
+  subcategoryID: number;
+  priorityID: number;
+  level1ProfileID: number;
+  level2ProfileID?: number;
+  level3ProfileID?: number;
+  level1Delay?: string;
+  level2Delay?: string;
+  level3Delay?: string;
+}
+
+
 export interface FileAttachment {
   fileID?: string;
   ticketID?: string;
@@ -591,7 +621,7 @@ export class SettingsService {
     }).toPromise();
   }
   editEscalationTimer(EscalationTimer: EscalationTimer): Promise<any> {
-    return this.http.put<any>(this.common.EscalationTimerUrl + "/" + EscalationTimer.timerID, EscalationTimer, {
+    return this.http.put<any>(this.common.EscalationTimerUrl + "/" + EscalationTimer.id, EscalationTimer, {
       headers: this.common.headers,
       responseType: 'json'
     }).toPromise();
@@ -600,4 +630,54 @@ export class SettingsService {
   getLicense(type: any = null): Observable<any> {
     return this.http.get<any>(this.common.LicenseUrl+"/details");
   }
+
+  getEscalationProfiles() {
+    return this.http.get<EscalationProfile[]>(`${this.common.EscalationProfilesUrl}`);
+  }
+
+  addEscalationProfile(profile: EscalationProfile) {
+    return this.http.post(`${this.common.EscalationProfilesUrl}`, profile).toPromise();
+  }
+
+  editEscalationProfile(profile: EscalationProfile) {
+    return this.http.put(`${this.common.EscalationProfilesUrl}/${profile.profileID}`, profile).toPromise();
+  }
+
+  deleteEscalationProfile(profileID: number) {
+    return this.http.delete(`${this.common.EscalationProfilesUrl}/${profileID}`).toPromise();
+  }
+
+  getEscalationLevels(): Observable<EscalationLevel[]> {
+    return this.http.get<EscalationLevel[]>(`${this.common.EscalationLevelsUrl}`);
+  }
+
+  addEscalationLevel(level: EscalationLevel): Promise<any> {
+    return this.http.post(`${this.common.EscalationLevelsUrl}/`, level).toPromise();
+  }
+
+  editEscalationLevel(level: EscalationLevel): Promise<any> {
+    return this.http.put(`${this.common.EscalationLevelsUrl}/${level.levelID}`, level).toPromise();
+  }
+  deleteEscalationLevel(id: number): Promise<any> {
+    return this.http.delete(`${this.common.EscalationLevelsUrl}/${id}`).toPromise();
+  }
+
+
+
+  getEscalationMappings() {
+    return this.http.get<EscalationMapping[]>(`${this.common.EscalationMappingsUrl}`);
+  }
+
+  addEscalationMapping(mapping: EscalationMapping) {
+    return this.http.post(`${this.common.EscalationMappingsUrl}`, mapping).toPromise();
+  }
+
+  editEscalationMapping(mapping: EscalationMapping) {
+    return this.http.put(`${this.common.EscalationMappingsUrl}/${mapping.mappingID}`, mapping).toPromise();
+  }
+
+  deleteEscalationMapping(mappingID: number) {
+    return this.http.delete(`${this.common.EscalationMappingsUrl}/${mappingID}`).toPromise();
+  }
+
 }

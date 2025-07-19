@@ -27,6 +27,9 @@ export class RequestComponent {
   submitted!: boolean;
   Delete!: string;
   cols!: any[];
+  allRequests: Request[] = []; // holds the unfiltered list
+  selectedDepartmentId: string | null = null;
+  departmentOptions: { label: string, value: string | null }[] = [];
   exportColumns!: any[];
   @ViewChild('dt') dt!: Table;
   constructor(private userService: UserService, private cdr: ChangeDetectorRef, private settingsService: SettingsService, private messageService: MessageService, private confirmationService: ConfirmationService, private router: Router) { }
@@ -43,37 +46,52 @@ export class RequestComponent {
   getData() {
     this.settingsService.getRequests().subscribe(
       (res: any) => {
-        this.Requests = res;
+        this.allRequests = res;
+        this.Requests = [...this.allRequests];
         this.cdr.detectChanges();
       },
       (error) => {
-        
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail:
-            "An error occurred while connection to the database",
+          detail: 'An error occurred while connecting to the database',
           life: 3000,
         });
       }
     );
+
     this.settingsService.getDepartments().subscribe(
       (res: any) => {
         this.Departments = res;
+        this.departmentOptions = [
+          { label: 'All Departments', value: null },
+          ...res.map((d: Department) => ({
+            label: d.description,
+            value: d.departmentID,
+          })),
+        ];
         this.cdr.detectChanges();
       },
       (error) => {
-        
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail:
-            "An error occurred while connection to the database",
+          detail: 'An error occurred while connecting to the database',
           life: 3000,
         });
       }
     );
   }
+  filterByDepartment() {
+    if (this.selectedDepartmentId) {
+      this.Requests = this.allRequests.filter(
+        (req) => req.departmentID === this.selectedDepartmentId
+      );
+    } else {
+      this.Requests = [...this.allRequests]; // Show all
+    }
+  }
+
   getRequestDepartmentName(departmentID: any): any {
     const department = this.Departments?.find((d) => d.departmentID === departmentID);
     return department ? department.description : 'N/A';

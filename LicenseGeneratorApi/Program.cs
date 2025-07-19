@@ -21,6 +21,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-app.UseEndpoints(endpoints => { endpoints.MapRazorPages(); });
+//app.UseEndpoints(endpoints => { endpoints.MapRazorPages(); });
 
 app.Run();

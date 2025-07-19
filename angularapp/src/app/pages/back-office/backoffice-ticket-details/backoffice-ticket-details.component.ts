@@ -667,7 +667,7 @@ export class BackofficeTicketDetailsComponent {
       });
   }
   assignToOtherAgent() {
-    this.userService.getAgentUsers().pipe(
+    this.userService.getBackOfficeUsers().pipe(
       map((res: any) => {
         const agents = res; // Assuming res contains the list of agents
 
@@ -714,7 +714,7 @@ export class BackofficeTicketDetailsComponent {
       (res: any) => {
         this.messageService.add({ severity: 'success', summary: 'Done', detail: 'Ticket assigned to ' + this.selectedAgentFullName, life: 3000 });
         if (this.selectedAgent?.user_Id !== undefined) {
-          this.ticket.assingedToUserID = parseInt(this.selectedAgent.user_Id, 10);
+          this.ticket.assingedToBackOfficeID = parseInt(this.selectedAgent.user_Id, 10);
         } else {
           // Handle the case where this.selectedAgent?.id is undefined
           // Handle the case where this.selectedAgent?.id is undefined

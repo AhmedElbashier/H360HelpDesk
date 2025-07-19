@@ -1,5 +1,4 @@
-
-<p-toast></p-toast>
+<!--<p-toast></p-toast>
 <p-toolbar styleClass="mb-4 gap-2">
   <h4>Manage Sub-Categories</h4>
   <ng-template pTemplate="left">
@@ -76,4 +75,116 @@
     <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="editSubCategoriesD(SubCategory)"></button>
     <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
   </ng-template>
+</p-dialog>-->
+
+
+
+
+
+<p-toast></p-toast>
+
+<p-toolbar class="mb-4">
+  <div class="p-toolbar-group-left">
+    <h4 class="m-0">Manage Sub-Categories</h4>
+  </div>
+  <div class="p-toolbar-group-right">
+    <button pButton icon="pi pi-upload" label="Export" class="p-button-help" (click)="exportExcel()"></button>
+  </div>
+</p-toolbar>
+
+<p-card header="Add Sub-Category" class="mb-4">
+  <div class="p-fluid p-formgrid p-grid">
+    <div class="p-field p-col-12 p-md-6">
+      <label for="department">Select Department</label>
+      <p-dropdown inputId="department"
+                  [options]="Departments"
+                  [(ngModel)]="selectedDepartment"
+                  optionLabel="description"
+                  (onChange)="onDepartmentChange()"
+                  placeholder="Select Department">
+      </p-dropdown>
+    </div>
+
+    <div class="p-field p-col-12 p-md-6">
+      <label for="category">Select Category</label>
+      <p-dropdown inputId="category"
+                  [options]="Categories"
+                  [(ngModel)]="selectedCategory"
+                  optionLabel="description"
+                  (onChange)="getSelectedCategory()"
+                  placeholder="Select Category">
+      </p-dropdown>
+    </div>
+
+    <div class="p-field p-col-12 p-md-9">
+      <label for="newSubCategory">New Sub-Category</label>
+      <input id="newSubCategory" type="text" pInputText [(ngModel)]="newSubCategory" />
+    </div>
+
+    <div class="p-field p-col-12 p-md-3 flex align-items-end">
+      <button pButton label="Add" class="p-button-success w-full" icon="pi pi-plus" (click)="addNew()"></button>
+    </div>
+  </div>
+</p-card>
+
+<p-table #dt
+         [value]="subCategories"
+         [rows]="10"
+         [paginator]="true"
+         [globalFilterFields]="['id', 'name']"
+         [tableStyle]="{ 'min-width': '100%' }"
+         [(selection)]="selectedCategories"
+         [rowHover]="true"
+         dataKey="id"
+         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         [showCurrentPageReport]="true">
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Sub-Category</th>
+      <th class="text-center">Actions</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-SubCategory>
+    <tr>
+      <td>{{ SubCategory.description }}</td>
+      <td class="text-center">
+        <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-warning mr-2" (click)="editCategory(SubCategory)"></button>
+        <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deleteCategory(SubCategory)"></button>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="summary">
+    <div class="p-text-right">Total Sub-Categories: {{ subCategories.length || 0 }}</div>
+  </ng-template>
+</p-table>
+
+<p-dialog [(visible)]="EditDialog" [style]="{width: '450px'}" header="Edit Sub-Category" [modal]="true" styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="Categoryname">Name</label>
+      <input type="text" pInputText id="Categoryname" [(ngModel)]="SubCategory.description" autofocus />
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="editSubCategoriesD(SubCategory)"></button>
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
 </p-dialog>
+
+<!-- Optional styles -->
+<style>
+  .p-field {
+    margin-bottom: 1.5rem;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .p-toolbar {
+    border-radius: 8px;
+  }
+</style>

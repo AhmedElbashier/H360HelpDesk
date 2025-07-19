@@ -43,6 +43,9 @@ export class CommonService {
     PriorityUrl = this.APIUrl + "/hdlevels";
     RequestUrl = this.APIUrl + "/hdrequests";
     EscalationUrl = this.APIUrl + "/hdescalation";
+    EscalationProfilesUrl = this.APIUrl + "/escalationProfile";
+    EscalationLevelsUrl = this.APIUrl + "/escalationLevels";
+    EscalationMappingsUrl = this.APIUrl + "/escalationMappings";
     FileUrl = this.APIUrl + "/hdfileattachments";
     ReportUrl = this.APIUrl + "/reports";
     SmtpSettingUrl = this.APIUrl + "/smtp";

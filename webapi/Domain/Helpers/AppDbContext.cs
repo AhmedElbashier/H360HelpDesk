@@ -22,6 +22,9 @@ namespace webapi.Domain.Helpers
         public DbSet<HdEscalation> HdEscalation { get; set; }
         public DbSet<HdEscalationTimers> HdEscalationTimers { get; set; }
         public DbSet<SmtpSettings> SmtpSettings { get; set; }
+        public DbSet<EscalationProfile> EscalationProfiles { get; set; }
+        public DbSet<EscalationLevel> EscalationLevels { get; set; }
+        public DbSet<EscalationMapping> EscalationMappings { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -150,8 +153,10 @@ namespace webapi.Domain.Helpers
 
             var escalationTimer = new HdEscalationTimers
             {
-                TimerID = 1,
-                Hours = 8
+                Id = 1,
+                Days=0,
+                Hours = 8,
+                Minutes=0
             };
             builder.Entity<HdEscalationTimers>().HasData(escalationTimer);
             var newStatus = new HdStatus

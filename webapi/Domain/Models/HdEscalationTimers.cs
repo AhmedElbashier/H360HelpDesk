@@ -4,10 +4,10 @@ namespace webapi.Domain.Models
 {
     public class HdEscalationTimers
     {
-        [Key]
-        public int TimerID { get; set; }
-
-        public int Hours { get; set; }
-
+        public int Id { get; set; }
+        public int? Days { get; set; }
+        public int? Hours { get; set; }
+        public int? Minutes { get; set; }
     }
+
 }

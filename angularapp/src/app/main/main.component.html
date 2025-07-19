@@ -31,14 +31,32 @@
         <i nz-icon nzType="exception" nzTheme="outline"></i>
         <span routerLink="admin/priority">Priority</span>
       </li>
-      <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter nzIcon="warning">
+      <li *ngIf="user.isAdministrator" nz-submenu nzTitle="Escalations" nzMatchRouter nzIcon="warning">
+
+        <ul>
+          <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter>
+            <a routerLink="admin/escalations/levels">Escalation Levels</a>
+          </li>
+          <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter>
+            <a routerLink="admin/escalations/profiles">Escalation Profiles</a>
+          </li>
+          <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter>
+            <a routerLink="admin/escalations/mappings">Escalation Mapping</a>
+          </li>
+          <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter>
+            <i nzTheme="outline"></i>
+            <span (click)="openEscalationTimerDialog()">Escalation Timer</span>
+          </li>
+        </ul>
+      </li>
+      <!--<li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter nzIcon="warning">
         <i nz-icon nzType="warning" nzTheme="outline"></i>
         <span routerLink="admin/escalations">Escalation</span>
       </li>
       <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter nzIcon="field-time">
         <i nz-icon nzType="field-time" nzTheme="outline"></i>
         <span (click)="openEscalationTimerDialog()">Escalation Timer</span>
-      </li>
+      </li>-->
       <li *ngIf="user.isAdministrator" nz-menu-item nzMatchRouter nzIcon="shop">
         <i nz-icon nzType="shop" nzTheme="outline"></i>
         <span routerLink="admin/companies">Companies</span>
@@ -263,12 +281,20 @@
 </p-dialog>
 
 
-<p-dialog [(visible)]="escalationTimerDialog" [style]="{width: '450px'}" header="Escalations Hours Schedule" [modal]="true"
+<p-dialog [(visible)]="escalationTimerDialog" [style]="{width: '450px'}" header="Escalation Timer Schedule" [modal]="true"
           styleClass="p-fluid">
   <ng-template pTemplate="content">
     <div class="p-field">
-      <label for="Categoryname">Hours</label>
-      <input type="number" pInputText id="hours" [(ngModel)]="escalationTimer.hours" autofocus />
+      <label for="days">Days</label>
+      <input type="number" pInputText id="days" [(ngModel)]="escalationTimer.days" />
+    </div>
+    <div class="p-field">
+      <label for="hours">Hours</label>
+      <input type="number" pInputText id="hours" [(ngModel)]="escalationTimer.hours" />
+    </div>
+    <div class="p-field">
+      <label for="minutes">Minutes</label>
+      <input type="number" pInputText id="minutes" [(ngModel)]="escalationTimer.minutes" />
     </div>
   </ng-template>
   <ng-template pTemplate="footer">
@@ -278,43 +304,44 @@
 </p-dialog>
 
 
+
 <p-dialog [(visible)]="licenseDialog" [style]="{width: '650px'}" header="License" [modal]="true"
           styleClass="p-fluid">
-    <div class="text-900 font-bold text-6xl mb-4 text-center">H360 Helpdesk</div>
-    <div class="text-700 text-xl mb-6 text-center line-height-3">License Granted To {{license.licenseInfo.company}}</div>
+  <div class="text-900 font-bold text-6xl mb-4 text-center">H360 Helpdesk</div>
+  <div class="text-700 text-xl mb-6 text-center line-height-3">License Granted To {{license.licenseInfo.company}}</div>
 
-    <div class="grid">
-      <div class="col-12 lg:col-12">
-        <div class="p-3 h-full">
-          <div class="shadow-2 p-3 h-full flex flex-column surface-card" style="border-radius: 6px">
-            <div class="text-900 font-medium text-xl mb-2">License Vendor: {{license.licenseInfo.vendor}}</div>
-            <div class="text-600">Version: v1.0</div>
-            <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
-            <div class="flex align-items-center">
-              <span class="font-bold text-2xl text-900">{{allLicenseUserLimit}}</span>
-              <span class="ml-2 font-medium text-600">users</span>
-            </div>
-            <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
-            <ul class="list-none p-0 m-0 flex-grow-1">
-              <li class="flex align-items-center mb-3">
-                <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                <span class="text-900">Administartors: {{allAdminsCount}}/{{license.licenseInfo.adminsLimit}}</span>
-              </li>
-              <li class="flex align-items-center mb-3">
-                <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                <span class="text-900">Agents: {{allAgentsCount}}/{{license.licenseInfo.agentsLimit}}</span>
-              </li>
-              <li class="flex align-items-center mb-3">
-                <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                <span class="text-900">Supervisors: {{allSupervisorsCount}}/{{license.licenseInfo.supervisorsLimit}}</span>
-              </li>
-              <li class="flex align-items-center mb-3">
-                <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                <span class="text-900">Back-Office: {{allBackOfficeCount}}/{{license.licenseInfo.backOfficeLimit}}</span>
-              </li>
-            </ul>
+  <div class="grid">
+    <div class="col-12 lg:col-12">
+      <div class="p-3 h-full">
+        <div class="shadow-2 p-3 h-full flex flex-column surface-card" style="border-radius: 6px">
+          <div class="text-900 font-medium text-xl mb-2">License Vendor: {{license.licenseInfo.vendor}}</div>
+          <div class="text-600">Version: v1.0</div>
+          <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
+          <div class="flex align-items-center">
+            <span class="font-bold text-2xl text-900">{{allLicenseUserLimit}}</span>
+            <span class="ml-2 font-medium text-600">users</span>
           </div>
+          <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
+          <ul class="list-none p-0 m-0 flex-grow-1">
+            <li class="flex align-items-center mb-3">
+              <i class="pi pi-check-circle text-green-500 mr-2"></i>
+              <span class="text-900">Administartors: {{allAdminsCount}}/{{license.licenseInfo.adminsLimit}}</span>
+            </li>
+            <li class="flex align-items-center mb-3">
+              <i class="pi pi-check-circle text-green-500 mr-2"></i>
+              <span class="text-900">Agents: {{allAgentsCount}}/{{license.licenseInfo.agentsLimit}}</span>
+            </li>
+            <li class="flex align-items-center mb-3">
+              <i class="pi pi-check-circle text-green-500 mr-2"></i>
+              <span class="text-900">Supervisors: {{allSupervisorsCount}}/{{license.licenseInfo.supervisorsLimit}}</span>
+            </li>
+            <li class="flex align-items-center mb-3">
+              <i class="pi pi-check-circle text-green-500 mr-2"></i>
+              <span class="text-900">Back-Office: {{allBackOfficeCount}}/{{license.licenseInfo.backOfficeLimit}}</span>
+            </li>
+          </ul>
         </div>
       </div>
-      </div>
+    </div>
+  </div>
 </p-dialog>

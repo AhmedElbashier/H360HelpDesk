@@ -1,4 +1,4 @@
-<div class="card">
+<!--<div class="card">
   <p-menubar>
     <ng-template pTemplate="start">
       <p-button label="All " icon="pi pi-users" styleClass="p-button-help p-button-rounded" [badge]="allTickets" (click)="getAllTickets()" badgeClass="p-badge-secondary"></p-button>&nbsp;&nbsp;&nbsp;
@@ -69,9 +69,9 @@
         <td>
           {{ ticket.subject }}
         </td>
-        <td>
-          <!--<p-tag [value]="getTicketPriorityDescription(ticket.priority)" [severity]="getPrioritySeverity(ticket.priority)"></p-tag>-->
-          <span class="ml-1 vertical-align-middle">{{ getTicketPriorityDescription(ticket.priority)}}</span>
+        <td>-->
+<!--<p-tag [value]="getTicketPriorityDescription(ticket.priority)" [severity]="getPrioritySeverity(ticket.priority)"></p-tag>-->
+<!--<span class="ml-1 vertical-align-middle">{{ getTicketPriorityDescription(ticket.priority)}}</span>
         </td>
         <td>
           <p-tag [value]="getTicketStatusDescription(ticket.statusID)" [severity]="getSeverity(ticket.statusID)"></p-tag>
@@ -96,4 +96,155 @@
       </tr>
     </ng-template>
   </p-table>
+</div>-->
+
+
+
+
+
+<div class="card">
+  <p-toolbar>
+    <div class="flex flex-wrap gap-3">
+      <p-button label="All" icon="pi pi-table"
+                class="p-button-rounded"
+                [badge]="allTickets"
+                (click)="getAllTickets()"
+                [style]="{ backgroundColor: '#64748b', borderColor: '#64748b', color: '#fff' }">
+      </p-button>
+
+      <p-button label="New" icon="pi pi-plus"
+                class="p-button-rounded"
+                [badge]="newTickets"
+                (click)="getNewTickets()"
+                [style]="{ backgroundColor: '#22c55e', borderColor: '#22c55e', color: '#fff' }">
+      </p-button>
+
+      <p-button label="Open" icon="pi pi-folder-open"
+                class="p-button-rounded"
+                [badge]="openedTickets"
+                (click)="getOpenTickets()"
+                [style]="{ backgroundColor: '#f59e0b', borderColor: '#f59e0b', color: '#000' }">
+      </p-button>
+
+      <p-button label="Closed" icon="pi pi-times"
+                class="p-button-rounded"
+                [badge]="closedTickets"
+                (click)="getCloseTickets()"
+                [style]="{ backgroundColor: '#ef4444', borderColor: '#ef4444', color: '#fff' }">
+      </p-button>
+
+      <p-button label="Resolved" icon="pi pi-check"
+                class="p-button-rounded"
+                [badge]="resolvedTickets"
+                (click)="getResolvedTickets()"
+                [style]="{ backgroundColor: '#3b82f6', borderColor: '#3b82f6', color: '#fff' }">
+      </p-button>
+    </div>
+
+    <!-- Optional Filters for Priority, Status, Agent -->
+    <div class="flex flex-wrap gap-3 mb-3 align-items-end">
+      <p-dropdown [options]="priorities"
+                  [(ngModel)]="selectedPriority"
+                  optionLabel="description"
+                  placeholder="Filter by Priority"
+                  (onChange)="filterTickets()"
+                  class="w-full md:w-15rem">
+      </p-dropdown>
+      <p-dropdown [options]="backofficeUsers"
+                  [(ngModel)]="selectedBackoffice"
+                  optionLabel="fullname"
+                  placeholder="Filter by Backoffice"
+                  (onChange)="filterTickets()"
+                  class="w-full md:w-15rem">
+      </p-dropdown>
+
+      <p-dropdown [options]="agents"
+                  [(ngModel)]="selectedAgent"
+                  optionLabel="fullname"
+                  placeholder="Filter by Agent"
+                  (onChange)="filterTickets()"
+                  class="w-full md:w-15rem">
+      </p-dropdown>
+
+
+      <p-calendar [(ngModel)]="startDate"
+                  placeholder="Start Date"
+                  (onSelect)="filterTickets()"
+                  dateFormat="mm/dd/yy"
+                  class="w-full md:w-15rem">
+      </p-calendar>
+
+      <p-button label="Reset Filters" icon="pi pi-refresh"
+                (click)="resetFilters()"
+                class="p-button-rounded"
+                [style]="{ backgroundColor: '#10b981', borderColor: '#10b981', color: '#fff' }">
+      </p-button>
+
+      <p-button label="Export" icon="pi pi-file-excel"
+                class="p-button-success p-button-rounded"
+                (click)="exportExcel()" tooltip="Export table to Excel">
+      </p-button>
+    </div>
+  </p-toolbar>
+
+</div>
+<br />
+<br />
+
+
+<div class="card">
+  <p-table #dt2
+           [value]="tickets"
+           dataKey="id"
+           [rows]="10"
+           [showCurrentPageReport]="true"
+           [rowsPerPageOptions]="[10, 25, 50]"
+           [loading]="loading"
+           [paginator]="true"
+           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+           [globalFilterFields]="['subject', 'priority', 'status', 'category','id']"
+           [tableStyle]="{ 'min-width': '75rem' }">
+    <ng-template pTemplate="caption">
+      <div class="flex justify-content-between align-items-center mt-3 mb-2">
+        <span class="p-input-icon-left w-50">
+          <i class="pi pi-search"></i>
+          <input pInputText placeholder="Search tickets..." class="w-full" (input)="applyFilterGlobal($event)" />
+        </span>
+        <p-button label="New Ticket" icon="pi pi-plus" class="p-button-primary p-button-rounded" (click)="createTicket()"></p-button>
+
+        <!-- Optional Backoffice actions -->
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width:32%">Subject</th>
+        <th style="width:12%">Backoffice User</th>
+        <th style="width:12%">Assigned Agent</th>
+        <th style="width:8%">Priority</th>
+        <th style="width:8%">Status</th>
+        <th style="width:15%">Entry Date</th>
+        <th style="width:15%">Due Date</th>
+        <th style="width:12%">Category</th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-ticket>
+      <tr (click)="ticektDetails(ticket)" class="cursor-pointer hover:bg-gray-100">
+        <td>{{ ticket.subject }}</td>
+        <td>{{ getUserName(ticket.assingedToBackOfficeID) }}</td>
+        <td>{{ getUserName(ticket.assingedToUserID) }}</td>
+        <td>{{ getTicketPriorityDescription(ticket.priority) }}</td>
+        <td><p-tag [value]="getTicketStatusDescription(ticket.statusID)" [severity]="getSeverity(ticket.statusID)"></p-tag></td>
+        <td>{{ ticket.startDate | date:'short' }}</td>
+        <td>{{ ticket.dueDate | date:'short' }}</td>
+        <td>{{ getTicketCategoryDescription(ticket.categoryID) }}</td>
+        <td><button pButton icon="pi pi-external-link" class="p-button-rounded p-button-info" (click)="ticektDetails(ticket)"></button></td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr><td colspan="7" class="text-center">No tickets found.</td></tr>
+    </ng-template>
+  </p-table>
+
 </div>

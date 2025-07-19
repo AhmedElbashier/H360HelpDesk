@@ -1,4 +1,4 @@
-<nz-layout class="app-layout">
+<!--<nz-layout class="app-layout">
   <nz-content>
     <h5>Ticket Info</h5>
     <div class="p-fluid p-formgrid grid">
@@ -78,11 +78,11 @@
         <input pInputTextarea id="address" rows="4" [(ngModel)]="subject" name="subject" />
       </div>
       <div class="field col-12 md:col-10">
-        <label htmlFor="city">Body</label>
-        <!--<input pInputText id="city" type="text" />-->
-        <div class="field col-12 md:col-8">
-          <!--<textarea rows="8" cols="45" placeholder="Your Message" pInputTextarea></textarea>-->
-          <ckeditor class="custom-editor" [editor]="Editor" data="" [(ngModel)]="body"></ckeditor>
+        <label htmlFor="city">Body</label>-->
+<!--<input pInputText id="city" type="text" />-->
+<!--<div class="field col-12 md:col-8">-->
+<!--<textarea rows="8" cols="45" placeholder="Your Message" pInputTextarea></textarea>-->
+<!--<ckeditor class="custom-editor" [editor]="Editor" data="" [(ngModel)]="body"></ckeditor>
         </div>
       </div>
 
@@ -104,4 +104,257 @@
       <p-button label="Submit" (click)="createTicket()"></p-button>
 
 </nz-content>
+</nz-layout>-->
+<!--<nz-layout class="app-layout">
+  <nz-content style="padding: 24px;">
+    <div class="card p-4">
+      <h3 class="mb-4">🎫 Create New Ticket</h3>
+
+      <form nz-form>-->
+<!-- Row 1: Name, Email, Phone -->
+<!--<nz-row [nzGutter]="16">
+  <nz-col nzSpan="8">
+    <label><i class="pi pi-user"></i> Customer Name</label>
+    <input pInputText [(ngModel)]="name" name="name" placeholder="Full Name" />
+  </nz-col>
+  <nz-col nzSpan="8">
+    <label><i class="pi pi-envelope"></i> Email</label>
+    <input pInputText [(ngModel)]="email" name="email" placeholder="Email Address" />
+  </nz-col>
+  <nz-col nzSpan="8">
+    <label><i class="pi pi-phone"></i> Phone</label>
+    <input pInputText [(ngModel)]="phone" name="phone" placeholder="Phone Number" />
+  </nz-col>
+</nz-row>-->
+<!-- Row 2: Reference Type, Number, Priority -->
+<!--<nz-row [nzGutter]="16" class="mt-3">
+  <nz-col nzSpan="8">
+    <label><i class="pi pi-tag"></i> Reference Type</label>
+    <input pInputText [(ngModel)]="refType" readonly />
+  </nz-col>
+  <nz-col nzSpan="8">
+    <label><i class="pi pi-hashtag"></i> Reference Number</label>
+    <input pInputText [(ngModel)]="refNo" readonly />
+  </nz-col>
+  <nz-col nzSpan="8">
+    <label><i class="pi pi-bolt"></i> Priority Level</label>
+    <nz-select [(ngModel)]="selectedPriority" name="priority" style="width: 100%;">
+      <nz-option *ngFor="let p of priorities" [nzValue]="p" [nzLabel]="p.description ?? ''"></nz-option>
+    </nz-select>
+  </nz-col>
+</nz-row>-->
+<!-- Row 3: Department, Category, Sub-category -->
+<!--<nz-row [nzGutter]="16" class="mt-3">
+  <nz-col nzSpan="8">
+    <label><i class="pi pi-building"></i> Department</label>
+    <nz-select [(ngModel)]="selectedDepartment" name="department" (ngModelChange)="onDepartmentChange()" style="width: 100%;">
+      <nz-option *ngFor="let d of departments" [nzValue]="d" [nzLabel]="d.description ?? ''"></nz-option>
+    </nz-select>
+  </nz-col>
+  <nz-col nzSpan="8">
+    <label><i class="pi pi-folder"></i> Category</label>
+    <nz-select [(ngModel)]="selectedCategory" name="category" (ngModelChange)="onCategoryChange()" style="width: 100%;">
+      <nz-option *ngFor="let c of categories" [nzValue]="c" [nzLabel]="c.description ?? ''"></nz-option>
+    </nz-select>
+  </nz-col>
+  <nz-col nzSpan="8">
+    <label><i class="pi pi-clone"></i> Sub-Category</label>
+    <nz-select [(ngModel)]="selectedSubcategory" name="subcategory" style="width: 100%;">
+      <nz-option *ngFor="let s of subcategories" [nzValue]="s" [nzLabel]="s.description ?? ''"></nz-option>
+    </nz-select>
+  </nz-col>
+</nz-row>-->
+<!-- Row 4: Reason, Channel -->
+<!--<nz-row [nzGutter]="16" class="mt-3">
+  <nz-col nzSpan="8">
+    <label><i class="pi pi-bullseye"></i> Reason</label>
+    <nz-select [(ngModel)]="selectedRequest" name="reason" style="width: 100%;">
+      <nz-option *ngFor="let r of requests" [nzValue]="r" [nzLabel]="r.description ?? ''"></nz-option>
+    </nz-select>
+  </nz-col>
+  <nz-col nzSpan="8">
+    <label><i class="pi pi-megaphone"></i> Channel</label>
+    <nz-select [(ngModel)]="selectedChannel" name="channel" style="width: 100%;">
+      <nz-option *ngFor="let ch of channels" [nzValue]="ch" [nzLabel]="ch.description ?? ''"></nz-option>
+    </nz-select>
+  </nz-col>
+</nz-row>-->
+<!-- Row 5: Subject (Full Width) -->
+<!--<nz-row class="mt-3">
+  <nz-col nzSpan="24">
+    <label><i class="pi pi-file-edit"></i> Subject</label>
+    <input pInputText [(ngModel)]="subject" name="subject" placeholder="Ticket Subject" style="width: 100%;" />
+  </nz-col>
+</nz-row>-->
+<!-- Row 6: Body -->
+<!--<nz-row class="mt-3">
+  <nz-col nzSpan="24">
+    <label><i class="pi pi-file"></i> Body</label>
+    <ckeditor class="custom-editor" [editor]="Editor" [(ngModel)]="body" name="body"></ckeditor>
+  </nz-col>
+</nz-row>-->
+<!-- Row 7: Upload -->
+<!--<nz-row class="mt-3">
+  <nz-col nzSpan="24">
+    <label><i class="pi pi-paperclip"></i> Upload Attachments</label><br />
+    <nz-upload class="upload-list-inline" [(nzFileList)]="fileList2">
+      <button nz-button><span nz-icon nzType="upload"></span> Upload</button>
+    </nz-upload>
+  </nz-col>
+</nz-row>-->
+<!-- Submit Button -->
+<!--<nz-row class="mt-4">
+          <nz-col nzSpan="24" class="text-right">
+            <button nz-button nzType="primary" (click)="createTicket()" [nzLoading]="loading">
+              <span nz-icon nzType="send"></span> Submit Ticket
+            </button>
+          </nz-col>
+        </nz-row>
+      </form>
+    </div>
+  </nz-content>
+</nz-layout>-->
+
+
+
+
+
+<nz-layout class="app-layout">
+  <nz-content style="padding: 24px;">
+    <div class="card p-4">
+      <h3 class="mb-4">🎫 Create New Ticket</h3>
+
+      <form nz-form>
+
+        <!-- Row 1: Name, Email, Phone -->
+        <nz-row [nzGutter]="16">
+          <nz-col nzSpan="8">
+            <label><i class="pi pi-user"></i> Customer Name</label>
+            <input nz-input [(ngModel)]="name" name="name" placeholder="Full Name" />
+          </nz-col>
+          <nz-col nzSpan="8">
+            <label><i class="pi pi-envelope"></i> Email</label>
+            <input nz-input [(ngModel)]="email" name="email" placeholder="Email Address" />
+          </nz-col>
+          <nz-col nzSpan="8">
+            <label><i class="pi pi-phone"></i> Phone</label>
+            <input nz-input [(ngModel)]="phone" name="phone" placeholder="Phone Number" />
+          </nz-col>
+        </nz-row>
+
+        <!-- Row 2: Reference Type, Number, Priority -->
+        <nz-row [nzGutter]="16" class="mt-3">
+          <nz-col nzSpan="8">
+            <label><i class="pi pi-tag"></i> Reference Type</label>
+            <input nz-input [(ngModel)]="refType" readonly />
+          </nz-col>
+          <nz-col nzSpan="8">
+            <label><i class="pi pi-hashtag"></i> Reference Number</label>
+            <input nz-input [(ngModel)]="refNo" readonly />
+          </nz-col>
+          <nz-col nzSpan="8">
+            <label><i class="pi pi-bolt"></i> Priority Level</label>
+            <nz-select [(ngModel)]="selectedPriority" name="priority" style="width: 100%;">
+              <nz-option *ngFor="let p of priorities" [nzValue]="p" [nzLabel]="p.description ?? ''"></nz-option>
+            </nz-select>
+          </nz-col>
+        </nz-row>
+
+        <!-- Row 3: Department, Category, Sub-category -->
+        <nz-row [nzGutter]="16" class="mt-3">
+          <nz-col nzSpan="8">
+            <label><i class="pi pi-building"></i> Department</label>
+            <nz-select [(ngModel)]="selectedDepartment" name="department" (ngModelChange)="onDepartmentChange()" style="width: 100%;">
+              <nz-option *ngFor="let d of departments" [nzValue]="d" [nzLabel]="d.description ?? ''"></nz-option>
+            </nz-select>
+          </nz-col>
+          <nz-col nzSpan="8">
+            <label><i class="pi pi-folder"></i> Category</label>
+            <nz-select [(ngModel)]="selectedCategory" name="category" (ngModelChange)="onCategoryChange()" style="width: 100%;">
+              <nz-option *ngFor="let c of categories" [nzValue]="c" [nzLabel]="c.description ?? ''"></nz-option>
+            </nz-select>
+          </nz-col>
+          <nz-col nzSpan="8">
+            <label><i class="pi pi-clone"></i> Sub-Category</label>
+            <nz-select [(ngModel)]="selectedSubcategory" name="subcategory" style="width: 100%;">
+              <nz-option *ngFor="let s of subcategories" [nzValue]="s" [nzLabel]="s.description ?? ''"></nz-option>
+            </nz-select>
+          </nz-col>
+        </nz-row>
+
+        <!-- Row 4: Reason, Channel -->
+        <nz-row [nzGutter]="16" class="mt-3">
+          <nz-col nzSpan="8">
+            <label><i class="pi pi-bullseye"></i> Reason</label>
+            <nz-select [(ngModel)]="selectedRequest" name="reason" style="width: 100%;">
+              <nz-option *ngFor="let r of requests" [nzValue]="r" [nzLabel]="r.description ?? ''"></nz-option>
+            </nz-select>
+          </nz-col>
+          <nz-col nzSpan="8">
+            <label><i class="pi pi-megaphone"></i> Channel</label>
+            <nz-select [(ngModel)]="selectedChannel" name="channel" style="width: 100%;">
+              <nz-option *ngFor="let ch of channels" [nzValue]="ch" [nzLabel]="ch.description ?? ''"></nz-option>
+            </nz-select>
+          </nz-col>
+        </nz-row>
+
+        <!-- Row 5: Subject -->
+        <nz-row class="mt-3">
+          <nz-col nzSpan="24">
+            <label><i class="pi pi-file-edit"></i> Subject</label>
+            <input pInputText [(ngModel)]="subject" name="subject" placeholder="Ticket Subject" style="width: 100%;" />
+          </nz-col>
+        </nz-row>
+
+        <!-- Row 6: Body -->
+        <nz-row class="mt-3">
+          <nz-col nzSpan="24">
+            <label><i class="pi pi-file"></i> Body</label>
+            <ckeditor class="custom-editor" [editor]="Editor" [(ngModel)]="body" name="body"></ckeditor>
+          </nz-col>
+        </nz-row>
+
+        <!-- Row 7: File Upload -->
+        <nz-row class="mt-3">
+          <nz-col nzSpan="24">
+            <label><i class="pi pi-paperclip"></i> Upload Attachments</label><br />
+            <nz-upload class="upload-list-inline" [(nzFileList)]="fileList2">
+              <button nz-button><span nz-icon nzType="upload"></span> Upload</button>
+            </nz-upload>
+          </nz-col>
+        </nz-row>
+        <!-- ✅ Clean & Functional Checkbox Row -->
+        <nz-row [nzGutter]="16" class="mt-3">
+          <nz-col nzSpan="12">
+            <label class="block mb-1">Send SMS Alert</label>
+            <nz-select [formControl]="smsAlertControl" style="width: 100%">
+              <nz-option nzValue="Yes" nzLabel="Yes"></nz-option>
+              <nz-option nzValue="No" nzLabel="No"></nz-option>
+            </nz-select>
+          </nz-col>
+
+          <nz-col nzSpan="12">
+            <label class="block mb-1">Send Email Alert</label>
+            <nz-select [formControl]="emailAlertControl" style="width: 100%">
+              <nz-option nzValue="Yes" nzLabel="Yes"></nz-option>
+              <nz-option nzValue="No" nzLabel="No"></nz-option>
+            </nz-select>
+          </nz-col>
+        </nz-row>
+
+
+
+
+
+        <!-- Row 8: Submit -->
+        <nz-row class="mt-4">
+          <nz-col nzSpan="24" class="text-right">
+            <button nz-button nzType="primary" (click)="createTicket()" [nzLoading]="loading">
+              <span nz-icon nzType="send"></span> Submit Ticket
+            </button>
+          </nz-col>
+        </nz-row>
+      </form>
+    </div>
+  </nz-content>
 </nz-layout>

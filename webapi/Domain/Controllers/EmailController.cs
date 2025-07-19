@@ -152,11 +152,12 @@ namespace webapi.Domain.Controllers
         }
 
         [HttpGet("test-escalations")]
-        public IActionResult TestEscalations()
+        public async Task<IActionResult> TestEscalations(CancellationToken cancellationToken)
         {
-            _emailEscalationService.ProcessEscalations();
-            return Ok("ProcessEscalations method has been executed.");
+            await _emailEscalationService.ProcessEscalationsAsync(cancellationToken);
+            return Ok("ProcessEscalationsAsync method has been executed.");
         }
+
 
     }
 }

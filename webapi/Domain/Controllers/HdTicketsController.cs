@@ -6,6 +6,8 @@ using System.Linq;
 using webapi.Domain.Helpers;
 using webapi.Domain.Models;
 using webapi.Domain.Services;
+using webapi.Domain.Config;
+using Microsoft.Extensions.Options;
 
 namespace webapi.Domain.Controllers
 {
@@ -18,13 +20,16 @@ namespace webapi.Domain.Controllers
         private readonly ILog _log4netLogger;
         private readonly SmsService _sms;
         private readonly EmailService _email;
+        private readonly EscalationSettings _escalationSettings;
 
-        public HdTicketsController(AppDbContext context, SmsService sms, EmailService email)
+        public HdTicketsController(AppDbContext context, SmsService sms, EmailService email, IOptions<EscalationSettings> escalationOptions)
         {
             _context = context;
             _log4netLogger = LogManager.GetLogger(typeof(HdTicketsController));
             _sms = sms;
-            _email = email; 
+            _email = email;
+            _escalationSettings = escalationOptions.Value;
+
         }
         [HttpPost]
         public ActionResult<HdTickets> UploadHdTickets([FromBody] HdTickets HdTicketsReq)
@@ -34,13 +39,39 @@ namespace webapi.Domain.Controllers
                 return BadRequest("InvalId HdTickets data.");
             }
 
-            HdEscalation escalationLevel = _context.HdEscalation
-                .FirstOrDefault(x => x.levelID == HdTicketsReq.Priority);
+            EscalationMapping escalationMapping = _context.EscalationMappings
+                .FirstOrDefault(x =>
+                    x.DepartmentID == HdTicketsReq.DepartmentID &&
+                    x.CategoryID == HdTicketsReq.CategoryID &&
+                    x.SubcategoryID == HdTicketsReq.SubCategoryID &&
+                    x.PriorityID == HdTicketsReq.Priority);
+
+            if (escalationMapping == null)
+            {
+                _log4netLogger.Warn($"No escalation mapping found for Department: {HdTicketsReq.DepartmentID}, Category: {HdTicketsReq.CategoryID}, SubCategory: {HdTicketsReq.SubCategoryID}, Priority: {HdTicketsReq.Priority}");
+
+                if (_escalationSettings.RequireMapping)
+                {
+                    return BadRequest("Escalation mapping is required but not found.");
+                }
+
+                // Proceed with default fallback if mapping is not required
+                escalationMapping = new EscalationMapping
+                {
+                    Level1ProfileID = 0,
+                    Level1Delay = TimeSpan.FromHours(8),
+                };
+            }
 
 
-            DateTime? dueDate = null; // Initialize it as null
- 
-            dueDate = HdTicketsReq.StartDate.AddDays(escalationLevel.Days);
+
+
+            DateTime? dueDate = null;
+
+            if (escalationMapping?.Level1Delay != null)
+            {
+                dueDate = HdTicketsReq.StartDate.Add(escalationMapping.Level1Delay.Value);
+            }
 
 
             var HdTikcet = new HdTickets
@@ -59,7 +90,7 @@ namespace webapi.Domain.Controllers
                 Body = HdTicketsReq.Body,
                 StatusID = HdTicketsReq.StatusID,
                 Priority = HdTicketsReq.Priority,
-                EscalationLevel = escalationLevel != null ? escalationLevel.EscalationID : 0,
+                EscalationLevel = escalationMapping != null ? escalationMapping.Level1ProfileID : 0,
                 UpdateByUser = HdTicketsReq.UpdateByUser,
                 Email = HdTicketsReq.Email,
                 EmailAlert = HdTicketsReq.EmailAlert,
@@ -102,8 +133,35 @@ namespace webapi.Domain.Controllers
             .Where(t => t.CategoryID == HdNewTickets.CategoryID) // Assuming 'Id' is your auto-incrementing primary key
             .FirstOrDefault();
 
-            _sms.SendOpenSmsAsync(smsRequest, HdNewTickets.Id, HdNewCategory.Description, escalationLevel.Days.ToString());
-            _email.SendOpenEmailAsync(HdNewTickets.Email, HdNewTickets.Id, HdNewCategory.Description, escalationLevel.Days.ToString());
+if (HdNewTickets.SMSAlert)
+{
+    _sms.SendOpenSmsAsync(smsRequest, HdNewTickets.Id, HdNewCategory.Description, escalationMapping.Level1Delay?.ToString(@"hh\:mm") ?? "N/A");
+
+    var HdSMSComments = new HdComments
+    {
+        TicketID = HdNewTickets.Id,
+        CommentDate = HdNewTickets.StartDate,
+        UserID = 0,
+        Body = "Ticket opened notification sent to the client by SMS",
+        TicketFlag = true
+    };
+    _context.HdComments.Add(HdSMSComments);
+}
+
+if (HdNewTickets.EmailAlert)
+{
+    _email.SendOpenEmailAsync(HdNewTickets.Email, HdNewTickets.Id, HdNewCategory.Description, escalationMapping.Level1Delay?.ToString(@"hh\:mm") ?? "N/A");
+
+    var HdEmailComments = new HdComments
+    {
+        TicketID = HdNewTickets.Id,
+        CommentDate = HdNewTickets.StartDate,
+        UserID = 0,
+        Body = "Ticket opened notification sent to the client by Email",
+        TicketFlag = true
+    };
+    _context.HdComments.Add(HdEmailComments);
+}
 
             HdUsers HdUser = _context.HdUsers
                             .FirstOrDefault(x => x.User_Id == HdTicketsReq.UserID.ToString());
@@ -161,14 +219,38 @@ namespace webapi.Domain.Controllers
                 return BadRequest("InvalId HdTickets data.");
             }
 
-            HdEscalation escalationLevel = _context.HdEscalation
-                .FirstOrDefault(x => x.levelID == HdTicketsReq.Ticket.Priority);
+            EscalationMapping escalationMapping = _context.EscalationMappings
+    .FirstOrDefault(x =>
+        x.DepartmentID == HdTicketsReq.Ticket.DepartmentID &&
+        x.CategoryID == HdTicketsReq.Ticket.CategoryID &&
+        x.SubcategoryID == HdTicketsReq.Ticket.SubCategoryID &&
+        x.PriorityID == HdTicketsReq.Ticket.Priority);
+
+            if (escalationMapping == null)
+            {
+                _log4netLogger.Warn($"No escalation mapping found for Department: {HdTicketsReq.Ticket.DepartmentID}, Category: {HdTicketsReq.Ticket.CategoryID}, SubCategory: {HdTicketsReq.Ticket.SubCategoryID}, Priority: {HdTicketsReq.Ticket.Priority}");
+
+                if (_escalationSettings.RequireMapping)
+                {
+                    return BadRequest("Escalation mapping is required but not found.");
+                }
+
+                // Proceed with default fallback if mapping is not required
+                escalationMapping = new EscalationMapping
+                {
+                    Level1ProfileID = 0,
+                    Level1Delay = TimeSpan.FromHours(8),
+                };
+            }
+
+            DateTime? dueDate = null;
+
+            if (escalationMapping?.Level1Delay != null)
+            {
+                dueDate = HdTicketsReq.Ticket.StartDate.Add(escalationMapping.Level1Delay.Value);
+            }
 
 
-            DateTime? dueDate = null; // Initialize it as null
- 
-            dueDate = HdTicketsReq.Ticket.StartDate.AddDays(escalationLevel.Days);
- 
 
             var HdTikcet = new HdTickets
             {
@@ -186,7 +268,7 @@ namespace webapi.Domain.Controllers
                 Body = HdTicketsReq.Ticket.Body,
                 StatusID = HdTicketsReq.Ticket.StatusID,
                 Priority = HdTicketsReq.Ticket.Priority,
-                EscalationLevel = escalationLevel != null ? escalationLevel.EscalationID : 0,
+                EscalationLevel = escalationMapping != null ? escalationMapping.Level1ProfileID : 0,
                 UpdateByUser = HdTicketsReq.Ticket.UpdateByUser,
                 Email = HdTicketsReq.Ticket.Email,
                 EmailAlert = HdTicketsReq.Ticket.EmailAlert,
@@ -233,8 +315,35 @@ namespace webapi.Domain.Controllers
             .Where(t => t.CategoryID == HdNewTickets.CategoryID) // Assuming 'Id' is your auto-incrementing primary key
             .FirstOrDefault();
 
-            _sms.SendOpenSmsAsync(smsRequest, HdNewTickets.Id, HdNewCategory.Description, escalationLevel.Days.ToString());
-            _email.SendOpenEmailAsync(HdNewTickets.Email, HdNewTickets.Id, HdNewCategory.Description, escalationLevel.Days.ToString());
+            if (HdNewTickets.SMSAlert)
+            {
+                _sms.SendOpenSmsAsync(smsRequest, HdNewTickets.Id, HdNewCategory.Description, escalationMapping.Level1Delay?.ToString(@"hh\:mm") ?? "N/A");
+
+                var HdSMSComments = new HdComments
+                {
+                    TicketID = HdNewTickets.Id,
+                    CommentDate = HdNewTickets.StartDate,
+                    UserID = 0,
+                    Body = "Ticket opened notification sent to the client by SMS",
+                    TicketFlag = true
+                };
+                _context.HdComments.Add(HdSMSComments);
+            }
+
+            if (HdNewTickets.EmailAlert)
+            {
+                _email.SendOpenEmailAsync(HdNewTickets.Email, HdNewTickets.Id, HdNewCategory.Description, escalationMapping.Level1Delay?.ToString(@"hh\:mm") ?? "N/A");
+
+                var HdEmailComments = new HdComments
+                {
+                    TicketID = HdNewTickets.Id,
+                    CommentDate = HdNewTickets.StartDate,
+                    UserID = 0,
+                    Body = "Ticket opened notification sent to the client by Email",
+                    TicketFlag = true
+                };
+                _context.HdComments.Add(HdEmailComments);
+            }
 
 
             if (HdUser == null)
@@ -329,6 +438,27 @@ namespace webapi.Domain.Controllers
                 _log4netLogger.Error("GET Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
                 return BadRequest();
 
+            }
+        }
+        [HttpGet("AssignedTo/{userId}")]
+        public IActionResult GetAssignedToUser(int userId)
+        {
+            try
+            {
+                var assignedTickets = _context.HdTickets
+                    .Where(x => x.AssingedToUserID == userId)
+                    .ToList();
+
+                return Ok(assignedTickets);
+            }
+            catch (Exception ex)
+            {
+                ClientInfo client = new ClientInfo();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+                client.Hostname = HttpContext.Request.Host.Host;
+
+                _log4netLogger.Error("GET Assigned Tickets | IP: " + client.IpAddress + "\t Hostname: " + client.Hostname, ex);
+                return BadRequest("Failed to load assigned tickets.");
             }
         }
 
@@ -1698,6 +1828,28 @@ namespace webapi.Domain.Controllers
         }
 
 
+        [HttpGet("Supervisor/DepartmentAllTotal/{DepartmentID}")]
+        public IActionResult GetSupervisorTicketAllForDepartment(int DepartmentID)
+        {
+            try
+            {
+                var newestHdTicketsForUser = _context.HdTickets
+                    .Where(x => x.DepartmentID == DepartmentID);
+
+                return Ok(newestHdTicketsForUser);
+            }
+            catch (Exception ex)
+            {
+                ClientInfo client = new ClientInfo();
+
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+
+                client.Hostname = HttpContext.Request.Host.Host;
+                _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
+                return BadRequest();
+            }
+        }
+
         [HttpGet("Supervisor/Total")]
         public IActionResult GetTotalSupervisor()
         {
@@ -1909,6 +2061,12 @@ namespace webapi.Domain.Controllers
                 return BadRequest();
             }
         }
+
+
+
+
     }
+
+
 }
 

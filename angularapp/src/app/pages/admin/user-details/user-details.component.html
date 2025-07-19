@@ -34,9 +34,11 @@
           <label htmlFor="state">User Type</label>
           <input pInputText id="userType" type="text" [disabled]="disabled" [(ngModel)]="UserType" />
         </div>
-        <div class="field col-12 md:col-3">
-          <label htmlFor="state">Department</label>
-          <input pInputText id="department" type="text" [disabled]="disabled" [(ngModel)]="User.department_Name" />
+        <div class="field col-12 md:col-3" *ngIf="showDepartment()">
+          <label htmlFor="department">Department</label>
+          <input pInputText id="department" type="text"
+                 [disabled]="disabled"
+                 [value]="getDepartmentDisplay()" />
         </div>
       </div>
     </div>

@@ -40,6 +40,8 @@ namespace webapi.Domain.Models
 
         public bool IsAdministrator { get; set; }
         public bool IsSuperVisor { get; set; }
+        public bool IsDepartmentRestrictedSupervisor { get; set; }
+
         public bool IsAgent { get; set; }
         public bool IsBackOffice { get; set; }
         public bool Disabled { get; set; }

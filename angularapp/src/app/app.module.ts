@@ -15,6 +15,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MenubarModule } from 'primeng/menubar';
 import { StyleClassModule } from 'primeng/styleclass';
 import { DividerModule } from 'primeng/divider';
+import { TabViewModule } from 'primeng/tabview';
 import { CommonModule, registerLocaleData } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { SliderModule } from 'primeng/slider';
@@ -61,7 +62,6 @@ import { NzFormModule } from "ng-zorro-antd/form"
 import { NzInputModule } from "ng-zorro-antd/input"
 import { NzSkeletonModule} from "ng-zorro-antd/skeleton"
 import { NzSelectModule } from "ng-zorro-antd/select"
-import { NzCardModule } from "ng-zorro-antd/card"
 import { NzDividerModule } from "ng-zorro-antd/divider"
 import { NzSwitchModule } from "ng-zorro-antd/switch"
 import { NzCommentModule } from "ng-zorro-antd/comment"
@@ -74,6 +74,11 @@ import { NzDatePickerModule } from 'ng-zorro-antd/date-picker'; // Import the mo
 import { MailOutline, AppstoreOutline, SettingOutline, MenuFoldOutline, MenuUnfoldOutline, HomeOutline, LogoutOutline, DownloadOutline, UserOutline } from '@ant-design/icons-angular/icons';
 import { NZ_I18N } from 'ng-zorro-antd/i18n';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+
+
+
 import { JwtModule, JwtModuleOptions } from '@auth0/angular-jwt';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
@@ -123,6 +128,9 @@ import { SupervisorSearchCrmComponent } from './pages/supervisor/supervisor-sear
 import { SupervisorTicketDetailsComponent } from './pages/supervisor/supervisor-ticket-details/supervisor-ticket-details.component';
 import { SupervisorReportsComponent } from './pages/supervisor/supervisor-reports/supervisor-reports.component';
 import { CommonService } from './services/common.service';
+import { EscalationProfilesComponent } from './pages/admin/escalation-profiles/escalation-profiles.component';
+import { EscalationLevelsComponent } from './pages/admin/escalation-levels/escalation-levels.component';
+import { EscalationMappingsComponent } from './pages/admin/escalation-mappings/escalation-mappings.component';
 
 
 registerLocaleData(en);
@@ -158,6 +166,9 @@ const JWT_Module_Options: JwtModuleOptions = {
     ChannelComponent,
     RequestComponent,
     EscalationsComponent,
+    EscalationProfilesComponent,
+    EscalationLevelsComponent,
+    EscalationMappingsComponent,
 
     AgentDashboardComponent,
     TicketDetailsComponent,
@@ -210,6 +221,7 @@ const JWT_Module_Options: JwtModuleOptions = {
     AutoCompleteModule,
     ConfirmDialogModule,
     InputTextareaModule,
+    TabViewModule,
     PasswordModule,
     ChartModule,
     DataViewModule,
@@ -219,7 +231,6 @@ const JWT_Module_Options: JwtModuleOptions = {
     ButtonModule,
     SplitButtonModule,
     TimelineModule,
-    NzButtonModule,
     NzMenuModule,
     MessagesModule,
     NzToolTipModule,
@@ -230,7 +241,6 @@ const JWT_Module_Options: JwtModuleOptions = {
     NzLayoutModule,
     AvatarModule,
     NzFormModule,
-    NzInputModule,
     NzSelectModule,
     NzDrawerModule,
     NzSpaceModule,
@@ -251,6 +261,9 @@ const JWT_Module_Options: JwtModuleOptions = {
     NzAvatarModule,
     NzRadioModule,
     NzDividerModule,
+    NzButtonModule,
+    NzInputModule,
+    NzCheckboxModule,
     JwtModule.forRoot(JWT_Module_Options),
     NzIconModule.forRoot([MailOutline, AppstoreOutline, SettingOutline, MenuFoldOutline, MenuUnfoldOutline, HomeOutline, LogoutOutline, DownloadOutline, UserOutline]),
     LoggerModule.forRoot({ level: NgxLoggerLevel.TRACE }), // Adjust the log level as needed
@@ -287,6 +300,9 @@ const JWT_Module_Options: JwtModuleOptions = {
           { path: 'admin/channels', component: ChannelComponent },
           { path: 'admin/requests', component: RequestComponent },
           { path: 'admin/escalations', component: EscalationsComponent },
+          { path: 'admin/escalations/profiles', component: EscalationProfilesComponent },
+          { path: 'admin/escalations/levels', component: EscalationLevelsComponent },
+          { path: 'admin/escalations/mappings', component: EscalationMappingsComponent },
 
 
           { path: 'agent/tickets/dashboard', component: AgentDashboardComponent },

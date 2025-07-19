@@ -37,6 +37,7 @@ export class SupervisorTicketDetailsComponent {
   listSubCategories: SubCategory[] = [];
   agentNameToAgentMap: { [name: string]: SelectedAgent } = {};
   assignAgentDialog: boolean = false;
+  assignBackOfficeDialog: boolean = false;
   statuses: Status[] = [];
   priorities: Priority[] = [];
   requests: Request[] = [];
@@ -47,6 +48,13 @@ export class SupervisorTicketDetailsComponent {
   selectedAgent: User = {}
   selectedAgentFullName: string = ''; // Initialize as an empty string
   filteredAgentNames!: any[];
+
+
+  backOffices: any[] = [];
+  selectedBackOffice: User = {}
+  selectedBackOfficeFullName: string = ''; // Initialize as an empty string
+  filteredBackOfficeNames!: any[];
+
   comments: Comment[] = [];
   users: User[] = [];
   files: FileAttachment[] = [];
@@ -652,8 +660,24 @@ export class SupervisorTicketDetailsComponent {
         return fullName;
       });
   }
+
+  searchBackOffice(event: AutoCompleteCompleteEvent) {
+    const searchTerm = event.query.toLowerCase();
+    this.filteredBackOfficeNames = this.agents
+      .filter(agent =>
+        agent.lastname.toLowerCase().includes(searchTerm) ||
+        agent.firstname.toLowerCase().includes(searchTerm) ||
+        agent.username.toLowerCase().includes(searchTerm)
+      )
+      .map(agent => {
+        const fullName = `${agent.firstname} ${agent.lastname} (${agent.username})`;
+        return fullName;
+      });
+  }
+
+
   assignToOtherAgent() {
-    this.userService.getBackOfficeUsers().pipe(
+    this.userService.getAgentUsers().pipe(
       map((res: any) => {
         const agents = res; // Assuming res contains the list of agents
 
@@ -693,6 +717,49 @@ export class SupervisorTicketDetailsComponent {
     )
     this.assignAgentDialog = true;
   }
+
+  assignToOtherBackOffice() {
+    this.userService.getBackOfficeUsers().pipe(
+      map((res: any) => {
+        const backOffices = res; // Assuming res contains the list of agents
+
+        // Create the mapping of agent names to agent objects
+        const agentNameToAgentMap: { [name: string]: SelectedAgent } = {};
+
+        backOffices.forEach((agent: SelectedAgent) => {
+          const fullName = `${agent.firstname} ${agent.lastname} (${agent.username})`;
+          agentNameToAgentMap[fullName] = agent;
+        });
+
+        return {
+          backOffices,
+          agentNameToAgentMap,
+        };
+      })
+    ).subscribe((data: any) => {
+      // Assign the agents list
+      this.backOffices = data.backOffices;
+
+      this.agentNameToAgentMap = data.agentNameToAgentMap;
+    },
+      (error) => {
+        this.logger.logError(error);
+        const userLog = localStorage.getItem('userLogs') || '';
+        const updatedUserLog = `${userLog}\n'error'${error}`;
+        localStorage.setItem('userLogs', updatedUserLog);
+        this.router.navigateByUrl("error");
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail:
+            "An error occurred while connection to the database",
+          life: 3000,
+        });
+      }
+    )
+    this.assignBackOfficeDialog = true;
+  }
+
   assignNewAgent() {
     this.selectedAgentFullName = this.selectedAgent.lastname + " " + this.selectedAgent.firstname;
     this.ticketService.assignTicketToOtherAgent(this.ticket.id, this.selectedAgent.user_Id).then(
@@ -706,6 +773,38 @@ export class SupervisorTicketDetailsComponent {
         }
         this.assignAgentDialog = false;
         localStorage.setItem("SupervisorTicketDetails", JSON.stringify(this.ticket));
+        this.router.navigateByUrl("/main/supervisor/tickets/details");
+      },
+      (error) => {
+        this.logger.logError(error);
+        const userLog = localStorage.getItem('userLogs') || '';
+        const updatedUserLog = `${userLog}\n'error'${error}`;
+        localStorage.setItem('userLogs', updatedUserLog);
+        this.router.navigateByUrl("error");
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail:
+            "An error occurred while connection to the database",
+          life: 3000,
+        });
+
+      }
+    )
+  }
+  assignNewBackOffice() {
+    this.selectedBackOfficeFullName = this.selectedBackOffice.lastname + " " + this.selectedBackOffice.firstname;
+    this.ticketService.assignTicketToOtherAgent(this.ticket.id, this.selectedBackOffice.user_Id).then(
+      (res: any) => {
+        this.messageService.add({ severity: 'success', summary: 'Done', detail: 'Ticket assigned to ' + this.selectedAgentFullName, life: 3000 });
+        if (this.selectedBackOffice?.user_Id !== undefined) {
+          this.ticket.assingedToBackOfficeID = parseInt(this.selectedBackOffice.user_Id, 10);
+        } else {
+          // Handle the case where this.selectedAgent?.id is undefined
+          // Handle the case where this.selectedAgent?.id is undefined
+        }
+        this.assignAgentDialog = false;
+        localStorage.setItem("TicketDetails", JSON.stringify(this.ticket));
         this.router.navigateByUrl("/main/supervisor/tickets/details");
       },
       (error) => {
@@ -910,4 +1009,38 @@ export class SupervisorTicketDetailsComponent {
       }
     );
   }
+
+  saveNewAlerts() {
+    this.ticket.updateByUser = this.user.user_Id;
+    this.ticketService.editTicket(this.ticket).then(
+      (res: any) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Done',
+          detail: 'Ticket alerts updated successfully',
+          life: 3000
+        });
+        this.editFlag = '';
+        localStorage.setItem('TicketDetails', JSON.stringify(this.ticket));
+        this.router.navigateByUrl('/main/supervisor/tickets/details');
+      },
+      (error) => {
+        this.logger.logError(error);
+        const userLog = localStorage.getItem('userLogs') || '';
+        const updatedUserLog = `${userLog}\n'error'${error}`;
+        localStorage.setItem('userLogs', updatedUserLog);
+        this.router.navigateByUrl('error');
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'An error occurred while updating ticket alerts',
+          life: 3000
+        });
+      }
+    );
+  }
+  editFlagAlert(field: string): void {
+    this.editFlag = field;
+  }
+
 }

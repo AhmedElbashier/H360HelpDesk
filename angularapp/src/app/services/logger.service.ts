@@ -75,3 +75,31 @@ export class LoggerService {
     );
   }
 }
+
+// Somewhere in a central place, like main.ts or a logging service
+const originalLog = console.log;
+const originalError = console.error;
+const originalWarn = console.warn;
+
+const logBuffer: string[] = [];
+
+function saveLogToBuffer(level: string, args: any[]) {
+  const timestamp = new Date().toISOString();
+  logBuffer.push(`[${timestamp}] [${level.toUpperCase()}] ${args.join(' ')}`);
+  localStorage.setItem('userLogs', logBuffer.join('\n'));
+}
+
+console.log = (...args: any[]) => {
+  saveLogToBuffer('log', args);
+  originalLog(...args);
+};
+
+console.error = (...args: any[]) => {
+  saveLogToBuffer('error', args);
+  originalError(...args);
+};
+
+console.warn = (...args: any[]) => {
+  saveLogToBuffer('warn', args);
+  originalWarn(...args);
+};

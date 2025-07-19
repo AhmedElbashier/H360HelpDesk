@@ -519,6 +519,8 @@ namespace webapi.Domain.Controllers
                             Created_at = HdUserReq.Created_at,
                             Updated_at = HdUserReq.Updated_at,
                             Deleted = HdUserReq.Deleted,
+                            IsDepartmentRestrictedSupervisor = HdUserReq.IsDepartmentRestrictedSupervisor
+
                         };
                         _context.HdUsers.Add(HdUser);
                         this._context.SaveChanges();
@@ -561,6 +563,8 @@ namespace webapi.Domain.Controllers
                             Created_at = HdUserReq.Created_at,
                             Updated_at = HdUserReq.Updated_at,
                             Deleted = HdUserReq.Deleted,
+                            IsDepartmentRestrictedSupervisor = HdUserReq.IsDepartmentRestrictedSupervisor
+
                         };
                         _context.HdUsers.Add(HdUser);
                         this._context.SaveChanges();
@@ -603,6 +607,7 @@ namespace webapi.Domain.Controllers
                             Created_at = HdUserReq.Created_at,
                             Updated_at = HdUserReq.Updated_at,
                             Deleted = HdUserReq.Deleted,
+                            IsDepartmentRestrictedSupervisor = HdUserReq.IsDepartmentRestrictedSupervisor
                         };
                         _context.HdUsers.Add(HdUser);
                         this._context.SaveChanges();
@@ -645,6 +650,7 @@ namespace webapi.Domain.Controllers
                             Created_at = HdUserReq.Created_at,
                             Updated_at = HdUserReq.Updated_at,
                             Deleted = HdUserReq.Deleted,
+                            IsDepartmentRestrictedSupervisor = HdUserReq.IsDepartmentRestrictedSupervisor
                         };
                         _context.HdUsers.Add(HdUser);
                         this._context.SaveChanges();

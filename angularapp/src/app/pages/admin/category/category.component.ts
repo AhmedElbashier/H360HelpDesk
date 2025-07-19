@@ -27,6 +27,10 @@ export class CategoryComponent {
   Delete!: string;
   cols!: any[];
   exportColumns!: any[];
+  departmentOptions: { label: string, value: string | null }[] = [];
+  selectedDepartmentId: string | null = null;
+  allCategories: Category[] = []; // to keep unfiltered list
+
   @ViewChild('dt') dt!: Table;
   constructor(private userService: UserService, private cdr: ChangeDetectorRef, private settingsService: SettingsService, private messageService: MessageService, private confirmationService: ConfirmationService, private router: Router) { }
   applyFilterGlobal(event: any) {
@@ -42,37 +46,53 @@ export class CategoryComponent {
   getData() {
     this.settingsService.getCategories().subscribe(
       (res: any) => {
-        this.Categories = res;
+        this.allCategories = res;
+        this.Categories = [...this.allCategories];
         this.cdr.detectChanges();
       },
       (error) => {
-        
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail:
-            "An error occurred while connection to the database",
+          detail: 'An error occurred while connection to the database',
           life: 3000,
         });
       }
     );
+
     this.settingsService.getDepartments().subscribe(
       (res: any) => {
         this.Departments = res;
+        this.departmentOptions = [
+          { label: 'All Departments', value: null },
+          ...res.map((d: Department) => ({
+            label: d.description,
+            value: d.departmentID,
+          }))
+        ];
         this.cdr.detectChanges();
       },
       (error) => {
-        
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail:
-            "An error occurred while connection to the database",
+          detail: 'An error occurred while connection to the database',
           life: 3000,
         });
       }
     );
   }
+  filterByDepartment() {
+    if (this.selectedDepartmentId) {
+      this.Categories = this.allCategories.filter(
+        (cat) => cat.departmentID === this.selectedDepartmentId
+      );
+    } else {
+      this.Categories = [...this.allCategories]; // Show all
+    }
+  }
+
+
   getCategoryDepartmentName(departmentID: any): any {
     const department = this.Departments?.find((d) => d.departmentID === departmentID);
     return department ? department.description : 'N/A';

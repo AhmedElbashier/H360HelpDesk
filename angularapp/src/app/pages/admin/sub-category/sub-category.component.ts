@@ -43,6 +43,13 @@ export class SubCategoryComponent {
   ngOnInit() {
     this.Delete = "Delete";
     this.getData();
+
+    // optional: pre-fetch categories/sub-categories for the first department
+    this.settingsService.getCategoriesbyDepartment(1).then((res: any) => {
+      this.Categories = res;
+      this.selectedCategory = this.Categories[0];
+      this.getSelectedCategory(); // Load sub-categories immediately
+    });
   }
   getData() {
     this.settingsService.getDepartments().subscribe(
@@ -174,9 +181,17 @@ export class SubCategoryComponent {
     this.EditDialog = false;
   }
   exportExcel() {
-    const worksheet = XLSX.utils.json_to_sheet(this.Categories);
+    console.log('Exporting:', this.subCategories); // ✅ Add this line
+    const exportData = this.subCategories?.map((sc, index) => ({
+      '#': index + 1,
+      'Sub-Category Description': sc.description || '',
+      'Main Category': this.selectedCategory?.description || '',
+      'Sub-Category ID': sc.subCategoryID || '',
+    })) || [];
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = {
-      Sheets: { 'Categories List': worksheet },
+      Sheets: { 'Sub-Categories List': worksheet },
       SheetNames: ['Sub-Categories List'],
     };
 
@@ -187,6 +202,7 @@ export class SubCategoryComponent {
 
     this.saveAsExcelFile(excelBuffer, 'Sub-Categories List.xlsx');
   }
+
   saveAsExcelFile(excelBuffer: any, filename: string) {
     const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     FileSaver.saveAs(data, filename);

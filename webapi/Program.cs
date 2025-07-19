@@ -14,12 +14,16 @@ using webapi;
 using webapi.Domain.Helpers;
 using webapi.Domain.Models;
 using webapi.Domain.Services;
+using webapi.Domain.Config;
+
+log4net.Config.XmlConfigurator.Configure(new FileInfo("log4net.config"));
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
 builder.Services.Configure<ExternalApisOptions>(builder.Configuration.GetSection("ExternalApis"));
+builder.Services.Configure<EscalationSettings>(builder.Configuration.GetSection("Escalation"));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

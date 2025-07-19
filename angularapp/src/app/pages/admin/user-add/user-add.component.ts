@@ -25,6 +25,8 @@ export class UserAddComponent {
   selectedDepartment: Department = {};
   Departments!: Department[];
   Languages: any;
+  isDepartmentRestrictedSupervisor: boolean = false;
+
   constructor(private router: Router, private location: Location, private settingService: SettingsService, private userService: UserService, private logger: LoggerService, private messageService: MessageService) { }
 
   ngOnInit() {
@@ -67,30 +69,30 @@ export class UserAddComponent {
   submit(User: User) {
     const currentDate = new Date();
 
+    // Assign roles
     if (this.selectedRole.name === "Administrator") {
       this.User.isAdministrator = true;
-      this.User.isSuperVisor = true;
-      this.User.isAgent = true;
-      this.User.isBackOffice = true;
-    }
-    else if (this.selectedRole.name === "Supervisor") {
+      this.User.isSuperVisor = false;
+      this.User.isAgent = false;
+      this.User.isBackOffice = false;
+    } else if (this.selectedRole.name === "Supervisor") {
       this.User.isAdministrator = false;
       this.User.isSuperVisor = true;
-      this.User.isAgent = true;
-      this.User.isBackOffice = true;
-    }
-    else if (this.selectedRole.name === "BackOffice") {
+      this.User.isAgent = false;
+      this.User.isBackOffice = false;
+    } else if (this.selectedRole.name === "BackOffice") {
       this.User.isAdministrator = false;
       this.User.isSuperVisor = false;
       this.User.isAgent = false;
       this.User.isBackOffice = true;
-    }
-    else if (this.selectedRole.name === "Agent") {
+    } else if (this.selectedRole.name === "Agent") {
       this.User.isAdministrator = false;
       this.User.isSuperVisor = false;
       this.User.isAgent = true;
       this.User.isBackOffice = false;
     }
+
+    // Add default values
     User.lastSeen = currentDate.toISOString();
     User.ipAddress = "Not defined";
     User.hostName = "Not defined";
@@ -98,33 +100,36 @@ export class UserAddComponent {
     User.darkMode = false;
     User.status = "Offline";
     User.deleted = false;
-    User.department_Id = this.selectedDepartment.departmentID?.toString();
-    User.department_Name = this.selectedDepartment.description;
-    User.isAdministrator = this.User.isAdministrator;
-    User.isSuperVisor = this.User.isSuperVisor;
-    User.isAgent = this.User.isAgent;
-    User.isBackOffice = this.User.isBackOffice;
-    if (User.isBackOffice) {
-      if (User.department_Id != null && User.department_Name != null) {
-        this.messageService.add({ severity: 'warn', summary: 'Filed Required ', detail: 'Please select a department', life: 3000 });
-      }
+    User.isDepartmentRestrictedSupervisor = this.isDepartmentRestrictedSupervisor;
+
+    // Conditionally assign department
+    // ✅ Correct logic to assign department only if user is limited to one department
+    if (this.isDepartmentRestrictedSupervisor && this.selectedDepartment?.departmentID) {
+      User.department_Id = this.selectedDepartment.departmentID.toString();
+      User.department_Name = this.selectedDepartment.description;
+    } else {
+      User.department_Id = null;
+      User.department_Name = null;
     }
-    console.log(User);
+
+    // Optional validation
+    if (this.User.isBackOffice && !this.selectedDepartment?.departmentID) {
+      this.messageService.add({ severity: 'warn', summary: 'Field Required', detail: 'Please select a department', life: 3000 });
+      return;
+    }
+
     this.userService.addUser(User).then(
       (res: any) => {
-        this.messageService.add({ severity: 'success', summary: 'done ', detail: 'User added succesfully', life: 3000 });
+        this.messageService.add({ severity: 'success', summary: 'Done', detail: 'User added successfully', life: 3000 });
         this.router.navigateByUrl('main/admin/users');
       },
       (error) => {
         if (error.status === 400) {
-          this.messageService.add({ severity: 'warn', summary: 'Limit Reached ', detail: 'The license users limit exceeded', life: 3000 });
-
-        }
-        else {
+          this.messageService.add({ severity: 'warn', summary: 'Limit Reached', detail: 'The license users limit exceeded', life: 3000 });
+        } else {
           this.logger.logError(error);
         }
       }
     );
-
   }
 }

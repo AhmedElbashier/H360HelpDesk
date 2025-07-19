@@ -22,6 +22,96 @@ namespace webapi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("webapi.Domain.Models.EscalationLevel", b =>
+                {
+                    b.Property<int>("LevelID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LevelID"));
+
+                    b.Property<string>("LevelName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("LevelID");
+
+                    b.ToTable("EscalationLevels");
+                });
+
+            modelBuilder.Entity("webapi.Domain.Models.EscalationMapping", b =>
+                {
+                    b.Property<int>("MappingID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MappingID"));
+
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepartmentID")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan?>("Level1Delay")
+                        .HasColumnType("time");
+
+                    b.Property<int>("Level1ProfileID")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan?>("Level2Delay")
+                        .HasColumnType("time");
+
+                    b.Property<int?>("Level2ProfileID")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan?>("Level3Delay")
+                        .HasColumnType("time");
+
+                    b.Property<int?>("Level3ProfileID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PriorityID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubcategoryID")
+                        .HasColumnType("int");
+
+                    b.HasKey("MappingID");
+
+                    b.ToTable("EscalationMappings");
+                });
+
+            modelBuilder.Entity("webapi.Domain.Models.EscalationProfile", b =>
+                {
+                    b.Property<int>("ProfileID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProfileID"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EscalationLevelID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ProfileID");
+
+                    b.HasIndex("EscalationLevelID");
+
+                    b.ToTable("EscalationProfiles");
+                });
+
             modelBuilder.Entity("webapi.Domain.Models.HdCategories", b =>
                 {
                     b.Property<int>("CategoryID")
@@ -160,24 +250,32 @@ namespace webapi.Migrations
 
             modelBuilder.Entity("webapi.Domain.Models.HdEscalationTimers", b =>
                 {
-                    b.Property<int>("TimerID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TimerID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Hours")
+                    b.Property<int?>("Days")
                         .HasColumnType("int");
 
-                    b.HasKey("TimerID");
+                    b.Property<int?>("Hours")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Minutes")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.ToTable("HdEscalationTimers");
 
                     b.HasData(
                         new
                         {
-                            TimerID = 1,
-                            Hours = 8
+                            Id = 1,
+                            Days = 0,
+                            Hours = 8,
+                            Minutes = 0
                         });
                 });
 
@@ -516,6 +614,9 @@ namespace webapi.Migrations
                     b.Property<bool>("IsBackOffice")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDepartmentRestrictedSupervisor")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsSuperVisor")
                         .HasColumnType("bit");
 
@@ -563,7 +664,7 @@ namespace webapi.Migrations
                         new
                         {
                             Id = -1,
-                            Created_at = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
+                            Created_at = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
                             DarkMode = false,
                             Deleted = false,
                             Department_Id = "0",
@@ -576,22 +677,23 @@ namespace webapi.Migrations
                             IsAdministrator = true,
                             IsAgent = false,
                             IsBackOffice = false,
+                            IsDepartmentRestrictedSupervisor = false,
                             IsSuperVisor = false,
-                            LastLogoutDate = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
-                            LastPasswordChange = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
-                            LastSeen = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
+                            LastLogoutDate = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
+                            LastPasswordChange = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
+                            LastSeen = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
                             Lastname = "Hermes",
-                            Password = "$2a$10$rwljqVOs3T9IRqhiMtLZyOxUz9o1FA2NMk9eUVYt0e8T/N5UwKzrq",
+                            Password = "$2a$10$E59f1AbP/ZGCbNAzB.TxeunwRT38XFyxZPR/A2UpVZ7D6D4hgh7ue",
                             Phone = "+97144464100",
                             Status = "Offline",
-                            Updated_at = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
+                            Updated_at = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
                             User_Id = "1",
                             Username = "admin"
                         },
                         new
                         {
                             Id = -4,
-                            Created_at = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
+                            Created_at = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
                             DarkMode = false,
                             Deleted = false,
                             Department_Id = "0",
@@ -604,22 +706,23 @@ namespace webapi.Migrations
                             IsAdministrator = false,
                             IsAgent = false,
                             IsBackOffice = true,
+                            IsDepartmentRestrictedSupervisor = false,
                             IsSuperVisor = false,
-                            LastLogoutDate = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
-                            LastPasswordChange = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
-                            LastSeen = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
+                            LastLogoutDate = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
+                            LastPasswordChange = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
+                            LastSeen = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
                             Lastname = "Hermes",
-                            Password = "$2a$10$YeiGoSlKih5a2IHLH9EAweIFDHlVzN5klS4LQ4qXZxN/..snCE8i2",
+                            Password = "$2a$10$klBlQlELgFQMP58TmGHyveLMiVqjkyxwZapxx7lZHvWwso4QB3Ik2",
                             Phone = "+97144464100",
                             Status = "Offline",
-                            Updated_at = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
+                            Updated_at = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
                             User_Id = "4",
                             Username = "backoffice"
                         },
                         new
                         {
                             Id = -2,
-                            Created_at = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
+                            Created_at = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
                             DarkMode = false,
                             Deleted = false,
                             Department_Id = "0",
@@ -632,22 +735,23 @@ namespace webapi.Migrations
                             IsAdministrator = false,
                             IsAgent = true,
                             IsBackOffice = false,
+                            IsDepartmentRestrictedSupervisor = false,
                             IsSuperVisor = false,
-                            LastLogoutDate = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
-                            LastPasswordChange = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
-                            LastSeen = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
+                            LastLogoutDate = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
+                            LastPasswordChange = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
+                            LastSeen = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
                             Lastname = "Hermes",
-                            Password = "$2a$10$BL24u9XexvNlHy5GVrjbv.6uuSG3RWjFWQmi0aYi7GJGVFL/AUxyq",
+                            Password = "$2a$10$RMBd/f1OjlcsR8AZIQtZb.vX/EoXkY509tyBRCHQFREA5.mDrsgye",
                             Phone = "+97144464100",
                             Status = "Offline",
-                            Updated_at = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
+                            Updated_at = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
                             User_Id = "2",
                             Username = "agent"
                         },
                         new
                         {
                             Id = -3,
-                            Created_at = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
+                            Created_at = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
                             DarkMode = false,
                             Deleted = false,
                             Department_Id = "0",
@@ -660,15 +764,16 @@ namespace webapi.Migrations
                             IsAdministrator = false,
                             IsAgent = false,
                             IsBackOffice = false,
+                            IsDepartmentRestrictedSupervisor = false,
                             IsSuperVisor = true,
-                            LastLogoutDate = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
-                            LastPasswordChange = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
-                            LastSeen = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
+                            LastLogoutDate = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
+                            LastPasswordChange = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
+                            LastSeen = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
                             Lastname = "Hermes",
-                            Password = "$2a$10$tMMbByVkk2f7tvmMX8HtduXnJmcdPLW1SJ1zsXE.p3xktbqSAzY8O",
+                            Password = "$2a$10$oeDiVp4P3YwLZDnr9uO5NOTz0O6IyZpBjUyJ5E3fwyfNTTt0Dm4Fu",
                             Phone = "+97144464100",
                             Status = "Offline",
-                            Updated_at = new DateTime(2025, 6, 4, 12, 0, 28, 98, DateTimeKind.Utc).AddTicks(2473),
+                            Updated_at = new DateTime(2025, 7, 17, 18, 12, 21, 481, DateTimeKind.Utc).AddTicks(3836),
                             User_Id = "3",
                             Username = "supervisor"
                         });
@@ -712,6 +817,20 @@ namespace webapi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SmtpSettings");
+                });
+
+            modelBuilder.Entity("webapi.Domain.Models.EscalationProfile", b =>
+                {
+                    b.HasOne("webapi.Domain.Models.EscalationLevel", null)
+                        .WithMany("Profiles")
+                        .HasForeignKey("EscalationLevelID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("webapi.Domain.Models.EscalationLevel", b =>
+                {
+                    b.Navigation("Profiles");
                 });
 #pragma warning restore 612, 618
         }

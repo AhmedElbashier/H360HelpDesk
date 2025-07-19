@@ -1,215 +1,121 @@
 <nz-layout class="app-layout">
   <nz-content>
-    <div class="col-12">
-      <div class="card">
-        <h5 class="field col-12 md:col-10">Search Customer</h5>
-        <div class="grid">
-          <div class="col-3 flex align-items-center justify-content-center">
-            <div class="p-fluid">
-              <!--<div class="field">
-                <label for="username">Policy ID</label>
-                <input pInputText id="policyID" type="text" [(ngModel)]="policyID"/>
-              </div>-->
-              <div class="field">
-                <label for="password">Phone Number </label>
-                <input pInputText id="Phonenumber" type="text" placeholder="545545234" [(ngModel)]="phoneNumber" />
-              </div>
-              <nz-radio-group [(ngModel)]="radioValue" nzName="radiogroup">
-                <label nz-radio nzValue="P">Search for a policy</label>
-                <label nz-radio nzValue="C">Search for a claim</label>
-              </nz-radio-group><br /><br />
-              <p-button label="Search" class="mt-2" (click)="searchCustomer()"></p-button>
-              <p-divider layout="horizontal" align="center" (click)="searchCustomer()">
-                <span class="p-tag">OR</span>
-                <p-divider layout="horizontal" align="center">
-                  <p-button label="Create Non-Customer Ticket" (click)="nonCustomer()" icon="pi pi-user-mins" styleClass="p-button-outlined"></p-button>
-                </p-divider>
-              </p-divider>
+    <div class="card" style="margin: 24px; padding: 24px;">
+      <h3 style="margin-bottom: 20px;">🔍 Search Customer</h3>
+      <div class="p-grid">
+        <!-- Search Panel -->
+        <div class="p-col-12 p-md-4">
+          <div class="p-fluid">
+            <div class="field mb-3">
+              <label for="Phonenumber"><strong>📞 Phone Number</strong></label>
+              <input pInputText id="Phonenumber" type="text" placeholder="Enter phone number" [(ngModel)]="phoneNumber" />
+            </div>
+            <nz-radio-group [(ngModel)]="radioValue" nzName="radiogroup" class="mb-3">
+              <label nz-radio nzValue="P">Policy</label>&nbsp;&nbsp;
+              <label nz-radio nzValue="C">Claim</label>
+            </nz-radio-group>
+            <div class="mt-3">
+              <p-button label="Search" icon="pi pi-search" styleClass="p-button-raised p-button-primary" (click)="searchCustomer()"></p-button>
+              <p-divider align="center"><span class="p-tag">OR</span></p-divider>
+              <p-button label="Create Non-Customer Ticket" icon="pi pi-user-plus" styleClass="p-button-outlined p-button-secondary" (click)="nonCustomer()"></p-button>
             </div>
           </div>
-          <div class="col-2">
-            <p-divider layout="vertical">
-              <b></b>
-            </p-divider>
-          </div>
-          <!-- <div class="col-7 align-items-center justify-content-center">
-           <p-table [value]="customers" [tableStyle]="{ 'min-width': '50rem' }">
+        </div>
+
+        <!-- Divider -->
+        <div class="p-col-12 p-md-1">
+          <p-divider layout="vertical"></p-divider>
+        </div>
+
+        <!-- Result Table -->
+        <div class="p-col-12 p-md-7">
+          <ng-container *ngIf="hasSearched">
+            <p-table [value]="customers" *ngIf="customers.length > 0" [style]="{ width: '100%' }" [scrollable]="true" scrollHeight="400px">
               <ng-template pTemplate="header">
                 <tr>
-                  <th>Policy ID</th>
-                  <th>Customer Name</th>
-                  <th>Phone Number</th>
-                  <th>Policy Status</th>
-                  <th></th>
+                  <th *ngFor="let header of tableHeaders">{{ header || '-' }}</th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-customer>
                 <tr>
-                  <td>{{ customer.POLICY_NUMBER }}</td>
-                  <td>{{ customer.INSURED_NAME }}</td>
-                  <td>{{ customer.MBILE_NO }}</td>
-                  <td>{{ customer.POLICY_STATUS }}</td>
-                  <td>
-                    <button pButton pRipple icon="pi pi-info" class="p-button-rounded p-button-info mr-1" (click)="recordSelect(customer)"></button>
-                  </td>
-                </tr>
-              </ng-template>
-            </p-table>
-          </div> -->
-          <div *ngIf="hasSearched">
-            <p-table [value]="customers" *ngIf="customers.length > 0" [tableStyle]="{ 'min-width': '50rem' }">
-              <ng-template pTemplate="header">
-                <tr>
-                  <th *ngFor="let header of tableHeaders">
-                    {{ header || '-' }}
-                  </th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-customer>
-                <tr>
-                  <!-- POLICY or CLAIM File No -->
                   <td>
                     <span *ngIf="radioValue === 'P'">{{ customer.POLICY_NUMBER }}</span>
                     <span *ngIf="radioValue === 'C'">{{ customer.CLAIM_FILE_NO }}</span>
                   </td>
-
-                  <!-- Name -->
                   <td>
                     <span *ngIf="radioValue === 'P'">{{ customer.INSURED_NAME }}</span>
                     <span *ngIf="radioValue === 'C'">{{ customer.OWNER_NAME }}</span>
                   </td>
-
-                  <!-- Phone Number -->
                   <td>
                     <span *ngIf="radioValue === 'P'">{{ customer.MBILE_NO }}</span>
                     <span *ngIf="radioValue === 'C'">{{ customer.OWNER_MOBILE_NO }}</span>
                   </td>
-
-                  <!-- Status or Accident Date -->
                   <td>
                     <span *ngIf="radioValue === 'P'">{{ customer.POLICY_STATUS }}</span>
                     <span *ngIf="radioValue === 'C'">{{ customer.ACCIDENT_DATE }}</span>
                   </td>
-
-                  <!-- Claim Number or N/A -->
                   <td>
                     <span *ngIf="radioValue === 'C'">{{ customer.CLAIM_NO || 'N/A' }}</span>
                   </td>
-
-                  <!-- Claimant Name -->
                   <td>
                     <span *ngIf="radioValue === 'C'">{{ customer.APPLIER_NAME || 'N/A' }}</span>
                   </td>
-
-                  <!-- Claim Status (custom logic if needed) -->
                   <td>
                     <span *ngIf="radioValue === 'C'">{{ customer.REJECTION_REASON ? 'Rejected' : 'Pending' }}</span>
                   </td>
-
-                  <!-- Info button -->
                   <td>
-                    <button pButton
-                            pRipple
-                            icon="pi pi-file"
-                            class="p-button-rounded p-button-info mr-1"
-                            (click)="recordSelect(customer)">
-                    </button>
-                    <button pButton
-                            pRipple
-                            icon="pi pi-ticket"
-                            class="p-button-rounded p-button-success mr-1"
-                            (click)="openTicket(customer)">
-                    </button>
+                    <button pButton icon="pi pi-file" class="p-button-rounded p-button-info mr-1" (click)="recordSelect(customer)"></button>
+                    <button pButton icon="pi pi-ticket" class="p-button-rounded p-button-success" (click)="openTicket(customer)"></button>
                   </td>
                 </tr>
               </ng-template>
             </p-table>
-
             <p *ngIf="customers.length === 0" class="p-text-center p-mt-3">No results found.</p>
-          </div>
-
+          </ng-container>
         </div>
       </div>
     </div>
   </nz-content>
-  <nz-drawer [nzSize]="size"
-             [nzVisible]="visible"
-             nzPlacement="right"
-             [nzTitle]="title"
-             [nzExtra]="extra"
-             (nzOnClose)="close()">
+
+  <!-- 🟢 Drawer with Customer Details -->
+  <nz-drawer [nzSize]="size" [nzVisible]="visible" nzPlacement="right" [nzTitle]="title" [nzExtra]="extra" (nzOnClose)="close()">
     <ng-container *nzDrawerContent>
       <form nz-form [nzLayout]="'vertical'">
         <ng-container *ngIf="radioValue === 'P'">
-          <nz-form-item>
-            <nz-form-label>Policy Number</nz-form-label>
-            <nz-form-control><span>{{ customer.POLICY_NUMBER }}</span></nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label>Insured Name</nz-form-label>
-            <nz-form-control><span>{{ customer.INSURED_NAME }}</span></nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label>Mobile Number</nz-form-label>
-            <nz-form-control><span>{{ customer.MBILE_NO }}</span></nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label>Status</nz-form-label>
-            <nz-form-control><span>{{ customer.POLICY_STATUS }}</span></nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label>Policy Start</nz-form-label>
-            <nz-form-control><span>{{ customer.POLICY_START_DATE }}</span></nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label>Policy End</nz-form-label>
-            <nz-form-control><span>{{ customer.POLICY_END_DATE }}</span></nz-form-control>
+          <nz-form-item *ngFor="let field of [
+              {label: 'Policy Number', key: 'POLICY_NUMBER'},
+              {label: 'Insured Name', key: 'INSURED_NAME'},
+              {label: 'Mobile Number', key: 'MBILE_NO'},
+              {label: 'Status', key: 'POLICY_STATUS'},
+              {label: 'Policy Start', key: 'POLICY_START_DATE'},
+              {label: 'Policy End', key: 'POLICY_END_DATE'}
+            ]">
+            <nz-form-label>{{ field.label }}</nz-form-label>
+            <nz-form-control><span>{{ customer[field.key] }}</span></nz-form-control>
           </nz-form-item>
         </ng-container>
 
         <ng-container *ngIf="radioValue === 'C'">
-          <nz-form-item>
-            <nz-form-label>Claim File No</nz-form-label>
-            <nz-form-control><span>{{ customer.CLAIM_FILE_NO }}</span></nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label>Owner Name</nz-form-label>
-            <nz-form-control><span>{{ customer.OWNER_NAME }}</span></nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label>Accident Date</nz-form-label>
-            <nz-form-control><span>{{ customer.ACCIDENT_DATE }}</span></nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label>Plate No</nz-form-label>
-            <nz-form-control><span>{{ customer.PLATE_NO }}</span></nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label>Claimant Amount</nz-form-label>
-            <nz-form-control><span>{{ customer.CALAIMANT_AMT || 'N/A' }}</span></nz-form-control>
-          </nz-form-item>
-
-          <nz-form-item>
-            <nz-form-label>Rejection Reason</nz-form-label>
-            <nz-form-control><span>{{ customer.REJECTION_REASON || 'N/A' }}</span></nz-form-control>
+          <nz-form-item *ngFor="let field of [
+              {label: 'Claim File No', key: 'CLAIM_FILE_NO'},
+              {label: 'Owner Name', key: 'OWNER_NAME'},
+              {label: 'Accident Date', key: 'ACCIDENT_DATE'},
+              {label: 'Plate No', key: 'PLATE_NO'},
+              {label: 'Claimant Amount', key: 'CALAIMANT_AMT'},
+              {label: 'Rejection Reason', key: 'REJECTION_REASON'}
+            ]">
+            <nz-form-label>{{ field.label }}</nz-form-label>
+            <nz-form-control><span>{{ customer[field.key] || 'N/A' }}</span></nz-form-control>
           </nz-form-item>
         </ng-container>
       </form>
     </ng-container>
   </nz-drawer>
+
   <ng-template #extra>
     <button nz-button nzType="default" (click)="close()">Close</button>
     &nbsp;
     <button nz-button nzType="primary" (click)="openTicket(customer)">Open a ticket</button>
   </ng-template>
-
 </nz-layout>
+

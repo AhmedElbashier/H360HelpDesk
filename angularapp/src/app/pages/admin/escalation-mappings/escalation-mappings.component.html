@@ -1,0 +1,152 @@
+<p-toolbar>
+  <div class="p-toolbar-group-left">
+    <button pButton label="Add" icon="pi pi-plus" (click)="openNew()" class="p-button-success"></button>
+    <button pButton label="Delete" icon="pi pi-trash" (click)="deleteSelectedMappings()" [disabled]="!selectedMappings.length" class="p-button-danger"></button>
+  </div>
+</p-toolbar>
+
+<p-table #dt [value]="mappings" [(selection)]="selectedMappings" dataKey="mappingID" [paginator]="true" [rows]="10" [responsiveLayout]="'scroll'">
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+      <th>Case Type</th>
+      <th>Department</th>
+      <th>Subcategory</th>
+      <th>Priority</th>
+      <th>Level 1 Delay</th>
+      <th>Level 1 Profile</th>
+      <th>Level 2 Delay</th>
+      <th>Level 2 Profile</th>
+      <th>Level 3 Delay</th>
+      <th>Level 3 Profile</th>
+      <th>Actions</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-mapping>
+    <tr>
+      <td><p-tableCheckbox [value]="mapping"></p-tableCheckbox></td>
+      <td>{{ getCategoryName(mapping.categoryID) }}</td>
+      <td>{{ getDepartmentName(mapping.departmentID) }}</td>
+      <td>{{ getSubcategoryName(mapping.subcategoryID) }}</td>
+      <td>{{ getPriorityName(mapping.priorityID) }}</td>
+      <td>{{ mapping.level1Delay }}</td>
+      <td>{{ getProfileName(mapping.level1ProfileID) }}</td>
+      <td>{{ mapping.level2Delay }}</td>
+      <td>{{ getProfileName(mapping.level2ProfileID) }}</td>
+      <td>{{ mapping.level3Delay }}</td>
+      <td>{{ getProfileName(mapping.level3ProfileID) }}</td>
+      <td>
+        <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-warning mr-2" (click)="editMapping(mapping)"></button>
+        <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deleteMapping(mapping)"></button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog [(visible)]="mappingDialog" header="Escalation Mapping" [modal]="true" [style]="{ width: '600px' }" styleClass="p-fluid">
+  <ng-template pTemplate="content">
+
+    <!-- Department -->
+    <div class="p-field">
+      <label>Department</label>
+      <p-dropdown [options]="departments"
+                  optionLabel="description"
+                  optionValue="departmentID"
+                  [(ngModel)]="selectedMapping.departmentID">
+      </p-dropdown>
+    </div>
+
+    <!-- Category -->
+    <div class="p-field">
+      <label>Category</label>
+      <p-dropdown [options]="categories"
+                  optionLabel="description"
+                  optionValue="categoryID"
+                  [(ngModel)]="selectedMapping.categoryID"
+                  (onChange)="onCategoryChange()">
+      </p-dropdown>
+    </div>
+
+    <!-- Subcategory -->
+    <div class="p-field">
+      <label>Subcategory</label>
+      <p-dropdown [options]="subcategories" optionLabel="description" optionValue="subCategoryID" [(ngModel)]="selectedMapping.subcategoryID"></p-dropdown>
+    </div>
+
+    <!-- Priority -->
+    <div class="p-field">
+      <label>Priority</label>
+      <p-dropdown [options]="priorities"
+                  optionLabel="description"
+                  optionValue="levelID"
+                  [(ngModel)]="selectedMapping.priorityID">
+      </p-dropdown>
+    </div>
+
+    <!-- Level 1 -->
+    <div class="p-field">
+      <label>Level 1</label>
+      <p-dropdown [options]="levels" optionLabel="levelName" optionValue="levelID" [(ngModel)]="selectedMapping.level1ProfileID"></p-dropdown>
+    </div>
+    <!-- Level 1 Delay -->
+    <div class="p-field p-grid">
+      <label class="p-col-fixed" style="width: 120px">Level 1 Delay</label>
+      <div class="p-col">
+        <input type="number" pInputText [(ngModel)]="selectedMapping.level1DelayDay" placeholder="dd" />
+      </div>
+      <div class="p-col">
+        <input type="number" pInputText [(ngModel)]="selectedMapping.level1DelayHour" placeholder="hh" />
+      </div>
+      <div class="p-col">
+        <input type="number" pInputText [(ngModel)]="selectedMapping.level1DelayMinute" placeholder="mm" />
+      </div>
+    </div>
+
+    <!-- Level 2 -->
+    <div class="p-field">
+      <label>Level 2</label>
+      <p-dropdown [options]="levels" optionLabel="levelName" optionValue="levelID" [(ngModel)]="selectedMapping.level2ProfileID"></p-dropdown>
+    </div>
+    <!-- Level 1 Delay -->
+    <div class="p-field p-grid">
+      <label class="p-col-fixed" style="width: 120px">Level 2 Delay</label>
+      <div class="p-col">
+        <input type="number" pInputText [(ngModel)]="selectedMapping.level2DelayDay" placeholder="dd" />
+      </div>
+      <div class="p-col">
+        <input type="number" pInputText [(ngModel)]="selectedMapping.level2DelayHour" placeholder="hh" />
+      </div>
+      <div class="p-col">
+        <input type="number" pInputText [(ngModel)]="selectedMapping.level2DelayMinute" placeholder="mm" />
+      </div>
+    </div>
+
+    <!-- Level 3 -->
+    <div class="p-field">
+      <label>Level 3</label>
+      <p-dropdown [options]="levels" optionLabel="levelName" optionValue="levelID" [(ngModel)]="selectedMapping.level3ProfileID"></p-dropdown>
+    </div>
+    <!-- Level 3 Delay -->
+    <div class="p-field p-grid">
+      <label class="p-col-fixed" style="width: 120px">Level 3 Delay</label>
+      <div class="p-col">
+        <input type="number" pInputText [(ngModel)]="selectedMapping.level3DelayDay" placeholder="dd" />
+      </div>
+      <div class="p-col">
+        <input type="number" pInputText [(ngModel)]="selectedMapping.level3DelayHour" placeholder="hh" />
+      </div>
+      <div class="p-col">
+        <input type="number" pInputText [(ngModel)]="selectedMapping.level3DelayMinute" placeholder="mm" />
+      </div>
+    </div>
+
+
+
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Save" icon="pi pi-check" (click)="saveMapping()"></button>
+    <button pButton label="Cancel" icon="pi pi-times" (click)="hideDialog()" class="p-button-secondary"></button>
+  </ng-template>
+</p-dialog>
+

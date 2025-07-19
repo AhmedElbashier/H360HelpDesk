@@ -46,6 +46,8 @@ export class TicketDetailsComponent {
   selectedAgent: User = {}
   selectedAgentFullName: string = ''; // Initialize as an empty string
   filteredAgentNames!: any[];
+
+
   comments: Comment[] = [];
   users: User[] = [];
   files: FileAttachment[] = [];
@@ -66,7 +68,9 @@ export class TicketDetailsComponent {
   selectedDepartment: Department = {};
   selectedCategory: Category = {};
   selectedSubCategory: SubCategory = {};
-  selectedReason: Request[] =[];
+  selectedReason: Request[] = [];
+  editMode = false;
+
   constructor(private userService: UserService, private settingService: SettingsService, private logger: LoggerService, private router: Router, private cdr: ChangeDetectorRef, private ticketService: TicketService, private messageService: MessageService) { }
   async ngOnInit() {
 
@@ -650,7 +654,7 @@ export class TicketDetailsComponent {
       });
   }
   assignToOtherAgent() {
-    this.userService.getBackOfficeUsers().pipe(
+    this.userService.getAgentUsers().pipe(
       map((res: any) => {
         const agents = res; // Assuming res contains the list of agents
 
@@ -722,6 +726,7 @@ export class TicketDetailsComponent {
       }
     )
   }
+
 
   reOpenTicket() {
     this.ticketService.reopenTicket(this.ticket).then(
@@ -907,4 +912,38 @@ export class TicketDetailsComponent {
       }
     );
   }
+  saveNewAlerts() {
+    this.ticket.updateByUser = this.user.user_Id;
+    this.ticketService.editTicket(this.ticket).then(
+      (res: any) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Done',
+          detail: 'Ticket alerts updated successfully',
+          life: 3000
+        });
+        this.editFlag = '';
+        localStorage.setItem('TicketDetails', JSON.stringify(this.ticket));
+        this.router.navigateByUrl('/main/agent/tickets/details');
+      },
+      (error) => {
+        this.logger.logError(error);
+        const userLog = localStorage.getItem('userLogs') || '';
+        const updatedUserLog = `${userLog}\n'error'${error}`;
+        localStorage.setItem('userLogs', updatedUserLog);
+        this.router.navigateByUrl('error');
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'An error occurred while updating ticket alerts',
+          life: 3000
+        });
+      }
+    );
+  }
+  editFlagAlert(field: string): void {
+    this.editFlag = field;
+  }
+
+
 }

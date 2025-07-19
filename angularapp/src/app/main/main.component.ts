@@ -305,19 +305,14 @@ export class MainComponent {
   downloadLogs() {
     const logs = localStorage.getItem('userLogs');
     if (logs) {
-      const dataUri = 'data:text/plain;charset=utf-8,' + encodeURIComponent(logs);
-
+      const blob = new Blob([logs], { type: 'text/plain;charset=utf-8' });
       const link = document.createElement('a');
-      link.href = dataUri;
+      link.href = URL.createObjectURL(blob);
       link.download = 'user-logs.txt';
-      link.style.display = 'none';
-      document.body.appendChild(link);
-
       link.click();
-      document.body.removeChild(link);
-      this.hideDialog();
     }
   }
+
   language(lang: any) {
     if (lang == "ar")
       this.translate.use('ar');

@@ -31,12 +31,27 @@
           <input pInputText id="phone" type="text" [(ngModel)]="User.phone" />
         </div>
         <div class="field col-12 md:col-3">
-          <label htmlFor="state">User Type</label>
-          <p-dropdown [options]="roles" optionLabel="name" [(ngModel)]="selectedRole"></p-dropdown>
+          <label>User Type</label>
+          <p-dropdown [options]="roles"
+                      optionLabel="name"
+                      [(ngModel)]="selectedRole">
+          </p-dropdown>
         </div>
-        <div class="field col-12 md:col-3">
-          <label htmlFor="state">Department</label>
-          <select id="state" [(ngModel)]="selectedDepartment" pInputText>
+
+        <!-- Show checkbox if Supervisor -->
+        <div class="field col-12 md:col-2" *ngIf="selectedRole?.name === 'Supervisor'">
+          <label>Multiple departments</label>
+          <p-checkbox label="Limit to Single Department Only"
+                      [(ngModel)]="isDepartmentRestrictedSupervisor"
+                      [binary]="true">
+          </p-checkbox>
+        </div>
+
+        <!-- Show department unless Agent or restricted Supervisor -->
+        <div class="field col-12 md:col-3"
+            *ngIf="selectedRole?.name !== 'Agent' && (selectedRole?.name !== 'Supervisor' || (selectedRole?.name === 'Supervisor' && isDepartmentRestrictedSupervisor))">
+          <label>Department</label>
+          <select [(ngModel)]="selectedDepartment" class="p-inputtext">
             <option *ngFor="let Department of Departments" [ngValue]="Department">
               {{ Department.description }}
             </option>

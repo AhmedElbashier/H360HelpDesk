@@ -5,7 +5,9 @@ import { Router } from '@angular/router';
 import { LoggerService } from '../../../services/logger.service';
 import { Table } from 'primeng/table';
 import { Priority, SettingsService } from '../../../services/settings.service';
-import { User } from '../../../services/user.service';
+import { User, UserService } from '../../../services/user.service';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-supervisor-dashboard',
@@ -46,12 +48,17 @@ export class SupervisorDashboardComponent {
   endDate: any;
   filteredPriorities: any[] = [];
   selectedPriority: any;
+  agents: any[] = [];
+  backofficeUsers: any[] = [];
 
-  constructor(private settingService: SettingsService, private logger: LoggerService, private router: Router, private cdr: ChangeDetectorRef, private ticketService: TicketService, private messageService: MessageService) {
+  selectedAgent: any = null;
+  selectedBackoffice: any = null;
+  constructor(private settingService: SettingsService, private logger: LoggerService, private router: Router, private cdr: ChangeDetectorRef, private ticketService: TicketService, private messageService: MessageService, private userService: UserService) {
   }
 
   ngOnInit() {
     this.user = JSON.parse(localStorage.getItem("user") || "{}") as User;
+    console.log(this.user)
     this.representatives = [
       { name: 'Amy Elsner', image: 'amyelsner.png' },
       { name: 'Anna Fali', image: 'annafali.png' },
@@ -64,7 +71,26 @@ export class SupervisorDashboardComponent {
       { name: 'Stephen Shaw', image: 'stephenshaw.png' },
       { name: 'Xuxue Feng', image: 'xuxuefeng.png' }
     ];
-    this.getTotals(this.user.user_Id);
+    this.userService.getBackOfficeUsers().subscribe(res => {
+      this.backofficeUsers = res.map(user => ({
+        ...user,
+        id: user.user_Id,
+        fullname: `${user.firstname} ${user.lastname}`
+      }));
+      this.cdr.detectChanges();
+    });
+
+    this.userService.getAgentUsers().subscribe(res => {
+      this.agents = res.map(agent => ({
+        ...agent,
+        id: agent.user_Id,
+        fullname: `${agent.firstname} ${agent.lastname}`
+      }));
+      this.cdr.detectChanges();
+    });
+
+
+    this.getTotals();
     this.settingService.getStatuses().subscribe(
       (res: any) => {
         this.statuses = res;
@@ -121,25 +147,26 @@ export class SupervisorDashboardComponent {
         });
       }
     );
+    this.getAllTickets();
 
-    this.ticketService.getTickets().subscribe(
-      (res: any) => {
-        this.tickets = res;
-        this.cdr.detectChanges();
-      },
-      (error) => {
+    //this.ticketService.getTickets().subscribe(
+    //  (res: any) => {
+    //    this.tickets = res;
+    //    this.cdr.detectChanges();
+    //  },
+    //  (error) => {
 
-        this.logger.logError(error);
-        this.router.navigateByUrl("error");
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail:
-            "An error occurred while connection to the database",
-          life: 3000,
-        });
-      }
-    );
+    //    this.logger.logError(error);
+    //    this.router.navigateByUrl("error");
+    //    this.messageService.add({
+    //      severity: 'error',
+    //      summary: 'Error',
+    //      detail:
+    //        "An error occurred while connection to the database",
+    //      life: 3000,
+    //    });
+    //  }
+    //);
   }
   applyFilterGlobal(event: any) {
     const searchTerm = (event.target as HTMLInputElement).value;
@@ -202,46 +229,51 @@ export class SupervisorDashboardComponent {
     this.router.navigateByUrl("main/supervisor/tickets/crm");
 
   }
-  getTotals(id: any) {
-    this.ticketService.getSupervisorClosedTotal(id).then(
-      (res: any) => {
-        if (res === null) {
-          this.closedTickets = "0";
-        }
-        this.closedTickets = res;
-        this.ticketService.getSupervisorInProgressTotal(id).then(
-          (res: any) => {
-            if (res === null) {
-              this.openedTickets = "0";
-            }
-            this.openedTickets = res;
-            this.ticketService.getSupervisorNewTotal().then(
-              (res: any) => {
-                this.newTickets = res;
-                this.ticketService.getSupervisorResolvedTotal(id).then(
-                  (res: any) => {
-                    this.resolvedTickets = res;
-                    this.ticketService.getSupervisorAllTotal(id).then(
-                      (res: any) => {
-                        this.allTickets = res;
-                      });
-                  });
-              });
-          });
-      },
-      (error) => {
+  getTotals() {
+    const isRestricted = this.user.isDepartmentRestrictedSupervisor;
+    const deptID = this.user.department_Id;
+
+    const totalClosed = isRestricted
+      ? this.ticketService.getBackOfficeClosedTotal(deptID)
+      : this.ticketService.getSupervisorClosedTotal();
+
+    const totalOpened = isRestricted
+      ? this.ticketService.getBackOfficeInProgressTotal(deptID)
+      : this.ticketService.getSupervisorInProgressTotal();
+
+    const totalNew = isRestricted
+      ? this.ticketService.getBackOfficeUnAnsweredTotal(deptID)
+      : this.ticketService.getSupervisorNewTotal();
+
+    const totalResolved = isRestricted
+      ? this.ticketService.getBackOfficeResolvedTotal(deptID)
+      : this.ticketService.getSupervisorResolvedTotal();
+
+    const totalAll = isRestricted
+      ? this.ticketService.getBackOfficeAllTotal(deptID)
+      : this.ticketService.getSupervisorAllTotal();
+
+    totalClosed.then(res => this.closedTickets = res ?? "0")
+      .then(() => totalOpened)
+      .then(res => this.openedTickets = res ?? "0")
+      .then(() => totalNew)
+      .then(res => this.newTickets = res ?? "0")
+      .then(() => totalResolved)
+      .then(res => this.resolvedTickets = res ?? "0")
+      .then(() => totalAll)
+      .then(res => this.allTickets = res ?? "0")
+      .catch(error => {
         this.logger.logError(error);
         this.router.navigateByUrl("error");
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail:
-            "An error occurred while connection to the database",
+          detail: "An error occurred while connection to the database",
           life: 3000,
         });
-      }
-    )
+      });
   }
+
   getTicketStatusDescription(statusID: any): any {
     const status = this.statuses?.find((d) => d?.statusID === statusID);
     return status ? status.description : 'N/A';
@@ -359,23 +391,102 @@ export class SupervisorDashboardComponent {
     )
   }
   getAllTickets() {
-    this.ticketService.getTickets(this.user.user_Id).subscribe(
-      (res: any) => {
-        this.tickets = res;
-        this.cdr.detectChanges();
-      },
-      (error) => {
-        this.logger.logError(error);
-        this.router.navigateByUrl("error");
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail:
-            "An error occurred while connection to the database",
-          life: 3000,
-        });
-      }
-    )
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    // ✅ Ensure the condition is based on this user object
+      if (user.isDepartmentRestrictedSupervisor && user.department_Id) {
+      this.ticketService.getSupervisorAllByDepartment(user.department_Id).then(
+        (res: any) => {
+          this.tickets = res;
+          this.cdr.detectChanges();
+        },
+        (error) => {
+          this.logger.logError(error);
+          this.router.navigateByUrl("error");
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail:
+              "An error occurred while connection to the database",
+            life: 3000,
+          });
+        })}
+     else {
+      this.ticketService.getTickets(this.user.user_Id).subscribe(
+        (res: any) => {
+          this.tickets = res;
+          this.cdr.detectChanges();
+        },
+        (error) => {
+          this.logger.logError(error);
+          this.router.navigateByUrl("error");
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail:
+              "An error occurred while connection to the database",
+            life: 3000,
+          });
+        }
+      );
+    }
   }
 
+
+  filterTickets() {
+    this.tickets = this.tickets.filter(ticket => {
+      const priorityMatch = !this.selectedPriority || ticket.priority === this.selectedPriority.levelID;
+      const dateMatch = !this.startDate || (ticket.startDate && new Date(ticket.startDate) >= new Date(this.startDate));
+      const agentMatch = !this.selectedAgent || +(ticket?.assingedToUserID ?? 0) === +this.selectedAgent.id;
+      const backofficeMatch = !this.selectedBackoffice || +(ticket?.assingedToBackOfficeID ?? 0) === +this.selectedBackoffice.id;
+      return priorityMatch && dateMatch && agentMatch && backofficeMatch;
+    });
+    this.cdr.detectChanges();
+  }
+
+
+  resetFilters() {
+    this.selectedPriority = null;
+    this.selectedAgent = null;
+    this.selectedBackoffice = null;
+    this.startDate = null;
+    this.getAllTickets();
+  }
+
+
+  exportExcel() {
+    const exportData = this.tickets.map(ticket => ({
+      'ID': ticket.id,
+      'Subject': ticket.subject,
+      'Priority': this.getTicketPriorityDescription(ticket.priority),
+      'Status': this.getTicketStatusDescription(ticket.statusID),
+      'Entry Date': ticket.startDate ? new Date(ticket.startDate).toLocaleString() : '',
+      'Due Date': ticket.dueDate ? new Date(ticket.dueDate).toLocaleString() : '',
+      'Category': this.getTicketCategoryDescription(ticket.categoryID)
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = {
+      Sheets: { 'Tickets': worksheet },
+      SheetNames: ['Tickets'],
+    };
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    this.saveAsExcelFile(excelBuffer, `Tickets_${new Date().toISOString().split('T')[0]}.xlsx`);
+  }
+
+  saveAsExcelFile(buffer: any, fileName: string) {
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    FileSaver.saveAs(blob, fileName);
+  }
+  getUserName(userID: number): string {
+    const user = [...this.agents, ...this.backofficeUsers].find(u => +u.user_Id === +userID);
+    return user ? `${user.firstname} ${user.lastname}` : 'N/A';
+  }
 }

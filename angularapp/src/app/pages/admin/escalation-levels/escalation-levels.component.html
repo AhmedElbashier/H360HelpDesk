@@ -1,0 +1,80 @@
+<p-toast></p-toast>
+
+<p-toolbar styleClass="mb-0 gap-0">
+  <h4 class="m-0">Manage Escalation Levels</h4>
+</p-toolbar>
+
+<p-table #dt
+         [value]="levels"
+         [rows]="10"
+         [paginator]="true"
+         [globalFilterFields]="['levelID', 'description', 'levelName']"
+         [tableStyle]="{ 'min-width': '60rem' }"
+         [(selection)]="selectedLevels"
+         [rowHover]="true"
+         dataKey="levelID"
+         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         [showCurrentPageReport]="true">
+  <ng-template pTemplate="caption">
+    <div class="flex align-items-center justify-content-between">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" (input)="applyFilterGlobal($event)" placeholder="Search..." />
+        <button pButton label="Add" icon="pi pi-plus" class="p-button-success ml-3" (click)="openNew()"></button>
+        <button pButton label="Delete" icon="pi pi-trash" class="p-button-danger ml-2"
+                (click)="deleteSelectedLevels()" [disabled]="!selectedLevels.length">
+        </button>
+        <button pButton label="Export" icon="pi pi-upload" class="p-button-help ml-2" (click)="exportExcel()"></button>
+      </span>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th pSortableColumn="levelID">ID <p-sortIcon field="levelID"></p-sortIcon></th>
+      <th pSortableColumn="levelName">Name <p-sortIcon field="levelName"></p-sortIcon></th>
+      <th>Profiles</th>
+      <th></th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-level>
+    <tr>
+      <td><p-tableCheckbox [value]="level"></p-tableCheckbox></td>
+      <td>{{ level.levelID }}</td>
+      <td>{{ level.levelName }}</td>
+      <td>
+        <ng-container *ngIf="level.profiles.length; else noProfiles">
+          <ul style="padding-left: 1rem">
+            <li *ngFor="let profile of level.profiles">{{ profile.name }} - {{ profile.email }}</li>
+          </ul>
+        </ng-container>
+        <ng-template #noProfiles>No Profiles</ng-template>
+      </td>
+      <td>
+        <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-warning mr-2" (click)="editLevel(level)"></button>
+        <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="confirmDeleteLevel(level)"></button>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="summary">
+    <div>In total there are {{ levels.length || 0 }} levels.</div>
+  </ng-template>
+</p-table>
+
+<p-dialog [(visible)]="levelDialog" header="Escalation Level" [modal]="true" [style]="{ width: '400px' }" styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label>Name</label>
+      <input type="text" pInputText [(ngModel)]="level.levelName" required />
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton label="Save" icon="pi pi-check" class="p-button-text" (click)="saveLevel()"></button>
+    <button pButton label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+  </ng-template>
+</p-dialog>

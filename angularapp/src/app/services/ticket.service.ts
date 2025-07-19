@@ -451,4 +451,20 @@ export class TicketService {
       responseType: 'json'
     }).toPromise();
   }
+  getSupervisorAllByDepartment(departmentID: any = null): Promise<any[] | undefined> {
+    return this.http.get<any[]>(
+      `${this.common.TicketUrl}/Supervisor/DepartmentAllTotal/${departmentID}`,
+      {
+        headers: this.common.headers,
+        responseType: 'json'
+      }
+    ).toPromise();
+  }
+
+
+
+  getAssignedToUser(userId: number): Promise<any> {
+    return this.http.get(`${this.common.TicketUrl}/AssignedTo/${userId}`).toPromise();
+  }
+
 }
