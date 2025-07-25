@@ -228,6 +228,12 @@ export class TicketService {
     }).toPromise();
 
   }
+  getTicketsByPhone(phone: string): Promise<any> {
+    return this.http.get<any>(`${this.common.TicketUrl}/phone/${phone}`, {
+      headers: this.common.headers,
+      responseType: 'json'
+    }).toPromise();
+  }
 
   closeTicket(Ticket: Ticket): Promise<any> {
     return this.http.put<any>(this.common.TicketUrl + "/TicketClose/" + Ticket.id, Ticket, {

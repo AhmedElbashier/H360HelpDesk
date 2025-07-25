@@ -14,9 +14,12 @@ namespace webapi.Domain.Controllers
     public class SMSController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILog _log4netLogger;
         public SMSController(AppDbContext context)
         {
             _context = context;
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.SMSController");
+
         }
         [HttpPost("send-test-sms")]
         public async Task<IActionResult> SendSmsAsync([FromBody] SmsRequest smsRequest)

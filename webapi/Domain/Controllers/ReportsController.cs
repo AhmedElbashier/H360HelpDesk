@@ -17,7 +17,7 @@ namespace webapi.Domain.Controllers
         public ReportsController(AppDbContext context)
         {
             _context = context;
-            _log4netLogger = LogManager.GetLogger(typeof(ReportsController));
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.ReportsController");
 
         }
 

@@ -1,0 +1,141 @@
+<nz-content>
+  <div class="card" style="margin: 24px; padding: 24px;">
+    <h3 style="margin-bottom: 20px;">📞 Auto Search by Phone: {{ phoneNumber }}</h3>
+
+    <div class="p-grid">
+      <!-- Left Panel -->
+      <div class="p-col-12 p-md-4">
+        <div class="p-fluid">
+          <div class="field mb-3">
+            <label for="radio"><strong>🔄 Type</strong></label>
+            <nz-radio-group [(ngModel)]="radioValue" (ngModelChange)="autoSearch()" nzName="radioType">
+              <label nz-radio nzValue="P">Policy</label>&nbsp;&nbsp;
+              <label nz-radio nzValue="C">Claim</label>
+            </nz-radio-group>
+          </div>
+          <p-message severity="info" text="Results shown below are fetched automatically."></p-message>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="p-col-12 p-md-1">
+        <p-divider layout="vertical"></p-divider>
+      </div>
+
+      <!-- Customer Results -->
+      <div class="p-col-12 p-md-7">
+        <ng-container *ngIf="hasSearched">
+          <h5>{{ radioValue === 'P' ? 'Policy Results' : 'Claim Results' }}</h5>
+          <p-table [value]="customers" *ngIf="customers.length > 0" [scrollable]="true" scrollHeight="300px" [style]="{ width: '100%' }">
+            <ng-template pTemplate="header">
+              <tr>
+                <th *ngFor="let header of tableHeaders">{{ header }}</th>
+                <th>Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-customer>
+              <tr>
+                <td>
+                  <span *ngIf="radioValue === 'P'">{{ customer.POLICY_NUMBER }}</span>
+                  <span *ngIf="radioValue === 'C'">{{ customer.CLAIM_FILE_NO }}</span>
+                </td>
+                <td>
+                  <span *ngIf="radioValue === 'P'">{{ customer.INSURED_NAME }}</span>
+                  <span *ngIf="radioValue === 'C'">{{ customer.OWNER_NAME }}</span>
+                </td>
+                <td>
+                  <span *ngIf="radioValue === 'P'">{{ customer.MBILE_NO }}</span>
+                  <span *ngIf="radioValue === 'C'">{{ customer.OWNER_MOBILE_NO }}</span>
+                </td>
+                <td>
+                  <span *ngIf="radioValue === 'P'">{{ customer.POLICY_STATUS }}</span>
+                  <span *ngIf="radioValue === 'C'">{{ customer.ACCIDENT_DATE }}</span>
+                </td>
+                <td *ngIf="radioValue === 'C'">{{ customer.CLAIM_NO || 'N/A' }}</td>
+                <td *ngIf="radioValue === 'C'">{{ customer.APPLIER_NAME || 'N/A' }}</td>
+                <td *ngIf="radioValue === 'C'">{{ customer.REJECTION_REASON ? 'Rejected' : 'Pending' }}</td>
+                <td>
+                  <button pButton icon="pi pi-file" class="p-button-rounded p-button-info mr-1" (click)="recordSelect(customer)"></button>
+                  <button pButton icon="pi pi-ticket" class="p-button-rounded p-button-success" (click)="openTicket(customer)"></button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+          <p *ngIf="customers.length === 0" class="p-text-center p-mt-3">No results found.</p>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Ticket Results -->
+    <div class="p-mt-4">
+      <h5>🎫 Related Tickets</h5>
+      <p-table [value]="tickets" *ngIf="tickets.length > 0" [style]="{ width: '100%' }">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Ticket ID</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Created</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-ticket>
+          <tr>
+            <td>{{ ticket.id }}</td>
+            <td>{{ ticket.subject }}</td>
+            <td>{{ ticket.status }}</td>
+            <td>{{ ticket.createdAt | date: 'short' }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+      <p-card *ngIf="tickets.length === 0" [ngClass]="'p-mt-3 p-p-3'" [style]="{ 'background-color': '#f8f9fa' }">
+        <div class="p-text-center">
+          <i class="pi pi-info-circle" style="font-size: 2rem; color: #6c757d;"></i>
+          <h5 class="p-mt-2">No Tickets Found</h5>
+          <p>This phone number has no recorded tickets. You may create a new one below.</p>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</nz-content>
+
+<!-- Drawer with Customer Details -->
+<nz-drawer [nzSize]="size" [nzVisible]="visible" nzPlacement="right" [nzTitle]="title" [nzExtra]="extra" (nzOnClose)="close()">
+  <ng-container *nzDrawerContent>
+    <form nz-form [nzLayout]="'vertical'">
+      <ng-container *ngIf="radioValue === 'P'">
+        <nz-form-item *ngFor="let field of [
+            {label: 'Policy Number', key: 'POLICY_NUMBER'},
+            {label: 'Insured Name', key: 'INSURED_NAME'},
+            {label: 'Mobile Number', key: 'MBILE_NO'},
+            {label: 'Status', key: 'POLICY_STATUS'},
+            {label: 'Policy Start', key: 'POLICY_START_DATE'},
+            {label: 'Policy End', key: 'POLICY_END_DATE'}
+          ]">
+          <nz-form-label>{{ field.label }}</nz-form-label>
+          <nz-form-control><span>{{ customer[field.key] || 'N/A' }}</span></nz-form-control>
+        </nz-form-item>
+      </ng-container>
+
+      <ng-container *ngIf="radioValue === 'C'">
+        <nz-form-item *ngFor="let field of [
+            {label: 'Claim File No', key: 'CLAIM_FILE_NO'},
+            {label: 'Owner Name', key: 'OWNER_NAME'},
+            {label: 'Accident Date', key: 'ACCIDENT_DATE'},
+            {label: 'Plate No', key: 'PLATE_NO'},
+            {label: 'Claimant Amount', key: 'CALAIMANT_AMT'},
+            {label: 'Rejection Reason', key: 'REJECTION_REASON'}
+          ]">
+          <nz-form-label>{{ field.label }}</nz-form-label>
+          <nz-form-control><span>{{ customer[field.key] || 'N/A' }}</span></nz-form-control>
+        </nz-form-item>
+      </ng-container>
+    </form>
+  </ng-container>
+</nz-drawer>
+
+<ng-template #extra>
+  <p-progressSpinner *ngIf="loadingCustomers" styleClass="p-d-block p-mt-3"></p-progressSpinner>
+  <button nz-button nzType="default" (click)="close()">Close</button>
+  &nbsp;
+  <button nz-button nzType="primary" (click)="openTicket(customer)">Open a Ticket</button>
+</ng-template>

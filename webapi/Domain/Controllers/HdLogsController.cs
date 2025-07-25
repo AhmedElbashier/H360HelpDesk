@@ -17,7 +17,7 @@ namespace webapi.Domain.Controllers
         public HdLogsController(AppDbContext context)
         {
             _context = context;
-            _log4netLogger = LogManager.GetLogger(typeof(HdLogsController));
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.HdLogsController");
         }
         [HttpPost]
         public ActionResult<HdLogs> CreatHdLogs(HdLogs HdLogsReq)

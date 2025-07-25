@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using log4net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using webapi.Domain.Helpers;
 using webapi.Domain.Models;
@@ -10,10 +11,13 @@ namespace webapi.Domain.Controllers
     public class EscalationMappingsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILog _log4netLogger;
 
         public EscalationMappingsController(AppDbContext context)
         {
             _context = context;
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.EscalationMappingsController");
+
         }
         private TimeSpan? ParseTime(string? value)
         {
@@ -72,23 +76,35 @@ namespace webapi.Domain.Controllers
                     .FirstOrDefaultAsync();
 
                 if (level2Profile != null)
+                {
                     mapping.Level2ProfileID = level2Profile.ProfileID;
+                }
                 else
-                    return BadRequest("Level 2 has no assigned profiles.");
+                {
+                    _log4netLogger.Warn($"Level 2 selected (LevelID: {dto.Level2LevelID}) but no profiles found. Skipping Level 2.");
+                    // Do not assign Level2ProfileID, skip silently.
+                }
             }
 
-            if (dto.Level3LevelID.HasValue)
+
+            if (dto.Level2LevelID.HasValue)
             {
-                var level2Profile = await _context.EscalationLevels
-                    .Where(e => e.LevelID == dto.Level3LevelID)
+                var level3Profile = await _context.EscalationLevels
+                    .Where(e => e.LevelID == dto.Level2LevelID)
                     .Select(e => e.Profiles.OrderBy(p => p.ProfileID).FirstOrDefault())
                     .FirstOrDefaultAsync();
 
-                if (level2Profile != null)
-                    mapping.Level3ProfileID = level2Profile.ProfileID;
+                if (level3Profile != null)
+                {
+                    mapping.Level3ProfileID = level3Profile.ProfileID;
+                }
                 else
-                    return BadRequest("Level 3 has no assigned profiles.");
+                {
+                    _log4netLogger.Warn($"Level 3 selected (LevelID: {dto.Level3LevelID}) but no profiles found. Skipping Level 3.");
+                    // Do not assign Level2ProfileID, skip silently.
+                }
             }
+
 
 
 

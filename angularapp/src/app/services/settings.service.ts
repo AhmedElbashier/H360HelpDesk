@@ -89,9 +89,9 @@ export interface EscalationMapping {
   categoryID: number;
   subcategoryID: number;
   priorityID: number;
-  level1ProfileID: number;
-  level2ProfileID?: number;
-  level3ProfileID?: number;
+  level1LevelID: number;
+  level2LevelID?: number;
+  level3LevelID?: number;
   level1Delay?: string;
   level2Delay?: string;
   level3Delay?: string;

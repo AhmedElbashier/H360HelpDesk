@@ -68,7 +68,7 @@ public class EmailService
                     var emailBody = BuildTicketEmailBody(tickets, departmentName);
                     mailMessage.Body = emailBody;
                     mailMessage.To.Add(escalationEmail);
-                    mailMessage.To.Add("jahanzebhkg@gmail.com");
+                    //mailMessage.To.Add("ahmedelbashier.22@gmail.com");
                     mailMessage.Attachments.Add(attachment);
                     mailMessage.Attachments.Add(pdfAttachment);
                 }

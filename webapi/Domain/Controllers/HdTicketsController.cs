@@ -25,7 +25,7 @@ namespace webapi.Domain.Controllers
         public HdTicketsController(AppDbContext context, SmsService sms, EmailService email, IOptions<EscalationSettings> escalationOptions)
         {
             _context = context;
-            _log4netLogger = LogManager.GetLogger(typeof(HdTicketsController));
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.HdTicketsController");
             _sms = sms;
             _email = email;
             _escalationSettings = escalationOptions.Value;
@@ -529,6 +529,43 @@ if (HdNewTickets.EmailAlert)
 
             }
         }
+
+        [HttpGet("phone/{phoneNumber}")]
+        public ActionResult<IEnumerable<HdTickets>> GetHdTicketsByPhone(string phoneNumber)
+        {
+            try
+            {
+                var tickets = _context.HdTickets
+                    .Where(t => t.Mobile == phoneNumber || t.Mobile == phoneNumber) // Adjust field names
+                    .ToList();
+
+                if (tickets == null || tickets.Count == 0)
+                {
+                    ClientInfo client = new ClientInfo
+                    {
+                        IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                        Hostname = HttpContext.Request.Host.Host
+                    };
+
+                    _log4netLogger.Warn($"GET Phone Lookup | IP: {client.IpAddress} | Hostname: {client.Hostname} | Phone: {phoneNumber} | No tickets found.");
+                    return NotFound();
+                }
+
+                return Ok(tickets);
+            }
+            catch (Exception ex)
+            {
+                ClientInfo client = new ClientInfo
+                {
+                    IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                    Hostname = HttpContext.Request.Host.Host
+                };
+
+                _log4netLogger.Error($"GET Phone Lookup Failed | IP: {client.IpAddress} | Hostname: {client.Hostname} | Phone: {phoneNumber}", ex);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
 
         [HttpPut("{Id}")]
         public async Task<IActionResult> PutHdTickets(int Id, HdTickets HdTickets)

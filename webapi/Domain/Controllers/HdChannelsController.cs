@@ -17,7 +17,7 @@ namespace webapi.Domain.Controllers
         public HdChannelsController(AppDbContext context)
         {
             _context = context;
-            _log4netLogger = LogManager.GetLogger(typeof(HdChannelsController));
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.HdChannelsController");
         }
         [HttpPost]
         public ActionResult<HdChannels> CreatHdChannels(HdChannels HdChannelsReq)

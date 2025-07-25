@@ -15,10 +15,20 @@ using webapi.Domain.Helpers;
 using webapi.Domain.Models;
 using webapi.Domain.Services;
 using webapi.Domain.Config;
+using Microsoft.Extensions.Logging;
 
 log4net.Config.XmlConfigurator.Configure(new FileInfo("log4net.config"));
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add log4net integration
+builder.Logging.ClearProviders();
+builder.Logging.AddLog4Net("log4net.config");
+
+// Ensure log directories exist
+Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "logs/Controllers"));
+Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "logs/Startup"));
+Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "logs/Angular"));
 
 
 builder.Services.AddControllers();

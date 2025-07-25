@@ -19,7 +19,7 @@ namespace webapi.Domain.Controllers
         public HdFileAttachmentsController(AppDbContext context)
         {
             _context = context;
-            _log4netLogger = LogManager.GetLogger(typeof(HdFileAttachmentsController));
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.HdFileAttachmentsController");
         }
 
         [HttpPost]

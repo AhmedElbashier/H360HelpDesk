@@ -22,7 +22,7 @@ namespace webapi.Domain.Controllers
         {
             _emailEscalationService = emailEscalationService;
             _context = context;
-            _log4netLogger = LogManager.GetLogger(typeof(SMTPController));
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.EmailController");
         }
         [HttpPost("send-test-email")]
         public async Task<IActionResult> TestEmail([FromBody] EmailRequest emailRequest)

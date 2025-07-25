@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using log4net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using webapi.Domain.Helpers;
 using webapi.Domain.Models;
@@ -10,10 +11,13 @@ namespace webapi.Domain.Controllers
     public class EscalationLevelsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILog _log4netLogger;
 
         public EscalationLevelsController(AppDbContext context)
         {
             _context = context;
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.EscalationLevelsController");
+
         }
 
         [HttpGet]

@@ -52,19 +52,22 @@
       <p-dropdown [options]="departments"
                   optionLabel="description"
                   optionValue="departmentID"
-                  [(ngModel)]="selectedMapping.departmentID">
+                  [(ngModel)]="selectedMapping.departmentID"
+                  (onChange)="onDepartmentChange()">
       </p-dropdown>
     </div>
+
 
     <!-- Category -->
     <div class="p-field">
       <label>Category</label>
-      <p-dropdown [options]="categories"
+      <p-dropdown [options]="filteredCategories"
                   optionLabel="description"
                   optionValue="categoryID"
                   [(ngModel)]="selectedMapping.categoryID"
                   (onChange)="onCategoryChange()">
       </p-dropdown>
+
     </div>
 
     <!-- Subcategory -->
@@ -86,7 +89,7 @@
     <!-- Level 1 -->
     <div class="p-field">
       <label>Level 1</label>
-      <p-dropdown [options]="levels" optionLabel="levelName" optionValue="levelID" [(ngModel)]="selectedMapping.level1ProfileID"></p-dropdown>
+      <p-dropdown [options]="levels" optionLabel="levelName" optionValue="levelID" [(ngModel)]="selectedMapping.level1LevelID"></p-dropdown>
     </div>
     <!-- Level 1 Delay -->
     <div class="p-field p-grid">
@@ -105,7 +108,7 @@
     <!-- Level 2 -->
     <div class="p-field">
       <label>Level 2</label>
-      <p-dropdown [options]="levels" optionLabel="levelName" optionValue="levelID" [(ngModel)]="selectedMapping.level2ProfileID"></p-dropdown>
+      <p-dropdown [options]="levels" optionLabel="levelName" optionValue="levelID" [(ngModel)]="selectedMapping.level2LevelID"></p-dropdown>
     </div>
     <!-- Level 1 Delay -->
     <div class="p-field p-grid">
@@ -124,7 +127,7 @@
     <!-- Level 3 -->
     <div class="p-field">
       <label>Level 3</label>
-      <p-dropdown [options]="levels" optionLabel="levelName" optionValue="levelID" [(ngModel)]="selectedMapping.level3ProfileID"></p-dropdown>
+      <p-dropdown [options]="levels" optionLabel="levelName" optionValue="levelID" [(ngModel)]="selectedMapping.level3LevelID"></p-dropdown>
     </div>
     <!-- Level 3 Delay -->
     <div class="p-field p-grid">

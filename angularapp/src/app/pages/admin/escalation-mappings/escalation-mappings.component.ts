@@ -38,6 +38,7 @@ export class EscalationMappingsComponent implements OnInit {
   priorities: Priority[] = [];
   levels: EscalationLevel[] = [];
   filteredSubcategories: any[] = [];
+  filteredCategories: Category[] = [];
 
   @ViewChild('dt') dt!: Table;
 
@@ -58,16 +59,8 @@ export class EscalationMappingsComponent implements OnInit {
     });
   }
 
-  loadMappings() {
-    this.mappingService.getEscalationMappings().subscribe({
-      next: res => (this.mappings = res),
-      error: () => this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Failed to load escalation mappings'
-      })
-    });
-  }
+
+
 
   loadLevels() {
     this.mappingService.getEscalationLevels().subscribe(levels => {
@@ -81,7 +74,7 @@ export class EscalationMappingsComponent implements OnInit {
       categoryID: 0,
       subcategoryID: 0,
       priorityID: 0,
-      level1ProfileID: 0
+      level1LevelID: 0
     };
   }
 
@@ -89,7 +82,32 @@ export class EscalationMappingsComponent implements OnInit {
     this.selectedMapping = this.createEmptyMapping();
     this.mappingDialog = true;
   }
+  loadMappings() {
+    this.mappingService.getEscalationMappings().subscribe({
+      next: res => (this.mappings = res),
+      error: () => this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to load escalation mappings'
+      })
+    });
+  }
+  onDepartmentChange() {
+    const deptId = this.selectedMapping.departmentID;
+    this.filteredCategories = [];
 
+    if (!deptId) {
+      this.filteredCategories = [];
+      return;
+    }
+
+    this.filteredCategories = this.categories.filter(cat => Number(cat.departmentID) === Number(deptId));
+
+    this.selectedMapping.categoryID = 0;
+    this.selectedMapping.subcategoryID = 0;
+    this.subcategories = [];
+    this.onCategoryChange();
+  }
   onCategoryChange() {
     if (this.selectedMapping.categoryID) {
       this.mappingService.getSubCategoriesbyMainCategory(this.selectedMapping.categoryID).then(res => {
@@ -117,9 +135,9 @@ export class EscalationMappingsComponent implements OnInit {
   }
   saveMapping() {
     // Convert level selections before saving
-    this.selectedMapping.level1ProfileID = this.selectedMapping.level1ProfileID;
-    this.selectedMapping.level2ProfileID = this.selectedMapping.level2ProfileID;
-    this.selectedMapping.level3ProfileID = this.selectedMapping.level3ProfileID;
+    this.selectedMapping.level1LevelID = this.selectedMapping.level1LevelID;
+    this.selectedMapping.level2LevelID = this.selectedMapping.level2LevelID || undefined;
+    this.selectedMapping.level3LevelID = this.selectedMapping.level3LevelID || undefined;
 
     // Format delay values into HH:MM:SS
     this.selectedMapping.level1Delay = this.formatDelay(
@@ -128,17 +146,27 @@ export class EscalationMappingsComponent implements OnInit {
       this.selectedMapping.level1DelayMinute
     );
 
-    this.selectedMapping.level2Delay = this.formatDelay(
-      this.selectedMapping.level2DelayDay,
-      this.selectedMapping.level2DelayHour,
-      this.selectedMapping.level2DelayMinute
-    );
+    if (this.selectedMapping.level2LevelID) {
+      this.selectedMapping.level2Delay = this.formatDelay(
+        this.selectedMapping.level2DelayDay,
+        this.selectedMapping.level2DelayHour,
+        this.selectedMapping.level2DelayMinute
+      );
+    } else {
+      this.selectedMapping.level2Delay = undefined;
+    }
 
-    this.selectedMapping.level3Delay = this.formatDelay(
-      this.selectedMapping.level3DelayDay,
-      this.selectedMapping.level3DelayHour,
-      this.selectedMapping.level3DelayMinute
-    );
+    if (this.selectedMapping.level3LevelID) {
+      this.selectedMapping.level3Delay = this.formatDelay(
+        this.selectedMapping.level3DelayDay,
+        this.selectedMapping.level3DelayHour,
+        this.selectedMapping.level3DelayMinute
+      );
+    } else {
+      this.selectedMapping.level3Delay = undefined;
+    }
+
+
 
     const isEdit = !!this.selectedMapping.mappingID && this.selectedMapping.mappingID > 0;
     const action = isEdit
@@ -154,11 +182,12 @@ export class EscalationMappingsComponent implements OnInit {
       });
       this.loadMappings();
       this.mappingDialog = false;
-    }).catch(() => {
+    }).catch((error) => {
+      const errorMsg = error?.error || 'Failed to save mapping';
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: 'Failed to save mapping',
+        detail: typeof errorMsg === 'string' ? errorMsg : 'An unknown error occurred'
       });
     });
   }
@@ -166,9 +195,9 @@ export class EscalationMappingsComponent implements OnInit {
   editMapping(mapping: EscalationMapping) {
     this.selectedMapping = { ...mapping };
 
-    this.selectedMapping.level1ProfileID = mapping.level1ProfileID;
-    this.selectedMapping.level2ProfileID = mapping.level2ProfileID;
-    this.selectedMapping.level3ProfileID = mapping.level3ProfileID;
+    this.selectedMapping.level1LevelID = mapping.level1LevelID;
+    this.selectedMapping.level2LevelID = mapping.level2LevelID;
+    this.selectedMapping.level3LevelID = mapping.level3LevelID;
 
     // Delay parsing logic
     const delay1 = this.parseDelay(mapping.level1Delay);
@@ -185,7 +214,7 @@ export class EscalationMappingsComponent implements OnInit {
     this.selectedMapping.level3DelayDay = delay3.day;
     this.selectedMapping.level3DelayHour = delay3.hour;
     this.selectedMapping.level3DelayMinute = delay3.minute;
-
+    this.onDepartmentChange();
     this.onCategoryChange();
     this.mappingDialog = true;
   }

@@ -23,7 +23,7 @@ namespace webapi.Domain.Controllers
         {
             _configuration = configuration;
             _context = context;
-            _log4netLogger = LogManager.GetLogger(typeof(AuthController));
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.AuthController");
         }
 
         [HttpPost("login")]

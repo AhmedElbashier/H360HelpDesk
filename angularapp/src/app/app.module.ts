@@ -34,6 +34,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { RatingModule } from 'primeng/rating';
 import { CardModule } from 'primeng/card';
 import { SplitterModule } from 'primeng/splitter';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -131,6 +132,7 @@ import { CommonService } from './services/common.service';
 import { EscalationProfilesComponent } from './pages/admin/escalation-profiles/escalation-profiles.component';
 import { EscalationLevelsComponent } from './pages/admin/escalation-levels/escalation-levels.component';
 import { EscalationMappingsComponent } from './pages/admin/escalation-mappings/escalation-mappings.component';
+import { AutoSearchCrmComponent } from './pages/agent/auto-search-crm/auto-search-crm.component';
 
 
 registerLocaleData(en);
@@ -175,6 +177,8 @@ const JWT_Module_Options: JwtModuleOptions = {
     ReportsComponent,
     TicketNewComponent,
     SearchCrmComponent,
+    AutoSearchCrmComponent,
+
 
     BackofficeDashboardComponent,
     BackofficeReportsComponent,
@@ -236,6 +240,7 @@ const JWT_Module_Options: JwtModuleOptions = {
     NzToolTipModule,
     OverlayPanelModule,
     ReactiveFormsModule,
+    ProgressSpinnerModule,
     MessageModule,
     SkeletonModule,
     NzLayoutModule,
@@ -310,6 +315,7 @@ const JWT_Module_Options: JwtModuleOptions = {
           { path: 'agent/tickets/crm', component: SearchCrmComponent },
           { path: 'agent/tickets/details', component: TicketDetailsComponent },
           { path: 'agent/reports', component: ReportsComponent },
+          { path: 'agent/tickets/crm/search/:phone',component: AutoSearchCrmComponent},
 
 
           { path: 'backoffice/tickets/dashboard', component: BackofficeDashboardComponent },

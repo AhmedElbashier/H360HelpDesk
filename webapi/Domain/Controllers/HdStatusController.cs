@@ -17,7 +17,7 @@ namespace webapi.Domain.Controllers
         public HdStatusController(AppDbContext context)
         {
             _context = context;
-            _log4netLogger = LogManager.GetLogger(typeof(HdStatusController));
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.HdStatusController");
         }
         [HttpPost]
         public ActionResult<HdStatus> CreatHdStatus(HdStatus HdStatusReq)

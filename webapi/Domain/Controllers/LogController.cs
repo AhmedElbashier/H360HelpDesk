@@ -11,7 +11,7 @@ namespace webapi.Domain.Controllers
 
         public LogController(ILogger<LogController> logger)
         {
-            _log4netLogger = LogManager.GetLogger(typeof(LogController));
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.LogController");
         }
 
         [HttpPost]

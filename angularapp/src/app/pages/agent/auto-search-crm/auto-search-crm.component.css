@@ -1,0 +1,10 @@
+.app-layout {
+  display: flex;
+  flex-grow: 1;
+  background-color: #F0F2F5; /* Allow the layout to grow and take up remaining space */
+}
+
+nz-content {
+  margin: 30px;
+  height: 100%;
+}

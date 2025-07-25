@@ -17,7 +17,7 @@ namespace webapi.Domain.Controllers
         public HdCommentsController(AppDbContext context)
         {
             _context = context;
-            _log4netLogger = LogManager.GetLogger(typeof(HdCommentsController));
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.HdCommentsController");
         }
         [HttpPost]
         public ActionResult<HdComments> CreatHdComments(HdComments HdCommentsReq)

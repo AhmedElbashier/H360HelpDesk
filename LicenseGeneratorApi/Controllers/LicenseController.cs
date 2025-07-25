@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //using Microsoft.AspNetCore.Mvc;
 //using System;
 //using System.IO;
@@ -32,7 +31,6 @@
 
 //            // Generate a unique license key
 //            string licenseKey = Guid.NewGuid().ToString("N");
-=======
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
@@ -62,7 +60,6 @@ namespace LicenseGeneratorApi.Controllers
             // Generate a unique license key
             string licenseKey = Guid.NewGuid().ToString("N");
 
-            string hardwareId = ComputeHardwareId(request.MacAddress ?? request.Secret);
 
             // Create a license object
             var license = new License
@@ -75,61 +72,61 @@ namespace LicenseGeneratorApi.Controllers
                 SupervisorsLimit = request.SupervisorsLimit,
                 BackOfficeLimit = request.BackOfficeLimit,
                 ExpirationDate = DateTime.UtcNow.AddYears(1), // License expires in 1 year
-                HardwareId = hardwareId
             };
->>>>>>> 211db96df5eda10efa565b70558f7e67b96850ac
 
-//            string hardwareId = ComputeHardwareId(request.MacAddress ?? request.Secret);
 
-//            // Create a license object
-//            var license = new License
-//            {
-//                Key = licenseKey,
-//                Company = request.Company,
-//                Vendor = request.Vendor,
-//                AdminsLimit = request.AdminsLimit,
-//                AgentsLimit = request.AgentsLimit,
-//                SupervisorsLimit = request.SupervisorsLimit,
-//                BackOfficeLimit = request.BackOfficeLimit,
-//                ExpirationDate = DateTime.UtcNow.AddYears(1) // Example: License expires in 1 year
-//                ExpirationDate = DateTime.UtcNow.AddYears(1), // License expires in 1 year
-//                HardwareId = hardwareId
-//            };
 
-//            // Serialize the license object to a .lic file content
-//            string licenseContent = SerializeLicense(license);
+            //            string hardwareId = ComputeHardwareId(request.MacAddress ?? request.Secret);
 
-<<<<<<< HEAD
-//            // Set the response headers for a file download
-//            var contentDisposition = new ContentDispositionHeaderValue("attachment")
-//            {
-//                FileName = "mylicense.lic"
-//            };
-//            Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
+            //            // Create a license object
+            //            var license = new License
+            //            {
+            //                Key = licenseKey,
+            //                Company = request.Company,
+            //                Vendor = request.Vendor,
+            //                AdminsLimit = request.AdminsLimit,
+            //                AgentsLimit = request.AgentsLimit,
+            //                SupervisorsLimit = request.SupervisorsLimit,
+            //                BackOfficeLimit = request.BackOfficeLimit,
+            //                ExpirationDate = DateTime.UtcNow.AddYears(1) // Example: License expires in 1 year
+            //                ExpirationDate = DateTime.UtcNow.AddYears(1), // License expires in 1 year
+            //                HardwareId = hardwareId
+            //            };
 
-//            // Return the license content as a file
-//            return File(Encoding.UTF8.GetBytes(licenseContent), "application/octet-stream");
-//        }
+            //            // Serialize the license object to a .lic file content
+            //            string licenseContent = SerializeLicense(license);
 
-//        private string SerializeLicense(License license)
-//        {
-//            // Serialize the license object to a string (you can use any serialization method)
-//            // Here, we are using JSON serialization for simplicity
-//            string serializedLicense = Newtonsoft.Json.JsonConvert.SerializeObject(license);
-//            return serializedLicense;
-//        }
-//    }
+            //            // Set the response headers for a file download
+            //            var contentDisposition = new ContentDispositionHeaderValue("attachment")
+            //            {
+            //                FileName = "mylicense.lic"
+            //            };
+            //            Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
 
-//    public class LicenseRequest
-//    {
-//        public string Vendor { get; set; }
-//        public string Company { get; set; }
-//        public int AdminsLimit { get; set; }
-//        public int AgentsLimit { get; set; }
-//        public int SupervisorsLimit { get; set; }
-//        public int BackOfficeLimit { get; set; }
-//    }
-=======
+            //            // Return the license content as a file
+            //            return File(Encoding.UTF8.GetBytes(licenseContent), "application/octet-stream");
+            //        }
+
+            //        private string SerializeLicense(License license)
+            //        {
+            //            // Serialize the license object to a string (you can use any serialization method)
+            //            // Here, we are using JSON serialization for simplicity
+            //            string serializedLicense = Newtonsoft.Json.JsonConvert.SerializeObject(license);
+            //            return serializedLicense;
+            //        }
+            //    }
+
+            //    public class LicenseRequest
+            //    {
+            //        public string Vendor { get; set; }
+            //        public string Company { get; set; }
+            //        public int AdminsLimit { get; set; }
+            //        public int AgentsLimit { get; set; }
+            //        public int SupervisorsLimit { get; set; }
+            //        public int BackOfficeLimit { get; set; }
+            //    }
+            return Ok();
+        }
         private string SerializeLicense(License license)
         {
             // Serialize the license object to a string (you can use any serialization method)
@@ -159,18 +156,16 @@ namespace LicenseGeneratorApi.Controllers
         public string? MacAddress { get; set; }
         public string? Secret { get; set; }
     }
->>>>>>> 211db96df5eda10efa565b70558f7e67b96850ac
+            //        private string ComputeHardwareId(string? source)
+            //        {
+            //            if (string.IsNullOrEmpty(source))
+            //                return string.Empty;
+            //            using var sha = SHA256.Create();
+            //            var hash = sha.ComputeHash(Encoding.UTF8.GetBytes(source));
+            //            return Convert.ToBase64String(hash);
+            //        }
+            //    }
 
 
-//        private string ComputeHardwareId(string? source)
-//        {
-//            if (string.IsNullOrEmpty(source))
-//                return string.Empty;
-//            using var sha = SHA256.Create();
-//            var hash = sha.ComputeHash(Encoding.UTF8.GetBytes(source));
-//            return Convert.ToBase64String(hash);
-//        }
-//    }
-
-
-//}
+            //}
+        }

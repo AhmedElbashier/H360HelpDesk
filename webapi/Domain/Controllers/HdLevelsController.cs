@@ -17,7 +17,7 @@ namespace webapi.Domain.Controllers
         public HdLevelsController(AppDbContext context)
         {
             _context = context;
-            _log4netLogger = LogManager.GetLogger(typeof(HdLevelsController));
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.HdLevelsController");
         }
         [HttpPost]
         public ActionResult<HdLevels> CreatHdLevels(HdLevels HdLevelsReq)

@@ -17,7 +17,7 @@ namespace webapi.Domain.Controllers
         public HdEscalationTimersController(AppDbContext context)
         {
             _context = context;
-            _log4netLogger = LogManager.GetLogger(typeof(HdEscalationTimersController));
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.HdEscalationTimersController");
         }
         [HttpPost]
         public ActionResult<HdEscalationTimers> CreateHdEscalationTimer(HdEscalationTimers HdEscalationTimerReq)

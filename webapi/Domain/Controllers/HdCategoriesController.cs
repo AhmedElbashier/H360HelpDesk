@@ -17,7 +17,7 @@ namespace webapi.Domain.Controllers
         public HdCategoriesController(AppDbContext context)
         {
             _context = context;
-            _log4netLogger = LogManager.GetLogger(typeof(HdCategoriesController));
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.HdCategoriesController");
         }
         [HttpPost]
         public ActionResult<HdCategories> CreatHdCategories(HdCategories HdCategoriesReq)

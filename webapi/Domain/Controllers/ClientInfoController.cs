@@ -13,7 +13,8 @@ namespace webapi.Domain.Controllers
         public ClientInfoController(AppDbContext context)
         {
             _context = context;
-            _log4netLogger = LogManager.GetLogger(typeof(ClientInfoController));
+            _context = context;
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.ClientInfoController");
         }
 
         [HttpGet]

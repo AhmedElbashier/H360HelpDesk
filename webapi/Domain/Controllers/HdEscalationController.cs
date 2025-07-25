@@ -17,7 +17,7 @@ namespace webapi.Domain.Controllers
         public HdEscalationController(AppDbContext context)
         {
             _context = context;
-            _log4netLogger = LogManager.GetLogger(typeof(HdEscalationController));
+            _log4netLogger = LogManager.GetLogger("webapi.Domain.Controllers.HdEscalationController");
         }
         [HttpPost]
         public ActionResult<HdEscalation> CreatHdEscalation(HdEscalation HdEscalationReq)

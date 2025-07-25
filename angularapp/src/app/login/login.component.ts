@@ -51,21 +51,21 @@ export class LoginComponent {
   }
 
   ngOnInit(): void {
-    localStorage.clear();
-    if (this.auth.isAuthenticated()) this.route.navigate(["main"]);
+    // DO NOT clear localStorage
+    if (this.auth.isAuthenticated()) {
+      this.route.navigate(["/main"]);
+      return;
+    }
+
     this.clientInfo = {
       ipAddress: "",
       hostname: "",
-    }
-    //this.login.getClientInfo().subscribe(
-    //  (res: any) => {
-    //    this.clientInfo = res;
-    //  },
-    //  (error) => {
-    //    this.loggerService.logError(error);
-    //  }
-    //);
+    };
+
+    // optionally clear only specific things if needed
+    //localStorage.removeItem('userLogs');
   }
+
   Login() {
     //this.route.navigateByUrl('/main/agent/dashboard');
 
