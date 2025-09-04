@@ -9,7 +9,7 @@ namespace webapi.Domain.Models
 
         public int DepartmentID { get; set; }
         public int CategoryID { get; set; }
-        public int SubcategoryID { get; set; }
+        public int? SubcategoryID { get; set; }
         public int PriorityID { get; set; }
 
         public int Level1ProfileID { get; set; }

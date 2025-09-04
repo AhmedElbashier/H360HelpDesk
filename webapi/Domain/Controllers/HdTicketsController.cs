@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.Linq;
+using System.Collections.Generic;
 using webapi.Domain.Helpers;
 using webapi.Domain.Models;
 using webapi.Domain.Services;
@@ -32,30 +33,31 @@ namespace webapi.Domain.Controllers
 
         }
         [HttpPost]
-        public ActionResult<HdTickets> UploadHdTickets([FromBody] HdTickets HdTicketsReq)
+        public async Task<ActionResult<HdTickets>> UploadHdTickets([FromBody] HdTickets HdTicketsReq)
         {
             if (HdTicketsReq == null)
-            {
                 return BadRequest("InvalId HdTickets data.");
+
+            // Duplicate guard: consider RequestID + DepartmentID + normalized Mobile while ticket is active (New/InProgress/Reopened)
+            var duplicate = await FindPotentialDuplicateAsync(HdTicketsReq);
+            if (duplicate != null)
+            {
+                return Conflict(new { message = "Duplicate ticket (same Request, department and mobile while active)", id = duplicate.Id });
             }
 
-            EscalationMapping escalationMapping = _context.EscalationMappings
-                .FirstOrDefault(x =>
-                    x.DepartmentID == HdTicketsReq.DepartmentID &&
-                    x.CategoryID == HdTicketsReq.CategoryID &&
-                    x.SubcategoryID == HdTicketsReq.SubCategoryID &&
-                    x.PriorityID == HdTicketsReq.Priority);
+            var escalationMapping = _context.EscalationMappings.FirstOrDefault(x =>
+                x.DepartmentID == HdTicketsReq.DepartmentID &&
+                x.CategoryID == HdTicketsReq.CategoryID &&
+                x.SubcategoryID == HdTicketsReq.SubCategoryID &&
+                x.PriorityID == HdTicketsReq.Priority);
 
             if (escalationMapping == null)
             {
                 _log4netLogger.Warn($"No escalation mapping found for Department: {HdTicketsReq.DepartmentID}, Category: {HdTicketsReq.CategoryID}, SubCategory: {HdTicketsReq.SubCategoryID}, Priority: {HdTicketsReq.Priority}");
 
                 if (_escalationSettings.RequireMapping)
-                {
                     return BadRequest("Escalation mapping is required but not found.");
-                }
 
-                // Proceed with default fallback if mapping is not required
                 escalationMapping = new EscalationMapping
                 {
                     Level1ProfileID = 0,
@@ -63,20 +65,12 @@ namespace webapi.Domain.Controllers
                 };
             }
 
-
-
-
-            DateTime? dueDate = null;
-
-            if (escalationMapping?.Level1Delay != null)
-            {
-                dueDate = HdTicketsReq.StartDate.Add(escalationMapping.Level1Delay.Value);
-            }
-
+            DateTime? dueDate = escalationMapping?.Level1Delay != null
+                ? HdTicketsReq.StartDate.Add(escalationMapping.Level1Delay.Value)
+                : (DateTime?)null;
 
             var HdTikcet = new HdTickets
             {
-
                 CustomerID = HdTicketsReq.CustomerID,
                 Indice = HdTicketsReq.Indice,
                 UserID = HdTicketsReq.UserID,
@@ -90,7 +84,7 @@ namespace webapi.Domain.Controllers
                 Body = HdTicketsReq.Body,
                 StatusID = HdTicketsReq.StatusID,
                 Priority = HdTicketsReq.Priority,
-                EscalationLevel = escalationMapping != null ? escalationMapping.Level1ProfileID : 0,
+                EscalationLevel = escalationMapping.Level1ProfileID,
                 UpdateByUser = HdTicketsReq.UpdateByUser,
                 Email = HdTicketsReq.Email,
                 EmailAlert = HdTicketsReq.EmailAlert,
@@ -108,107 +102,163 @@ namespace webapi.Domain.Controllers
                 ReferenceNumber = HdTicketsReq.ReferenceNumber,
                 ReferenceType = HdTicketsReq.ReferenceType,
             };
+
             _context.HdTickets.Add(HdTikcet);
-            this._context.SaveChanges();
-            var HdNewTickets = _context.HdTickets
-                    .OrderByDescending(t => t.Id) // Assuming 'Id' is your auto-incrementing primary key
-                    .FirstOrDefault();
-            var mobile = HdNewTickets.Mobile;
+            await _context.SaveChangesAsync();
 
-            if (mobile.StartsWith("0"))
+            // Use the entity we just saved (Id is populated after SaveChanges)
+            var HdNewTickets = HdTikcet;
+
+            // Normalize mobile for SMS
+            var mobile = HdNewTickets.Mobile ?? string.Empty;
+            if (mobile.StartsWith("0")) mobile = mobile.Substring(1);
+            if (!mobile.StartsWith("+966")) mobile = "+966" + mobile;
+
+            var smsRequest = new SmsRequest { PhoneNumber = mobile };
+
+            var HdNewCategory = await _context.HdCategories
+                .Where(t => t.CategoryID == HdNewTickets.CategoryID)
+                .FirstOrDefaultAsync();
+
+            // Client notifications
+            if (HdNewTickets.SMSAlert)
             {
-                mobile = mobile.Substring(1);
-            }
+                _sms.SendOpenSmsAsync(
+                    smsRequest,
+                    HdNewTickets.Id,
+                    HdNewCategory?.Description ?? "N/A",
+                    escalationMapping.Level1Delay?.ToString(@"hh\:mm") ?? "N/A");
 
-            if (!mobile.StartsWith("+966"))
-            {
-                mobile = "+966" + mobile;
-            }
-
-            var smsRequest = new SmsRequest
-            {
-                PhoneNumber = mobile,
-            };
-            var HdNewCategory = _context.HdCategories
-            .Where(t => t.CategoryID == HdNewTickets.CategoryID) // Assuming 'Id' is your auto-incrementing primary key
-            .FirstOrDefault();
-
-if (HdNewTickets.SMSAlert)
-{
-    _sms.SendOpenSmsAsync(smsRequest, HdNewTickets.Id, HdNewCategory.Description, escalationMapping.Level1Delay?.ToString(@"hh\:mm") ?? "N/A");
-
-    var HdSMSComments = new HdComments
-    {
-        TicketID = HdNewTickets.Id,
-        CommentDate = HdNewTickets.StartDate,
-        UserID = 0,
-        Body = "Ticket opened notification sent to the client by SMS",
-        TicketFlag = true
-    };
-    _context.HdComments.Add(HdSMSComments);
-}
-
-if (HdNewTickets.EmailAlert)
-{
-    _email.SendOpenEmailAsync(HdNewTickets.Email, HdNewTickets.Id, HdNewCategory.Description, escalationMapping.Level1Delay?.ToString(@"hh\:mm") ?? "N/A");
-
-    var HdEmailComments = new HdComments
-    {
-        TicketID = HdNewTickets.Id,
-        CommentDate = HdNewTickets.StartDate,
-        UserID = 0,
-        Body = "Ticket opened notification sent to the client by Email",
-        TicketFlag = true
-    };
-    _context.HdComments.Add(HdEmailComments);
-}
-
-            HdUsers HdUser = _context.HdUsers
-                            .FirstOrDefault(x => x.User_Id == HdTicketsReq.UserID.ToString());
-            if (HdUser == null)
-            {
-                return BadRequest("Error.");
-            }
-            else
-            {
-                var HdComments = new HdComments
+                _context.HdComments.Add(new HdComments
                 {
-
-                    TicketID = HdNewTickets.Id,
-                    CommentDate = HdNewTickets.StartDate,
-                    UserID = HdNewTickets.UserID,
-                    Body = HdUser.Lastname + " " + HdUser.Firstname + " created ticket ",
-                    TicketFlag = true
-                };
-                var HdSMSComments = new HdComments
-                {
-
                     TicketID = HdNewTickets.Id,
                     CommentDate = HdNewTickets.StartDate,
                     UserID = 0,
                     Body = "Ticket opened notification sent to the client by SMS",
                     TicketFlag = true
-                };
-                var HdEmailComments = new HdComments
-                {
+                });
+            }
 
+            if (HdNewTickets.EmailAlert && !string.IsNullOrWhiteSpace(HdNewTickets.Email))
+            {
+                await _email.SendOpenEmailAsync(
+                    HdNewTickets.Email,
+                    HdNewTickets.Id,
+                    HdNewCategory?.Description ?? "N/A",
+                    escalationMapping.Level1Delay?.ToString(@"hh\:mm") ?? "N/A");
+
+                _context.HdComments.Add(new HdComments
+                {
                     TicketID = HdNewTickets.Id,
                     CommentDate = HdNewTickets.StartDate,
                     UserID = 0,
                     Body = "Ticket opened notification sent to the client by Email",
                     TicketFlag = true
-                };
-
-                _context.HdComments.Add(HdComments);
-                _context.HdComments.Add(HdSMSComments);
-                _context.HdComments.Add(HdEmailComments);
-                this._context.SaveChanges();
-
-
+                });
             }
+
+            // Creator comment
+            var HdUser = await _context.HdUsers
+                .FirstOrDefaultAsync(x => x.User_Id == HdTicketsReq.UserID.ToString());
+
+            if (HdUser == null)
+                return BadRequest("Error.");
+
+            _context.HdComments.Add(new HdComments
+            {
+                TicketID = HdNewTickets.Id,
+                CommentDate = HdNewTickets.StartDate,
+                UserID = HdNewTickets.UserID,
+                Body = HdUser.Lastname + " " + HdUser.Firstname + " created ticket ",
+                TicketFlag = true
+            });
+
+            // ------------ BACK-OFFICE NOTIFICATION (NEW) ------------
+
+            // Collect all active Back-Office recipients (ignore department)
+            var backOfficeEmails = await _context.HdUsers
+                .Where(u => u.IsBackOffice == true
+                         && u.Disabled == false
+                         && !string.IsNullOrEmpty(u.Email))
+                .Select(u => u.Email)
+                .Distinct()
+                .ToListAsync();
+
+            var info = new TicketInformation
+            {
+                Id = HdNewTickets.Id,
+                UserID = HdNewTickets.UserID.ToString(),
+                AssingedToUserID = HdNewTickets.AssingedToUserID?.ToString() ?? "",
+                AssingedToBackOfficeID = HdNewTickets.AssingedToBackOfficeID?.ToString() ?? "",
+                DepartmentID = (await _context.HdDepartments
+                                    .FirstOrDefaultAsync(d => d.DepartmentID == HdNewTickets.DepartmentID))
+                                    ?.Description,
+                StatusID = (await _context.HdStatuses
+                                    .FirstOrDefaultAsync(s => s.StatusID == HdNewTickets.StatusID))
+                                    ?.Description,
+                PriorityID = (await _context.HdLevels
+                                    .FirstOrDefaultAsync(p => p.LevelID == HdNewTickets.Priority))
+                                    ?.Description,
+                Subject = HdNewTickets.Subject,
+                CustomerID = HdNewTickets.CustomerID.ToString(),
+                CustomerName = HdNewTickets.CustomerName,
+                Email = HdNewTickets.Email,
+                Mobile = HdNewTickets.Mobile,
+                StartDate = HdNewTickets.StartDate,
+                DueDate = HdNewTickets.DueDate ?? DateTime.Now
+            };
+
+            try
+            {
+                if (backOfficeEmails.Count > 0)
+                {
+                    await _email.SendBackOfficeNewTicketAsync(   // or _email if that's your service var
+                        backOfficeEmails,
+                        info,
+                        HdNewTickets.DepartmentID);
+
+                    _context.HdComments.Add(new HdComments
+                    {
+                        TicketID = HdNewTickets.Id,
+                        CommentDate = DateTime.UtcNow,
+                        UserID = 0,
+                        Body = $"Back-Office notified by email ({backOfficeEmails.Count} recipient{(backOfficeEmails.Count > 1 ? "s" : "")}).",
+                        TicketFlag = true
+                    });
+                }
+                else
+                {
+                    _log4netLogger.Warn("No Back-Office recipients found.");
+                    _context.HdComments.Add(new HdComments
+                    {
+                        TicketID = HdNewTickets.Id,
+                        CommentDate = DateTime.UtcNow,
+                        UserID = 0,
+                        Body = "No Back-Office recipients found to notify.",
+                        TicketFlag = true
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _log4netLogger.Error("Error notifying Back-Office users.", ex);
+                _context.HdComments.Add(new HdComments
+                {
+                    TicketID = HdNewTickets.Id,
+                    CommentDate = DateTime.UtcNow,
+                    UserID = 0,
+                    Body = "Error sending Back-Office notification email.",
+                    TicketFlag = true
+                });
+            }
+
+            await _context.SaveChangesAsync();
+            // --------------------------------------------------------
+
 
             return CreatedAtAction(nameof(GetHdTickets), new { Id = HdTikcet.Id }, HdTikcet);
         }
+
 
 
         [HttpPost("UploadHdTicketsWithFile")]
@@ -217,6 +267,16 @@ if (HdNewTickets.EmailAlert)
             if (HdTicketsReq == null)
             {
                 return BadRequest("InvalId HdTickets data.");
+            }
+
+            // Duplicate guard: consider RequestID + DepartmentID + normalized Mobile while ticket is active (New/InProgress/Reopened)
+            if (HdTicketsReq.Ticket != null)
+            {
+                var duplicate = FindPotentialDuplicate(HdTicketsReq.Ticket);
+                if (duplicate != null)
+                {
+                    return Conflict(new { message = "Duplicate ticket (same Request, department and mobile while active)", id = duplicate.Id });
+                }
             }
 
             EscalationMapping escalationMapping = _context.EscalationMappings
@@ -289,9 +349,8 @@ if (HdNewTickets.EmailAlert)
             _context.HdTickets.Add(HdTikcet);
             this._context.SaveChanges();
 
-            var HdNewTickets = _context.HdTickets
-            .OrderByDescending(t => t.Id) // Assuming 'Id' is your auto-incrementing primary key
-            .FirstOrDefault(); 
+            // Use the entity we just saved
+            var HdNewTickets = HdTikcet;
             HdUsers HdUser = _context.HdUsers
                 .FirstOrDefault(x => x.User_Id == HdTicketsReq.Ticket.UserID.ToString());
 
@@ -354,47 +413,23 @@ if (HdNewTickets.EmailAlert)
             {
                 var HdComments = new HdComments
                 {
-
                     TicketID = HdNewTickets.Id,
                     CommentDate = HdNewTickets.StartDate,
                     UserID = HdNewTickets.UserID,
                     Body = HdUser.Lastname + " " + HdUser.Firstname + " created ticket ",
                     TicketFlag = true
                 };
-                var HdSMSComments = new HdComments
-                {
-
-                    TicketID = HdNewTickets.Id,
-                    CommentDate = HdNewTickets.StartDate,
-                    UserID = 0,
-                    Body = "Ticket opened notification sent to the client by SMS",
-                    TicketFlag = true
-                };
-                var HdEmailComments = new HdComments
-                {
-
-                    TicketID = HdNewTickets.Id,
-                    CommentDate = HdNewTickets.StartDate,
-                    UserID = 0,
-                    Body = "Ticket opened notification sent to the client by Email",
-                    TicketFlag = true
-                };
                 _context.HdComments.Add(HdComments);
-                _context.HdComments.Add(HdSMSComments);
-                _context.HdComments.Add(HdEmailComments);
-                this._context.SaveChangesAsync();
+                // Ensure we persist immediately using sync SaveChanges to avoid un-awaited async calls
+                this._context.SaveChanges();
             }
-
-            var lastCreatedTicket = _context.HdTickets
-                    .OrderByDescending(t => t.Id) // Assuming 'Id' is your auto-incrementing primary key
-                    .FirstOrDefault();
 
             if (HdTicketsReq.File != null)
             {
  
                 var fileEntity = new HdFileAttachments
                 {
-                    TicketID = lastCreatedTicket.Id,
+                    TicketID = HdNewTickets.Id,
                     CommentID = HdTicketsReq.File.CommentID,
                     UserID = HdTicketsReq.File.UserID,
                     FileName = HdTicketsReq.File.FileName,
@@ -403,11 +438,107 @@ if (HdNewTickets.EmailAlert)
                 };
  
                 _context.HdFileAttachments.Add(fileEntity);
-                this._context.SaveChangesAsync();
+                this._context.SaveChanges();
             }
 
 
             return CreatedAtAction(nameof(GetHdTickets), new { Id = HdTikcet.Id }, HdTikcet);
+        }
+
+        private static string NormalizeMobile(string mobile)
+        {
+            if (string.IsNullOrWhiteSpace(mobile)) return string.Empty;
+            var m = mobile.Trim();
+            // Remove spaces and common separators
+            m = m.Replace(" ", string.Empty).Replace("-", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
+            if (m.StartsWith("0")) m = m.Substring(1);
+            if (m.StartsWith("+966")) m = m.Substring(4);
+            return m;
+        }
+
+        private async Task<HdTickets?> FindPotentialDuplicateAsync(HdTickets req)
+        {
+            try
+            {
+                var norm = NormalizeMobile(req.Mobile ?? string.Empty);
+
+                // Build mobile variants to match common formats (+966, leading 0, raw)
+                var variants = new List<string>();
+                if (!string.IsNullOrEmpty(norm))
+                {
+                    variants.Add(norm);
+                    variants.Add("+966" + norm);
+                    variants.Add(norm.StartsWith("0") ? norm : ("0" + norm));
+                }
+
+                var query = _context.HdTickets.AsNoTracking().Where(t =>
+                    t.RequestID == req.RequestID &&
+                    t.DepartmentID == req.DepartmentID &&
+                    (t.StatusID == 1 || t.StatusID == 2 || t.StatusID == 5));
+
+                if (variants.Count > 0)
+                {
+                    query = query.Where(t => variants.Contains(t.Mobile));
+                }
+                else if (!string.IsNullOrWhiteSpace(req.Email))
+                {
+                    var email = req.Email.Trim();
+                    query = query.Where(t => t.Email == email);
+                }
+                else
+                {
+                    // If no mobile/email, fallback to stricter match on category/subcategory as well
+                    query = query.Where(t => t.CategoryID == req.CategoryID && t.SubCategoryID == req.SubCategoryID);
+                }
+
+                return await query.FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                _log4netLogger.Error("Error while checking duplicate ticket.", ex);
+                return null;
+            }
+        }
+
+        private HdTickets? FindPotentialDuplicate(HdTickets req)
+        {
+            try
+            {
+                var norm = NormalizeMobile(req.Mobile ?? string.Empty);
+                var variants = new List<string>();
+                if (!string.IsNullOrEmpty(norm))
+                {
+                    variants.Add(norm);
+                    variants.Add("+966" + norm);
+                    variants.Add(norm.StartsWith("0") ? norm : ("0" + norm));
+                }
+
+                var query = _context.HdTickets.AsNoTracking().Where(t =>
+                    t.RequestID == req.RequestID &&
+                    t.DepartmentID == req.DepartmentID &&
+                    (t.StatusID == 1 || t.StatusID == 2 || t.StatusID == 5));
+
+                if (variants.Count > 0)
+                {
+                    query = query.Where(t => variants.Contains(t.Mobile));
+                }
+                else if (!string.IsNullOrWhiteSpace(req.Email))
+                {
+                    var email = req.Email.Trim();
+                    query = query.Where(t => t.Email == email);
+                }
+                else
+                {
+                    query = query.Where(t => t.CategoryID == req.CategoryID && t.SubCategoryID == req.SubCategoryID);
+                }
+
+                return query.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                _log4netLogger.Error("Error while checking duplicate ticket.", ex);
+                return null;
+            }
         }
 
         [HttpGet]

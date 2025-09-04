@@ -51,7 +51,7 @@ namespace webapi.Domain.Controllers
             {
                 DepartmentID = dto.DepartmentID,
                 CategoryID = dto.CategoryID,
-                SubcategoryID = dto.SubcategoryID,
+                SubcategoryID = dto.SubcategoryID ?? 0,
                 PriorityID = dto.PriorityID,
                 Level1Delay = ParseTime(dto.Level1Delay),
                 Level2Delay = ParseTime(dto.Level2Delay),
@@ -165,7 +165,7 @@ namespace webapi.Domain.Controllers
     {
         public int DepartmentID { get; set; }
         public int CategoryID { get; set; }
-        public int SubcategoryID { get; set; }
+        public int? SubcategoryID { get; set; }
         public int PriorityID { get; set; }
 
         public int? Level1LevelID { get; set; }

@@ -107,9 +107,10 @@ export class TicketService {
   }
   uploadTicketWithFile(ticketData: any, file: any) {
     const formData = new FormData();
-    formData.append('ticket', JSON.stringify(ticketData));
-    formData.append('file', file, file.name);
-    return this.http.post<any>(this.common.CommentUrl + "/UploadHdTicketsWithFile/", formData, { headers: this.common.headers });
+    // Match API [FromForm] model keys (case-insensitive but align for clarity)
+    formData.append('Ticket', new Blob([JSON.stringify(ticketData)], { type: 'application/json' }));
+    formData.append('File', file, file.name);
+    return this.http.post<any>(this.common.TicketUrl + "/UploadHdTicketsWithFile", formData, { headers: this.common.headers });
   }
 
   getComments(type: any = null): Observable<any[]> {

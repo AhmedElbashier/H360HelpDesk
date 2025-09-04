@@ -12,5 +12,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\environments\" />
+    <Folder Include="src\app\utils\" />
   </ItemGroup>
 </Project>

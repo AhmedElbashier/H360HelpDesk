@@ -217,6 +217,11 @@ namespace webapi.Domain.Helpers
             };
             builder.Entity<HdCompanies>().HasData(company);
 
+            // Helpful index to speed up duplicate checks (non-unique, safe)
+            builder.Entity<HdTickets>()
+                .HasIndex(t => new { t.DepartmentID, t.RequestID, t.Mobile, t.StatusID })
+                .HasDatabaseName("IX_HdTickets_DupCheck");
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

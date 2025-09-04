@@ -33,19 +33,24 @@ public class EmailEscalationBackgroundService : BackgroundService
                 var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 var emailEscalationService = scope.ServiceProvider.GetRequiredService<IEmailEscalationService>();
 
+                _logger.LogDebug("[Escalation] Executing escalation processing cycle at {Now}", DateTime.Now);
                 await emailEscalationService.ProcessEscalationsAsync(stoppingToken);
+                _logger.LogDebug("[Escalation] Escalation processing completed");
 
                 var delay = dbContext.HdEscalationTimers.FirstOrDefault()?.ToTimeSpan() ?? _defaultDelay;
-                _logger.LogInformation($"[Escalation] Waiting for next cycle in {delay.TotalMinutes} minutes");
+                _logger.LogInformation("[Escalation] Waiting for next cycle in {Minutes} minutes", delay.TotalMinutes);
 
                 await Task.Delay(delay, stoppingToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[Escalation] Error in background service loop");
+                _logger.LogError(ex, "[Escalation] Error in background service loop, retrying in {Minutes} minutes", _defaultDelay.TotalMinutes);
                 await Task.Delay(_defaultDelay, stoppingToken);
             }
         }
+
+        _logger.LogWarning("[Escalation] Background service cancellation requested");
     }
+
 }
 

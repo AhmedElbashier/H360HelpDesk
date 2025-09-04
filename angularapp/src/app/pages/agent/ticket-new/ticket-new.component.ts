@@ -274,28 +274,37 @@ export class TicketNewComponent {
         });
       } else {
         this.ticketService.addTicket(this.newTicket).then(
-          (res: any) => {
-            this.ticketService.getlastTicketId().subscribe(
-              (res: any) => {
-                this.newTicket.id = res;
-                if (this.fileList2 !== null) {
-                  this.customRequest(this.fileList2);
-                }
-                localStorage.setItem("TicketDetails", JSON.stringify(this.newTicket));
-                this.router.navigateByUrl("/main/agent/tickets/details");
-              });
+          (created: any) => {
+            // Use API response directly (returns created ticket with id)
+            this.newTicket.id = created?.id ?? created?.Id;
+            if (this.fileList2 && this.fileList2.length > 0) {
+              this.customRequest(this.fileList2);
+            }
+            localStorage.setItem("TicketDetails", JSON.stringify(this.newTicket));
+            this.router.navigateByUrl("/main/agent/tickets/details");
           },
           (error) => {
             this.loggerService.logError(error);
             const userLog = localStorage.getItem('userLogs') || '';
             const updatedUserLog = `${userLog}\n'error'${error}`;
             localStorage.setItem('userLogs', updatedUserLog);
-            //this.router.navigateByUrl("error");
+
+            // Handle duplicate RequestID (API returns 409 Conflict)
+            if (error?.status === 409) {
+              const dupId = error?.error?.id ?? '';
+              this.messageService.add({
+                severity: 'warn',
+                summary: 'Duplicate Ticket',
+                detail: dupId ? `A ticket with the same Request is already opened (ID: ${dupId}).` : 'A ticket with the same Request is already opened.',
+                life: 5000,
+              });
+              return;
+            }
+
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail:
-                "An error occurred while connection to the database",
+              detail: "An error occurred while creating the ticket",
               life: 3000,
             });
           }

@@ -8,6 +8,7 @@ import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { AgentReport, ReportService, SuperVisorReport } from '../../../services/report.service';
 import { User, UserService } from '../../../services/user.service';
+import { autosize, formatDate, stripHtml } from '../../../utils/export-helpers';
 
 @Component({
   selector: 'app-supervisor-reports',
@@ -200,20 +201,73 @@ export class SupervisorReportsComponent {
       }
     );
   }
-  exportExcel() {
-    const worksheet = XLSX.utils.json_to_sheet(this.tickets);
-    const workbook = {
-      Sheets: { 'Tickets Report': worksheet },
-      SheetNames: ['Tickets Report'],
+  //exportExcel() {
+  //  const worksheet = XLSX.utils.json_to_sheet(this.tickets);
+  //  const workbook = {
+  //    Sheets: { 'Tickets Report': worksheet },
+  //    SheetNames: ['Tickets Report'],
+  //  };
+
+  //  const excelBuffer = XLSX.write(workbook, {
+  //    bookType: 'xlsx',
+  //    type: 'array',
+  //  });
+
+  //  this.saveAsExcelFile(excelBuffer, 'Tickets Report.xlsx');
+  //}
+  private mapTicketToRow(t: Ticket) {
+    return {
+      'id': t.id ?? '',
+      'ticketID': t.ticketID ?? '',
+      'CustomerID': t.CustomerID ?? '',
+      'indice': t.indice ?? '',
+      'userID': t.userID ?? '',
+      'categoryID': t.categoryID ?? '',
+      'subCategoryID': t.subCategoryID ?? '',
+      'departmentID': t.departmentID ?? '',
+      'channelID': t.channelID ?? '',
+      'startDate': formatDate(t.startDate),
+      'resolvedDate': formatDate(t.resolvedDate),
+      'closedDate': formatDate(t.closedDate),
+      'assignedToUserID': t.assingedToUserID ?? '',
+      'assignedToBackOfficeID': t.assingedToBackOfficeID ?? '',
+      'subject': stripHtml(t.subject),
+      'body': stripHtml(t.body),
+      'statusID': t.statusID ?? '',
+      'priority': t.priority ?? '',
+      'escalationLevel': t.escalationLevel ?? '',
+      'updateByUser': t.updateByUser ?? '',
+      'dueDate': formatDate(t.dueDate),
+      'slaDate': formatDate(t.slaDate),
+      'emailAlert': t.emailAlert ?? false,
+      'flag': t.flag ?? false,
+      'mobile': t.mobile ?? '',
+      'email': t.email ?? '',
+      'customerName': t.customerName ?? '',
+      'companyID': t.companyID ?? '',
+      'smsAlert': t.smsAlert ?? false,
+      'requestID': t.requestID ?? '',
+      'departmentReply': stripHtml(t.departmentReply),
+      'referenceType': t.referenceType ?? '',
+      'referenceNumber': t.referenceNumber ?? ''
     };
-
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-
-    this.saveAsExcelFile(excelBuffer, 'Tickets Report.xlsx');
   }
+
+  exportExcel() {
+    // Export ALL rows currently loaded in the report table
+    const source = this.tickets ?? [];
+    const rows = source.map(t => this.mapTicketToRow(t));
+
+    const ws = XLSX.utils.json_to_sheet(rows, { header: Object.keys(rows[0] || {}) });
+    autosize(ws, rows);
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Tickets Report');
+
+    const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    FileSaver.saveAs(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), 'Tickets Report.xlsx');
+  }
+
 
   saveAsExcelFile(excelBuffer: any, filename: string) {
     const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });

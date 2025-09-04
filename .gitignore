@@ -374,3 +374,6 @@ dist/
 # Ignore backup git folder
 .git_old/
 dist*.rar
+
+# Superset
+superset/*

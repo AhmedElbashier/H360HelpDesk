@@ -29,57 +29,65 @@ namespace webapi.Domain.Services
             _emailService = emailService;
             _logger = logger;
         }
-
         public async Task ProcessEscalationsAsync(CancellationToken cancellationToken)
         {
             using var scope = _scopeFactory.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             var now = DateTime.Now;
+            _logger.LogInformation("[Escalation] Fetching tickets due before {Now}", now);
+
             var tickets = await dbContext.HdTickets
                 .Where(t => t.DueDate <= now && (t.StatusID == 1 || t.StatusID == 2))
                 .ToListAsync(cancellationToken);
+
+            _logger.LogInformation("[Escalation] {Count} tickets found for escalation", tickets.Count);
 
             foreach (var ticket in tickets)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var mapping = dbContext.EscalationMappings
-                    .Where(m => m.CategoryID == ticket.CategoryID
-                             && m.DepartmentID == ticket.DepartmentID
-                             && m.PriorityID == ticket.Priority
-                             && (m.SubcategoryID == ticket.SubCategoryID || m.SubcategoryID == null))
-                    .OrderByDescending(m => m.SubcategoryID != 0)
-                    .FirstOrDefault();
+                _logger.LogDebug("[Escalation] Processing Ticket ID: {TicketId}", ticket.Id);
 
-                if (mapping == null)
+                if (ticket.EscalationLevel == null || ticket.EscalationLevel <= 0)
+                {
+                    _logger.LogWarning("[Escalation] Ticket ID {TicketId} has no EscalationLevel set", ticket.Id);
                     continue;
+                }
 
-                var elapsed = now - ticket.DueDate.Value;
-                int? profileIdToNotify = null;
+                var level = await dbContext.EscalationLevels
+                    .Include(l => l.Profiles)
+                    .FirstOrDefaultAsync(l => l.LevelID == ticket.EscalationLevel, cancellationToken);
 
-                if (elapsed >= mapping.Level3Delay && mapping.Level3ProfileID.HasValue)
-                    profileIdToNotify = mapping.Level3ProfileID;
-                else if (elapsed >= mapping.Level2Delay && mapping.Level2ProfileID.HasValue)
-                    profileIdToNotify = mapping.Level2ProfileID;
-                else if (elapsed >= mapping.Level1Delay)
-                    profileIdToNotify = mapping.Level1ProfileID;
-
-                if (profileIdToNotify == null)
+                if (level == null || level.Profiles == null || !level.Profiles.Any())
+                {
+                    _logger.LogWarning("[Escalation] No valid profiles found for EscalationLevel {LevelID} on Ticket ID {TicketId}", ticket.EscalationLevel, ticket.Id);
                     continue;
-
-                var profile = await dbContext.EscalationProfiles
-                    .FirstOrDefaultAsync(p => p.ProfileID == profileIdToNotify, cancellationToken);
-
-                if (profile == null)
-                    continue;
+                }
 
                 var ticketInfo = BuildTicketInformation(ticket, dbContext);
-                await _emailService.SendTicketInformationEmailAsync(new List<TicketInformation> { ticketInfo }, profile.Email, ticket.DepartmentID);
 
-                _logger.LogInformation($"[Escalation] Email sent to profile {profile.ProfileID} for ticket {ticket.Id}");
+                foreach (var profile in level.Profiles.Where(p => !string.IsNullOrWhiteSpace(p.Email)))
+                {
+                    try
+                    {
+                        _logger.LogInformation("[Escalation] Sending escalation email to {Email} for Ticket ID {TicketId}", profile.Email, ticket.Id);
+                        await _emailService.SendTicketInformationEmailAsync(
+                            new List<TicketInformation> { ticketInfo },
+                            profile.Email,
+                            ticket.DepartmentID);
+
+                        _logger.LogInformation("[Escalation] Email sent successfully to {Email} for Ticket ID {TicketId}", profile.Email, ticket.Id);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "[Escalation] Failed to send email to {Email} for Ticket ID {TicketId}", profile.Email, ticket.Id);
+                    }
+                }
             }
         }
+
+
 
         private TicketInformation BuildTicketInformation(HdTickets ticket, AppDbContext db)
         {
