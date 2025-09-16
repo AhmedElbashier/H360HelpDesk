@@ -14,9 +14,7 @@ services:
       - key: ASPNETCORE_URLS
         value: http://0.0.0.0:80
       - key: ConnectionStrings__PostgreSQLConnection
-        fromDatabase:
-          name: your-existing-db-name
-          property: connectionString
+        value: "Host=your-db-host;Database=your-db-name;Username=your-username;Password=your-password;"
     healthCheckPath: /swagger
     autoDeploy: true
 
@@ -34,5 +32,5 @@ services:
         value: production
     autoDeploy: true
 
-# Note: Using existing database instead of creating new one
-# Replace 'your-existing-db-name' with your actual database name from Render dashboard
+# Note: This configuration uses an external database connection
+# Replace the connection string with your actual database details
