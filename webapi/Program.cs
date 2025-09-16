@@ -80,15 +80,17 @@ builder.Services.AddTransient<EmailService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder();
-    if (!optionsBuilder.IsConfigured)
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    var postgresConnectionString = builder.Configuration.GetConnectionString("PostgreSQLConnection");
+    
+    // Use PostgreSQL if available (for Render), otherwise fall back to SQL Server
+    if (!string.IsNullOrEmpty(postgresConnectionString))
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-            .AddJsonFile("appsettings.json")
-            .Build();
-
-        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+        options.UseNpgsql(postgresConnectionString);
+    }
+    else
+    {
+        options.UseSqlServer(connectionString);
     }
 });
 builder.Services.AddAuthentication(options =>
