@@ -1,5 +1,5 @@
 {
-  "apiUrl": "https://localhost:7012/api/v1",
+  "apiUrl": "https://your-api.railway.app/api/v1",
   "auth": {
     "username": "admin",
     "password": "V0c4lc0m"

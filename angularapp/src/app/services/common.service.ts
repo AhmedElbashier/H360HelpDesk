@@ -2,6 +2,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, map, throwError } from 'rxjs';
+import { environment } from '../../environments/environment';
 const username = 'admin';
 const password = 'V0c4lc0m';
 const base64Credential = btoa(username + ':' + password);
@@ -24,7 +25,8 @@ export class CommonService {
 
 
     //APIUrl = "https://call-srv-app.burujinsurance.com/ticketing-api/api/v1";
-    APIUrl = "https://localhost:7012/api/v1";
+    //APIUrl = "https://localhost:7012/api/v1";
+    APIUrl = environment.apiUrl;
     AuthUrl = this.APIUrl + "/auth/login";
     ClientInfoUrl = this.APIUrl + "/clientinfo";
     UserUrl = this.APIUrl + "/hdusers";
