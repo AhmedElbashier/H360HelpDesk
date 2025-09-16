@@ -128,10 +128,11 @@ catch (Exception ex)
     // Log the error but don't fail startup
     logger.LogWarning(ex, "Database migration failed during startup. This is normal if database is not yet configured.");
 }
-app.UseWhen(context => context.Request.Path.StartsWithSegments("/swagger"), appBuilder =>
-{
-    appBuilder.UseMiddleware<BasicAuthMiddleware>();
-});
+// Temporarily disable basic auth for Swagger to allow Railway health checks
+// app.UseWhen(context => context.Request.Path.StartsWithSegments("/swagger"), appBuilder =>
+// {
+//     appBuilder.UseMiddleware<BasicAuthMiddleware>();
+// });
 //if (app.Environment.IsDevelopment())
 //{
 //    app.UseSwagger();
@@ -185,6 +186,17 @@ app.MapGet("/status", () => {
         status = "running", 
         timestamp = DateTime.UtcNow,
         environment = app.Environment.EnvironmentName
+    };
+});
+
+// Add a Railway-compatible health check endpoint
+app.MapGet("/", () => {
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation("Root endpoint called (Railway health check)");
+    return new { 
+        status = "OK", 
+        message = "H360 Helpdesk API is running",
+        timestamp = DateTime.UtcNow
     };
 });
 

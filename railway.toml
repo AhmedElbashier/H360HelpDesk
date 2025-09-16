@@ -1,0 +1,10 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "webapi/Dockerfile"
+
+[deploy]
+startCommand = "dotnet webapi.dll"
+healthcheckPath = "/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5
