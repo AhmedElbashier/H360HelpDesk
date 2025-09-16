@@ -39,5 +39,5 @@ databases:
   - name: h360helpdeskdb
     plan: starter
     region: oregon
-    databaseName: H360_Helpdesk
+    databaseName: h360helpdesk
     user: h360_user
