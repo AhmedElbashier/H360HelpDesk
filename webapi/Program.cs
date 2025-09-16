@@ -80,32 +80,39 @@ builder.Services.AddTransient<EmailService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    // For Railway deployment, use SQL Server by default
-    // Only use PostgreSQL if explicitly configured with a valid connection string
-    var postgresConnectionString = builder.Configuration.GetConnectionString("PostgreSQLConnection");
+    // For Railway deployment, use PostgreSQL by default
+    // Check for Railway PostgreSQL environment variables
+    var postgresHost = Environment.GetEnvironmentVariable("PGHOST");
+    var postgresDatabase = Environment.GetEnvironmentVariable("PGDATABASE");
+    var postgresUser = Environment.GetEnvironmentVariable("PGUSER");
+    var postgresPassword = Environment.GetEnvironmentVariable("PGPASSWORD");
     
-    // Log connection string info for debugging
-    Console.WriteLine($"PostgreSQLConnection: {postgresConnectionString}");
+    // Log environment variables for debugging
+    Console.WriteLine($"PGHOST: {postgresHost}");
+    Console.WriteLine($"PGDATABASE: {postgresDatabase}");
+    Console.WriteLine($"PGUSER: {postgresUser}");
+    Console.WriteLine($"PGPASSWORD: {(string.IsNullOrEmpty(postgresPassword) ? "Not set" : "Set")}");
     
-    // Check if we have a real PostgreSQL connection string (not environment variable placeholders)
-    var hasValidPostgresConnection = !string.IsNullOrEmpty(postgresConnectionString) && 
-                                   !postgresConnectionString.Contains("${") && 
-                                   !postgresConnectionString.Contains("$") &&
-                                   postgresConnectionString.StartsWith("Host=") &&
-                                   postgresConnectionString.Length > 20;
+    // Check if we have Railway PostgreSQL environment variables
+    var hasRailwayPostgres = !string.IsNullOrEmpty(postgresHost) && 
+                            !string.IsNullOrEmpty(postgresDatabase) && 
+                            !string.IsNullOrEmpty(postgresUser) && 
+                            !string.IsNullOrEmpty(postgresPassword);
     
-    Console.WriteLine($"Has valid PostgreSQL connection: {hasValidPostgresConnection}");
+    Console.WriteLine($"Has Railway PostgreSQL: {hasRailwayPostgres}");
     
-    if (hasValidPostgresConnection)
+    if (hasRailwayPostgres)
     {
-        Console.WriteLine("Configuring PostgreSQL database");
+        // Use Railway PostgreSQL
+        var postgresConnectionString = $"Host={postgresHost};Database={postgresDatabase};Username={postgresUser};Password={postgresPassword};";
+        Console.WriteLine("Configuring Railway PostgreSQL database");
         options.UseNpgsql(postgresConnectionString);
     }
     else
     {
-        // Use SQL Server connection string for Railway
+        // Fall back to SQL Server for local development
         var sqlServerConnection = "Server=VCLLAECD2370YYT;Database=H360_Helpdesk;Trusted_Connection=True;TrustServerCertificate=True";
-        Console.WriteLine("Configuring SQL Server database");
+        Console.WriteLine("Configuring SQL Server database (local development)");
         options.UseSqlServer(sqlServerConnection);
     }
 });
