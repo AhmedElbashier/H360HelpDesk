@@ -109,6 +109,10 @@ builder.Services.AddAuthentication(options =>
 });
 var app = builder.Build();
 
+// Log startup information
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("H360 Helpdesk API starting up...");
+
 // Only run migrations if database connection is available
 try
 {
@@ -171,4 +175,8 @@ app.UseAuthorization();
 app.MapGet("/health", () => "OK");
 
 app.MapControllers();
+
+// Log that the app is ready
+logger.LogInformation("H360 Helpdesk API is ready and listening on port 80");
+
 app.Run();
