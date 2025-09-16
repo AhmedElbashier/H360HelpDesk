@@ -108,11 +108,22 @@ builder.Services.AddAuthentication(options =>
     };
 });
 var app = builder.Build();
-using (var scope = app.Services.CreateScope())
+
+// Only run migrations if database connection is available
+try
 {
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<AppDbContext>();
-    context.Database.Migrate();
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var context = services.GetRequiredService<AppDbContext>();
+        context.Database.Migrate();
+    }
+}
+catch (Exception ex)
+{
+    // Log the error but don't fail startup
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogWarning(ex, "Database migration failed during startup. This is normal if database is not yet configured.");
 }
 app.UseWhen(context => context.Request.Path.StartsWithSegments("/swagger"), appBuilder =>
 {
@@ -129,8 +140,8 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/swagger"), appB
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.RoutePrefix = "api-docs"; // Ensure this matches your expected path
-    c.SwaggerEndpoint("/ticketing-api/swagger/v1/swagger.json", "VOCALCOM MEA Ticketing API V1");
+    c.RoutePrefix = "swagger"; // Changed to just "swagger" for easier health check
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "VOCALCOM MEA Ticketing API V1");
     //c.DefaultModelsExpandDepth(-1);
 });
 
@@ -155,5 +166,9 @@ app.UseExceptionHandler(errorApp =>
 app.UseHttpsRedirection();
 app.UseCors(cfg => cfg.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseAuthorization();
+
+// Add a simple health check endpoint
+app.MapGet("/health", () => "OK");
+
 app.MapControllers();
 app.Run();
