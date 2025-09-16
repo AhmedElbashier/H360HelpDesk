@@ -158,27 +158,29 @@ try
             logger.LogInformation($"Pending migrations count: {pendingMigrations.Count()}");
             logger.LogInformation($"Pending migrations: {string.Join(", ", pendingMigrations)}");
             
-            // Apply migrations
-            logger.LogInformation("Applying migrations...");
+            // Try to create database schema
+            logger.LogInformation("Creating database schema...");
             try
             {
+                // First try migrations
                 context.Database.Migrate();
                 logger.LogInformation("Database migrations completed successfully.");
             }
             catch (Exception migrationEx)
             {
-                logger.LogError(migrationEx, "Migration failed, attempting to create database: {Message}", migrationEx.Message);
+                logger.LogWarning(migrationEx, "Migrations failed, using EnsureCreated: {Message}", migrationEx.Message);
                 
-                // Fallback: Create database if migrations fail
+                // Fallback: Create database schema directly
                 try
                 {
-                    logger.LogInformation("Creating database...");
+                    logger.LogInformation("Creating database schema using EnsureCreated...");
                     context.Database.EnsureCreated();
-                    logger.LogInformation("Database created successfully using EnsureCreated()");
+                    logger.LogInformation("Database schema created successfully using EnsureCreated()");
                 }
                 catch (Exception createEx)
                 {
-                    logger.LogError(createEx, "Failed to create database: {Message}", createEx.Message);
+                    logger.LogError(createEx, "Failed to create database schema: {Message}", createEx.Message);
+                    throw; // Re-throw to stop the application if we can't create the database
                 }
             }
             

@@ -1,0 +1,88 @@
+[33mcommit f512d505925b31e507e1a56a3b44caf121b377e6[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Ahmed Elbashier <62715278+AhmedElbashier@users.noreply.github.com>
+Date:   Tue Sep 16 16:29:15 2025 +0400
+
+    hotfix3
+
+[1mdiff --git a/webapi/Program.cs b/webapi/Program.cs[m
+[1mindex 579fc9a..35199b2 100644[m
+[1m--- a/webapi/Program.cs[m
+[1m+++ b/webapi/Program.cs[m
+[36m@@ -137,6 +137,7 @@[m [mvar logger = app.Services.GetRequiredService<ILogger<Program>>();[m
+ logger.LogInformation("H360 Helpdesk API starting up...");[m
+ [m
+ // Run database migrations on startup[m
+[32m+[m[32mlogger.LogInformation("Starting database migration process...");[m
+ try[m
+ {[m
+     using (var scope = app.Services.CreateScope())[m
+[36m@@ -150,22 +151,57 @@[m [mtry[m
+         var canConnect = context.Database.CanConnect();[m
+         logger.LogInformation($"Can connect to database: {canConnect}");[m
+         [m
+[31m-        // Get pending migrations[m
+[31m-        var pendingMigrations = context.Database.GetPendingMigrations();[m
+[31m-        logger.LogInformation($"Pending migrations: {string.Join(", ", pendingMigrations)}");[m
+[31m-        [m
+[31m-        // Apply migrations[m
+[31m-        context.Database.Migrate();[m
+[31m-        logger.LogInformation("Database migrations completed successfully.");[m
+[31m-        [m
+[31m-        // Verify tables exist[m
+[31m-        var tables = context.Database.GetDbConnection().GetSchema("Tables");[m
+[31m-        logger.LogInformation($"Database tables: {string.Join(", ", tables.Rows.Cast<System.Data.DataRow>().Select(r => r["TABLE_NAME"]))}");[m
+[32m+[m[32m        if (canConnect)[m
+[32m+[m[32m        {[m
+[32m+[m[32m            // Get pending migrations[m
+[32m+[m[32m            var pendingMigrations = context.Database.GetPendingMigrations();[m
+[32m+[m[32m            logger.LogInformation($"Pending migrations count: {pendingMigrations.Count()}");[m
+[32m+[m[32m            logger.LogInformation($"Pending migrations: {string.Join(", ", pendingMigrations)}");[m
+[32m+[m[41m            [m
+[32m+[m[32m            // Apply migrations[m
+[32m+[m[32m            logger.LogInformation("Applying migrations...");[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                context.Database.Migrate();[m
+[32m+[m[32m                logger.LogInformation("Database migrations completed successfully.");[m
+[32m+[m[32m            }[m
+[32m+[m[32m            catch (Exception migrationEx)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                logger.LogError(migrationEx, "Migration failed, attempting to create database: {Message}", migrationEx.Message);[m
+[32m+[m[41m                [m
+[32m+[m[32m                // Fallback: Create database if migrations fail[m
+[32m+[m[32m                try[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    logger.LogInformation("Creating database...");[m
+[32m+[m[32m                    context.Database.EnsureCreated();[m
+[32m+[m[32m                    logger.LogInformation("Database created successfully using EnsureCreated()");[m
+[32m+[m[32m                }[m
+[32m+[m[32m                catch (Exception createEx)[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    logger.LogError(createEx, "Failed to create database: {Message}", createEx.Message);[m
+[32m+[m[32m                }[m
+[32m+[m[32m            }[m
+[32m+[m[41m            [m
+[32m+[m[32m            // Verify tables exist[m
+[32m+[m[32m            try[m
+[32m+[m[32m            {[m
+[32m+[m[32m                var tables = context.Database.GetDbConnection().GetSchema("Tables");[m
+[32m+[m[32m                logger.LogInformation($"Database tables: {string.Join(", ", tables.Rows.Cast<System.Data.DataRow>().Select(r => r["TABLE_NAME"]))}");[m
+[32m+[m[32m            }[m
+[32m+[m[32m            catch (Exception tableEx)[m
+[32m+[m[32m            {[m
+[32m+[m[32m                logger.LogWarning($"Could not list tables: {tableEx.Message}");[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m[32m        else[m
+[32m+[m[32m        {[m
+[32m+[m[32m            logger.LogError("Cannot connect to database, skipping migrations");[m
+[32m+[m[32m        }[m
+     }[m
+ }[m
+ catch (Exception ex)[m
+ {[m
+[31m-    logger.LogError(ex, "Database migration failed during startup.");[m
+[32m+[m[32m    logger.LogError(ex, "Database migration failed during startup: {Message}", ex.Message);[m
+     // Don't fail startup, but log the error[m
+ }[m
+ // Temporarily disable basic auth for Swagger to allow Railway health checks[m
