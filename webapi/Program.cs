@@ -171,11 +171,27 @@ app.UseCors(cfg => cfg.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseAuthorization();
 
 // Add a simple health check endpoint
-app.MapGet("/health", () => "OK");
+app.MapGet("/health", () => {
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation("Health check endpoint called");
+    return "OK";
+});
+
+// Add a simple status endpoint for debugging
+app.MapGet("/status", () => {
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation("Status endpoint called");
+    return new { 
+        status = "running", 
+        timestamp = DateTime.UtcNow,
+        environment = app.Environment.EnvironmentName
+    };
+});
 
 app.MapControllers();
 
 // Log that the app is ready
-logger.LogInformation("H360 Helpdesk API is ready and listening on port 80");
+var port = Environment.GetEnvironmentVariable("PORT") ?? "80";
+logger.LogInformation($"H360 Helpdesk API is ready and listening on port {port}");
 
-app.Run();
+app.Run($"http://0.0.0.0:{port}");

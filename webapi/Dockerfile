@@ -26,6 +26,7 @@ COPY --from=build /app/publish .
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV ASPNETCORE_URLS=http://+:80
 ENV DOTNET_RUNNING_IN_CONTAINER=true
+ENV PORT=80
 
 # Expose port 80
 EXPOSE 80
