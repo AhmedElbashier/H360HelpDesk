@@ -80,29 +80,30 @@ builder.Services.AddTransient<EmailService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    // For Railway deployment, use SQL Server by default
+    // Only use PostgreSQL if explicitly configured with a valid connection string
     var postgresConnectionString = builder.Configuration.GetConnectionString("PostgreSQLConnection");
     
     // Log connection string info for debugging
-    Console.WriteLine($"DefaultConnection: {connectionString}");
     Console.WriteLine($"PostgreSQLConnection: {postgresConnectionString}");
     
-    // Check if PostgreSQL connection string is valid (not just environment variable placeholders)
-    var isValidPostgresConnection = !string.IsNullOrEmpty(postgresConnectionString) && 
+    // Check if we have a real PostgreSQL connection string (not environment variable placeholders)
+    var hasValidPostgresConnection = !string.IsNullOrEmpty(postgresConnectionString) && 
                                    !postgresConnectionString.Contains("${") && 
-                                   postgresConnectionString.Contains("Host=");
+                                   !postgresConnectionString.Contains("$") &&
+                                   postgresConnectionString.StartsWith("Host=") &&
+                                   postgresConnectionString.Length > 20;
     
-    Console.WriteLine($"Using PostgreSQL: {isValidPostgresConnection}");
+    Console.WriteLine($"Has valid PostgreSQL connection: {hasValidPostgresConnection}");
     
-    // Use PostgreSQL if available and valid, otherwise fall back to SQL Server
-    if (isValidPostgresConnection)
+    if (hasValidPostgresConnection)
     {
         Console.WriteLine("Configuring PostgreSQL database");
         options.UseNpgsql(postgresConnectionString);
     }
     else
     {
-        // Use SQL Server connection string
+        // Use SQL Server connection string for Railway
         var sqlServerConnection = "Server=VCLLAECD2370YYT;Database=H360_Helpdesk;Trusted_Connection=True;TrustServerCertificate=True";
         Console.WriteLine("Configuring SQL Server database");
         options.UseSqlServer(sqlServerConnection);
