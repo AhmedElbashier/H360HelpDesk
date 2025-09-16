@@ -126,7 +126,6 @@ try
 catch (Exception ex)
 {
     // Log the error but don't fail startup
-    var logger = app.Services.GetRequiredService<ILogger<Program>>();
     logger.LogWarning(ex, "Database migration failed during startup. This is normal if database is not yet configured.");
 }
 app.UseWhen(context => context.Request.Path.StartsWithSegments("/swagger"), appBuilder =>
