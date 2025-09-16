@@ -136,20 +136,37 @@ var app = builder.Build();
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("H360 Helpdesk API starting up...");
 
-// Only run migrations if database connection is available
+// Run database migrations on startup
 try
 {
     using (var scope = app.Services.CreateScope())
     {
         var services = scope.ServiceProvider;
         var context = services.GetRequiredService<AppDbContext>();
+        
+        logger.LogInformation("Running database migrations...");
+        
+        // Check if database exists
+        var canConnect = context.Database.CanConnect();
+        logger.LogInformation($"Can connect to database: {canConnect}");
+        
+        // Get pending migrations
+        var pendingMigrations = context.Database.GetPendingMigrations();
+        logger.LogInformation($"Pending migrations: {string.Join(", ", pendingMigrations)}");
+        
+        // Apply migrations
         context.Database.Migrate();
+        logger.LogInformation("Database migrations completed successfully.");
+        
+        // Verify tables exist
+        var tables = context.Database.GetDbConnection().GetSchema("Tables");
+        logger.LogInformation($"Database tables: {string.Join(", ", tables.Rows.Cast<System.Data.DataRow>().Select(r => r["TABLE_NAME"]))}");
     }
 }
 catch (Exception ex)
 {
-    // Log the error but don't fail startup
-    logger.LogWarning(ex, "Database migration failed during startup. This is normal if database is not yet configured.");
+    logger.LogError(ex, "Database migration failed during startup.");
+    // Don't fail startup, but log the error
 }
 // Temporarily disable basic auth for Swagger to allow Railway health checks
 // app.UseWhen(context => context.Request.Path.StartsWithSegments("/swagger"), appBuilder =>
