@@ -5,7 +5,7 @@ services:
     env: docker
     dockerfilePath: ./webapi/Dockerfile
     dockerContext: ./webapi
-    plan: starter
+    plan: free
     region: oregon
     branch: main
     envVars:
@@ -26,7 +26,7 @@ services:
     env: docker
     dockerfilePath: ./angularapp/Dockerfile
     dockerContext: ./angularapp
-    plan: starter
+    plan: free
     region: oregon
     branch: main
     envVars:
@@ -37,7 +37,7 @@ services:
 # Database Service
 databases:
   - name: h360helpdeskdb
-    plan: starter
+    plan: free
     region: oregon
     databaseName: h360helpdesk
     user: h360_user
