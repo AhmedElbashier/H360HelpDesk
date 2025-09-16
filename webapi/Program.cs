@@ -137,6 +137,7 @@ var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("H360 Helpdesk API starting up...");
 
 // Run database migrations on startup
+logger.LogInformation("Starting database migration process...");
 try
 {
     using (var scope = app.Services.CreateScope())
@@ -150,22 +151,57 @@ try
         var canConnect = context.Database.CanConnect();
         logger.LogInformation($"Can connect to database: {canConnect}");
         
-        // Get pending migrations
-        var pendingMigrations = context.Database.GetPendingMigrations();
-        logger.LogInformation($"Pending migrations: {string.Join(", ", pendingMigrations)}");
-        
-        // Apply migrations
-        context.Database.Migrate();
-        logger.LogInformation("Database migrations completed successfully.");
-        
-        // Verify tables exist
-        var tables = context.Database.GetDbConnection().GetSchema("Tables");
-        logger.LogInformation($"Database tables: {string.Join(", ", tables.Rows.Cast<System.Data.DataRow>().Select(r => r["TABLE_NAME"]))}");
+        if (canConnect)
+        {
+            // Get pending migrations
+            var pendingMigrations = context.Database.GetPendingMigrations();
+            logger.LogInformation($"Pending migrations count: {pendingMigrations.Count()}");
+            logger.LogInformation($"Pending migrations: {string.Join(", ", pendingMigrations)}");
+            
+            // Apply migrations
+            logger.LogInformation("Applying migrations...");
+            try
+            {
+                context.Database.Migrate();
+                logger.LogInformation("Database migrations completed successfully.");
+            }
+            catch (Exception migrationEx)
+            {
+                logger.LogError(migrationEx, "Migration failed, attempting to create database: {Message}", migrationEx.Message);
+                
+                // Fallback: Create database if migrations fail
+                try
+                {
+                    logger.LogInformation("Creating database...");
+                    context.Database.EnsureCreated();
+                    logger.LogInformation("Database created successfully using EnsureCreated()");
+                }
+                catch (Exception createEx)
+                {
+                    logger.LogError(createEx, "Failed to create database: {Message}", createEx.Message);
+                }
+            }
+            
+            // Verify tables exist
+            try
+            {
+                var tables = context.Database.GetDbConnection().GetSchema("Tables");
+                logger.LogInformation($"Database tables: {string.Join(", ", tables.Rows.Cast<System.Data.DataRow>().Select(r => r["TABLE_NAME"]))}");
+            }
+            catch (Exception tableEx)
+            {
+                logger.LogWarning($"Could not list tables: {tableEx.Message}");
+            }
+        }
+        else
+        {
+            logger.LogError("Cannot connect to database, skipping migrations");
+        }
     }
 }
 catch (Exception ex)
 {
-    logger.LogError(ex, "Database migration failed during startup.");
+    logger.LogError(ex, "Database migration failed during startup: {Message}", ex.Message);
     // Don't fail startup, but log the error
 }
 // Temporarily disable basic auth for Swagger to allow Railway health checks
