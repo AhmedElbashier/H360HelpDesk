@@ -83,14 +83,29 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     var postgresConnectionString = builder.Configuration.GetConnectionString("PostgreSQLConnection");
     
-    // Use PostgreSQL if available (for Render), otherwise fall back to SQL Server
-    if (!string.IsNullOrEmpty(postgresConnectionString))
+    // Log connection string info for debugging
+    Console.WriteLine($"DefaultConnection: {connectionString}");
+    Console.WriteLine($"PostgreSQLConnection: {postgresConnectionString}");
+    
+    // Check if PostgreSQL connection string is valid (not just environment variable placeholders)
+    var isValidPostgresConnection = !string.IsNullOrEmpty(postgresConnectionString) && 
+                                   !postgresConnectionString.Contains("${") && 
+                                   postgresConnectionString.Contains("Host=");
+    
+    Console.WriteLine($"Using PostgreSQL: {isValidPostgresConnection}");
+    
+    // Use PostgreSQL if available and valid, otherwise fall back to SQL Server
+    if (isValidPostgresConnection)
     {
+        Console.WriteLine("Configuring PostgreSQL database");
         options.UseNpgsql(postgresConnectionString);
     }
     else
     {
-        options.UseSqlServer(connectionString);
+        // Use SQL Server connection string
+        var sqlServerConnection = "Server=VCLLAECD2370YYT;Database=H360_Helpdesk;Trusted_Connection=True;TrustServerCertificate=True";
+        Console.WriteLine("Configuring SQL Server database");
+        options.UseSqlServer(sqlServerConnection);
     }
 });
 builder.Services.AddAuthentication(options =>
@@ -159,8 +174,16 @@ app.UseExceptionHandler(errorApp =>
         var logger = LogManager.GetLogger(typeof(Program));
         logger.Error($"Unexpected error: {exception}");
         var logEntry = $"[{DateTime.Now}] Unexpected error: {exception}";
-        var logFilePath = "/logs/startup.log";
-        File.AppendAllText(logFilePath, logEntry + Environment.NewLine);
+        var logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "startup.log");
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(logFilePath));
+            File.AppendAllText(logFilePath, logEntry + Environment.NewLine);
+        }
+        catch (Exception logEx)
+        {
+            Console.WriteLine($"Failed to write to log file: {logEx.Message}");
+        }
         context.Response.StatusCode = 500;
         context.Response.ContentType = "application/json";
         await context.Response.WriteAsync("An unexpected error occurred.");
