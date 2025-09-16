@@ -551,7 +551,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
  
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("GET Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -563,7 +563,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("GET Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -606,7 +606,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
  
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("GET Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -619,7 +619,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("GET Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -639,7 +639,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
  
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("GET Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -652,7 +652,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("GET Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -705,7 +705,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + BadRequest());
@@ -745,7 +745,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
  
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -772,7 +772,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + BadRequest());
@@ -814,7 +814,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
  
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -842,7 +842,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + BadRequest());
@@ -885,7 +885,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
 
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -913,7 +913,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + BadRequest());
@@ -956,7 +956,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
 
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -980,7 +980,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + BadRequest());
@@ -1022,7 +1022,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
  
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -1047,7 +1047,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + BadRequest());
@@ -1093,7 +1093,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
  
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -1118,7 +1118,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + BadRequest());
@@ -1201,7 +1201,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
  
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -1229,7 +1229,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + BadRequest());
@@ -1272,7 +1272,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
  
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -1298,7 +1298,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + BadRequest());
@@ -1341,7 +1341,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
 
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("PUT Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -1366,7 +1366,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
  
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -1381,7 +1381,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1398,7 +1398,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
  
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -1409,7 +1409,7 @@ namespace webapi.Domain.Controllers
                 {
                     ClientInfo client = new ClientInfo();
  
-                    client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                    client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                     client.Hostname = HttpContext.Request.Host.Host;
                     _log4netLogger.Error("IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t " + NotFound());
@@ -1423,7 +1423,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1457,7 +1457,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1484,7 +1484,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1507,7 +1507,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1529,7 +1529,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1549,7 +1549,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1569,7 +1569,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1589,7 +1589,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1609,7 +1609,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1639,7 +1639,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1659,7 +1659,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1679,7 +1679,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1699,7 +1699,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1718,7 +1718,7 @@ namespace webapi.Domain.Controllers
             catch (Exception ex)
             {
                 ClientInfo client = new ClientInfo();
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
                 return BadRequest();
@@ -1740,7 +1740,7 @@ namespace webapi.Domain.Controllers
             catch (Exception ex)
             {
                 ClientInfo client = new ClientInfo();
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1762,7 +1762,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1785,7 +1785,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1807,7 +1807,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1829,7 +1829,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1851,7 +1851,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1876,7 +1876,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1898,7 +1898,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1921,7 +1921,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1943,7 +1943,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1965,7 +1965,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -1987,7 +1987,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
  
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
  
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -2010,7 +2010,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -2032,7 +2032,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -2053,7 +2053,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -2074,7 +2074,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -2095,7 +2095,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -2116,7 +2116,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -2138,7 +2138,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -2159,7 +2159,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -2180,7 +2180,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -2201,7 +2201,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
@@ -2222,7 +2222,7 @@ namespace webapi.Domain.Controllers
             {
                 ClientInfo client = new ClientInfo();
 
-                client.IpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+                client.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
                 client.Hostname = HttpContext.Request.Host.Host;
                 _log4netLogger.Error("DELETE Request IP_Address: " + client.IpAddress + "\t Hostname: " + client.Hostname + "\t ", ex);
