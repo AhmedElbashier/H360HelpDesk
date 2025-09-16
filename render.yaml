@@ -15,7 +15,7 @@ services:
         value: http://0.0.0.0:80
       - key: ConnectionStrings__PostgreSQLConnection
         fromDatabase:
-          name: h360-helpdesk-db
+          name: h360helpdeskdb
           property: connectionString
     healthCheckPath: /swagger
     autoDeploy: true
@@ -36,7 +36,7 @@ services:
 
 # Database Service
 databases:
-  - name: h360-helpdesk-db
+  - name: h360helpdeskdb
     plan: starter
     region: oregon
     databaseName: H360_Helpdesk
