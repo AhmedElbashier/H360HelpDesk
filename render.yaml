@@ -1,0 +1,43 @@
+services:
+  # Web API Service
+  - type: web
+    name: h360-helpdesk-api
+    env: docker
+    dockerfilePath: ./webapi/Dockerfile
+    dockerContext: ./webapi
+    plan: starter
+    region: oregon
+    branch: main
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:80
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: h360-helpdesk-db
+          property: connectionString
+    healthCheckPath: /swagger
+    autoDeploy: true
+
+  # Angular Frontend Service
+  - type: web
+    name: h360-helpdesk-frontend
+    env: docker
+    dockerfilePath: ./angularapp/Dockerfile
+    dockerContext: ./angularapp
+    plan: starter
+    region: oregon
+    branch: main
+    envVars:
+      - key: NODE_ENV
+        value: production
+    autoDeploy: true
+
+# Database Service
+databases:
+  - name: h360-helpdesk-db
+    plan: starter
+    region: oregon
+    databaseName: H360_Helpdesk
+    user: h360_user

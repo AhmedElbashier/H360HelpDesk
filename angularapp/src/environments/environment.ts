@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://localhost/publish/api/v1/hdusers',
+  apiUrl: 'https://h360-helpdesk-api.onrender.com/api/v1/hdusers',
 };

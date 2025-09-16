@@ -8,6 +8,7 @@ import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { AgentReport, ReportService } from '../../../services/report.service';
 import { User, UserService } from '../../../services/user.service';
+import { autosize, formatDate, stripHtml } from '../../../utils/export-helpers';
 
 
 @Component({
@@ -38,6 +39,7 @@ export class BackofficeReportsComponent {
 
     this.user = JSON.parse(localStorage.getItem("user") || "{}") as User;
     this.getFilters();
+    this.buildLookups();
     this.settingService.getCategories().subscribe(
       (res: any) => {
         this.categories = res;
@@ -152,19 +154,21 @@ export class BackofficeReportsComponent {
     );
   }
   exportExcel() {
-    const worksheet = XLSX.utils.json_to_sheet(this.tickets);
-    const workbook = {
-      Sheets: { 'Tickets Report': worksheet },
-      SheetNames: ['Tickets Report'],
-    };
+    // Export ALL rows currently loaded in the report table
+    this.buildLookups();
+    const source = this.tickets ?? [];
+    const rows = source.map(t => this.mapTicketToRow(t));
 
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
+    const ws = XLSX.utils.json_to_sheet(rows, { header: Object.keys(rows[0] || {}) });
+    autosize(ws, rows);
 
-    this.saveAsExcelFile(excelBuffer, 'Tickets Report.xlsx');
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Tickets Report');
+
+    const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    FileSaver.saveAs(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), 'Tickets Report.xlsx');
   }
+
 
   saveAsExcelFile(excelBuffer: any, filename: string) {
     const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -221,4 +225,66 @@ export class BackofficeReportsComponent {
     const Category = this.categories.find((d) => d.categoryID === CategoryID);
     return Category ? Category.description : 'N/A';
   }
+
+  private usersById = new Map<string, User>();
+  private statusesById = new Map<string, Status>();
+  private prioritiesById = new Map<string, Priority>();
+  private deptsById = new Map<string, Department>();
+  private categoriesById = new Map<string, Category>();
+
+  private buildLookups() {
+    this.usersById.clear();
+    this.statusesById.clear();
+    this.prioritiesById.clear();
+    this.deptsById.clear();
+    this.categoriesById.clear();
+
+    (this.users ?? []).forEach(u => this.usersById.set(String(u.user_Id), u));
+    (this.statuses ?? []).forEach(s => this.statusesById.set(String(s.statusID), s));
+    (this.priorities ?? []).forEach(p => this.prioritiesById.set(String(p.levelID), p));
+    (this.departments ?? []).forEach(d => this.deptsById.set(String(d.departmentID), d));
+    (this.categories ?? []).forEach(c => this.categoriesById.set(String(c.categoryID), c));
+  }
+
+  private fullName(u?: User) {
+    return u ? `${u.lastname ?? ''} ${u.firstname ?? ''}`.trim() : 'N/A';
+  }
+  private statusName(id: any) { return this.statusesById.get(String(id))?.description ?? 'N/A'; }
+  private priorityName(id: any) { return this.prioritiesById.get(String(id))?.description ?? 'N/A'; }
+  private deptName(id: any) { return this.deptsById.get(String(id))?.description ?? 'N/A'; }
+  private categoryName(id: any) { return this.categoriesById.get(String(id))?.description ?? 'N/A'; }
+
+  private mapTicketToRow(t: Ticket) {
+    const createdBy = this.usersById.get(String(t.userID));
+    const assignedAgent = this.usersById.get(String(t.assingedToUserID));
+    const backOffice = this.usersById.get(String(t.assingedToBackOfficeID));
+
+    return {
+      // keep raw keys you actually want; below is a curated, readable set:
+      'Ticket No': t.id ?? '',
+      'Subject': stripHtml(t.subject),
+      'Details': stripHtml(t.body),
+      'Created By': this.fullName(createdBy),
+      'Assigned Agent': this.fullName(assignedAgent),
+      'Back Office User': this.fullName(backOffice),
+      'Department': this.deptName(t.departmentID),
+      'Category': this.categoryName(t.categoryID),
+      'Start Date': formatDate(t.startDate),
+      'Due Date': formatDate(t.dueDate),
+      'Resolved Date': formatDate(t.resolvedDate),
+      'Closed Date': formatDate(t.closedDate),
+      'Level': this.priorityName(t.priority),
+      'Status': this.statusName(t.statusID),
+      'Customer Name': t.customerName ?? '',
+      'Customer Email': t.email ?? '',
+      'Customer Mobile': t.mobile ?? '',
+      // optionally keep technicals at the end:
+      'Reference Type': t.referenceType ?? '',
+      'Reference Number': t.referenceNumber ?? '',
+      'Email Alert': (t.emailAlert ? 'TRUE' : 'FALSE'),
+      'SMS Alert': (t.smsAlert ? 'TRUE' : 'FALSE'),
+      'Flag': (t.flag ? 'TRUE' : 'FALSE'),
+    };
+  }
+
 }

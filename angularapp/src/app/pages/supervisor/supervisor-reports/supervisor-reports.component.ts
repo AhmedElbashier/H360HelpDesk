@@ -43,6 +43,8 @@ export class SupervisorReportsComponent {
 
     this.user = JSON.parse(localStorage.getItem("user") || "{}") as User;
     this.getFilters();
+    this.buildLookups();
+
   }
 
   getFilters() {
@@ -215,46 +217,47 @@ export class SupervisorReportsComponent {
 
   //  this.saveAsExcelFile(excelBuffer, 'Tickets Report.xlsx');
   //}
-  private mapTicketToRow(t: Ticket) {
-    return {
-      'id': t.id ?? '',
-      'ticketID': t.ticketID ?? '',
-      'CustomerID': t.CustomerID ?? '',
-      'indice': t.indice ?? '',
-      'userID': t.userID ?? '',
-      'categoryID': t.categoryID ?? '',
-      'subCategoryID': t.subCategoryID ?? '',
-      'departmentID': t.departmentID ?? '',
-      'channelID': t.channelID ?? '',
-      'startDate': formatDate(t.startDate),
-      'resolvedDate': formatDate(t.resolvedDate),
-      'closedDate': formatDate(t.closedDate),
-      'assignedToUserID': t.assingedToUserID ?? '',
-      'assignedToBackOfficeID': t.assingedToBackOfficeID ?? '',
-      'subject': stripHtml(t.subject),
-      'body': stripHtml(t.body),
-      'statusID': t.statusID ?? '',
-      'priority': t.priority ?? '',
-      'escalationLevel': t.escalationLevel ?? '',
-      'updateByUser': t.updateByUser ?? '',
-      'dueDate': formatDate(t.dueDate),
-      'slaDate': formatDate(t.slaDate),
-      'emailAlert': t.emailAlert ?? false,
-      'flag': t.flag ?? false,
-      'mobile': t.mobile ?? '',
-      'email': t.email ?? '',
-      'customerName': t.customerName ?? '',
-      'companyID': t.companyID ?? '',
-      'smsAlert': t.smsAlert ?? false,
-      'requestID': t.requestID ?? '',
-      'departmentReply': stripHtml(t.departmentReply),
-      'referenceType': t.referenceType ?? '',
-      'referenceNumber': t.referenceNumber ?? ''
-    };
-  }
+  //private mapTicketToRow(t: Ticket) {
+  //  return {
+  //    'id': t.id ?? '',
+  //    'ticketID': t.ticketID ?? '',
+  //    'CustomerID': t.CustomerID ?? '',
+  //    'indice': t.indice ?? '',
+  //    'userID': t.userID ?? '',
+  //    'categoryID': t.categoryID ?? '',
+  //    'subCategoryID': t.subCategoryID ?? '',
+  //    'departmentID': t.departmentID ?? '',
+  //    'channelID': t.channelID ?? '',
+  //    'startDate': formatDate(t.startDate),
+  //    'resolvedDate': formatDate(t.resolvedDate),
+  //    'closedDate': formatDate(t.closedDate),
+  //    'assignedToUserID': t.assingedToUserID ?? '',
+  //    'assignedToBackOfficeID': t.assingedToBackOfficeID ?? '',
+  //    'subject': stripHtml(t.subject),
+  //    'body': stripHtml(t.body),
+  //    'statusID': t.statusID ?? '',
+  //    'priority': t.priority ?? '',
+  //    'escalationLevel': t.escalationLevel ?? '',
+  //    'updateByUser': t.updateByUser ?? '',
+  //    'dueDate': formatDate(t.dueDate),
+  //    'slaDate': formatDate(t.slaDate),
+  //    'emailAlert': t.emailAlert ?? false,
+  //    'flag': t.flag ?? false,
+  //    'mobile': t.mobile ?? '',
+  //    'email': t.email ?? '',
+  //    'customerName': t.customerName ?? '',
+  //    'companyID': t.companyID ?? '',
+  //    'smsAlert': t.smsAlert ?? false,
+  //    'requestID': t.requestID ?? '',
+  //    'departmentReply': stripHtml(t.departmentReply),
+  //    'referenceType': t.referenceType ?? '',
+  //    'referenceNumber': t.referenceNumber ?? ''
+  //  };
+  //}
 
   exportExcel() {
     // Export ALL rows currently loaded in the report table
+    this.buildLookups();
     const source = this.tickets ?? [];
     const rows = source.map(t => this.mapTicketToRow(t));
 
@@ -322,6 +325,66 @@ export class SupervisorReportsComponent {
 
     const Category = this.categories.find((d) => d.categoryID === CategoryID);
     return Category ? Category.description : 'N/A';
+  }
+  private usersById = new Map<string, User>();
+  private statusesById = new Map<string, Status>();
+  private prioritiesById = new Map<string, Priority>();
+  private deptsById = new Map<string, Department>();
+  private categoriesById = new Map<string, Category>();
+
+  private buildLookups() {
+    this.usersById.clear();
+    this.statusesById.clear();
+    this.prioritiesById.clear();
+    this.deptsById.clear();
+    this.categoriesById.clear();
+
+    (this.users ?? []).forEach(u => this.usersById.set(String(u.user_Id), u));
+    (this.statuses ?? []).forEach(s => this.statusesById.set(String(s.statusID), s));
+    (this.priorities ?? []).forEach(p => this.prioritiesById.set(String(p.levelID), p));
+    (this.departments ?? []).forEach(d => this.deptsById.set(String(d.departmentID), d));
+    (this.categories ?? []).forEach(c => this.categoriesById.set(String(c.categoryID), c));
+  }
+
+  private fullName(u?: User) {
+    return u ? `${u.lastname ?? ''} ${u.firstname ?? ''}`.trim() : 'N/A';
+  }
+  private statusName(id: any) { return this.statusesById.get(String(id))?.description ?? 'N/A'; }
+  private priorityName(id: any) { return this.prioritiesById.get(String(id))?.description ?? 'N/A'; }
+  private deptName(id: any) { return this.deptsById.get(String(id))?.description ?? 'N/A'; }
+  private categoryName(id: any) { return this.categoriesById.get(String(id))?.description ?? 'N/A'; }
+
+  private mapTicketToRow(t: Ticket) {
+    const createdBy = this.usersById.get(String(t.userID));
+    const assignedAgent = this.usersById.get(String(t.assingedToUserID));
+    const backOffice = this.usersById.get(String(t.assingedToBackOfficeID));
+
+    return {
+      // keep raw keys you actually want; below is a curated, readable set:
+      'Ticket No': t.id ?? '',
+      'Subject': stripHtml(t.subject),
+      'Details': stripHtml(t.body),
+      'Created By': this.fullName(createdBy),
+      'Assigned Agent': this.fullName(assignedAgent),
+      'Back Office User': this.fullName(backOffice),
+      'Department': this.deptName(t.departmentID),
+      'Category': this.categoryName(t.categoryID),
+      'Start Date': formatDate(t.startDate),
+      'Due Date': formatDate(t.dueDate),
+      'Resolved Date': formatDate(t.resolvedDate),
+      'Closed Date': formatDate(t.closedDate),
+      'Level': this.priorityName(t.priority),
+      'Status': this.statusName(t.statusID),
+      'Customer Name': t.customerName ?? '',
+      'Customer Email': t.email ?? '',
+      'Customer Mobile': t.mobile ?? '',
+      // optionally keep technicals at the end:
+      'Reference Type': t.referenceType ?? '',
+      'Reference Number': t.referenceNumber ?? '',
+      'Email Alert': (t.emailAlert ? 'TRUE' : 'FALSE'),
+      'SMS Alert': (t.smsAlert ? 'TRUE' : 'FALSE'),
+      'Flag': (t.flag ? 'TRUE' : 'FALSE'),
+    };
   }
 
 }
