@@ -106,7 +106,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         
         Console.WriteLine("Configuring Railway PostgreSQL database");
         Console.WriteLine($"Host: {host}, Port: {port}, Database: {database}, Username: {username}");
-        options.UseNpgsql(npgsqlConnectionString);
+        
+        // Configure PostgreSQL with timezone handling
+        options.UseNpgsql(npgsqlConnectionString, npgsqlOptions =>
+        {
+            npgsqlOptions.EnableLegacyTimestampBehavior();
+        });
     }
     else
     {
@@ -174,7 +179,11 @@ try
                 try
                 {
                     logger.LogInformation("Creating database schema using EnsureCreated...");
+                    
+                    // Drop and recreate the database to ensure clean schema
+                    context.Database.EnsureDeleted();
                     context.Database.EnsureCreated();
+                    
                     logger.LogInformation("Database schema created successfully using EnsureCreated()");
                 }
                 catch (Exception createEx)
