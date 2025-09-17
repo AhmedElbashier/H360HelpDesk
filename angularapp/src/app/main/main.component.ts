@@ -85,7 +85,10 @@ export class MainComponent {
     // Only call getLicense if user is administrator (license is only needed for admin features)
     this.user = JSON.parse(localStorage.getItem("user") || "{}") as User;
     if (this.user.isAdministrator) {
-      this.getLicense();
+      // Add a small delay to ensure authentication is fully processed
+      setTimeout(() => {
+        this.getLicense();
+      }, 100);
     }
     this.getUsersCount();
     console.log('MainComponent: User loaded from localStorage:', this.user);
@@ -150,9 +153,22 @@ export class MainComponent {
     localStorage.clear();
     sessionStorage.clear();
     
-    // Navigate to login and prevent back navigation
+    // Clear any cached data
+    this.user = null;
+    this.isAdministrator = false;
+    this.isAgent = false;
+    this.isSuperVisor = false;
+    this.isBackOffice = false;
+    
+    // Force navigation to login and prevent back navigation
     this.router.navigateByUrl('/login', { replaceUrl: true }).then(() => {
       console.log('MainComponent: Successfully logged out and redirected to login');
+      // Force a page reload to clear any cached state
+      window.location.href = '/login';
+    }).catch((error) => {
+      console.log('MainComponent: Error during logout navigation:', error);
+      // Fallback: force page reload to login
+      window.location.href = '/login';
     });
   }
   checkAndClearLogs(): void {
@@ -168,6 +184,12 @@ export class MainComponent {
     }
   }
   getLicense() {
+    // Check if user is still authenticated before making API call
+    if (!this.auth.isAuthenticated()) {
+      console.log('MainComponent: User not authenticated, skipping license call');
+      return;
+    }
+    
     console.log('MainComponent: Getting license details');
     this.settingService.getLicense().subscribe(
       (res: any) => {
