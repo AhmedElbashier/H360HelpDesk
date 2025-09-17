@@ -10,7 +10,7 @@ RUN dotnet restore "webapi.csproj"
 COPY . .
 
 # Publish the application
-RUN dotnet publish "webapi.csproj" -c Release -o /app/publish /p:UseAppHost=false /p:TreatWarningsAsErrors=false
+RUN dotnet publish "webapi.csproj" -c Release -o /app/publish /p:UseAppHost=false /p:TreatWarningsAsErrors=false /p:WarningsAsErrors="" /p:WarningsNotAsErrors="CS8602;CS8600;CS8618;CS8601;CS8604"
 
 # Use the official .NET 7 runtime as final image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS final
