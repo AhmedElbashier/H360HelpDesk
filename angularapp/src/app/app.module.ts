@@ -340,7 +340,7 @@ const JWT_Module_Options: JwtModuleOptions = {
 
     //{ provide: ErrorHandler, useClass: GlobalErrorHandler },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    // { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }, // Disabled - API uses Basic Auth
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     MessageService, ConfirmationService, AuthGuardService, NgxImageCompressService
   ],

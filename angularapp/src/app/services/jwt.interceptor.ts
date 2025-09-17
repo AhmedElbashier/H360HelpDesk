@@ -23,7 +23,8 @@ export class JwtInterceptor implements HttpInterceptor {
     const token = localStorage.getItem('token');
     
     // Add the token to the request if it exists and the request is not to the auth endpoint
-    if (token && !request.url.includes('/auth/')) {
+    // Note: This API uses Basic Auth, not JWT Bearer tokens
+    if (token && !request.url.includes('/auth/') && !request.headers.has('Authorization')) {
       const authRequest = request.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`

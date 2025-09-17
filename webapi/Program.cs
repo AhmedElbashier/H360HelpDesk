@@ -172,13 +172,12 @@ try
             {
                 logger.LogWarning(migrationEx, "Migrations failed, using EnsureCreated: {Message}", migrationEx.Message);
                 
-                // Fallback: Create database schema directly
+                // Fallback: Create database schema directly (SAFE - no data deletion)
                 try
                 {
                     logger.LogInformation("Creating database schema using EnsureCreated...");
                     
-                    // Drop and recreate the database to ensure clean schema
-                    context.Database.EnsureDeleted();
+                    // SAFE: Only create if database doesn't exist - NO DELETION
                     context.Database.EnsureCreated();
                     
                     logger.LogInformation("Database schema created successfully using EnsureCreated()");
@@ -186,7 +185,8 @@ try
                 catch (Exception createEx)
                 {
                     logger.LogError(createEx, "Failed to create database schema: {Message}", createEx.Message);
-                    throw; // Re-throw to stop the application if we can't create the database
+                    // Don't throw - just log the error and continue
+                    logger.LogWarning("Application will continue without database schema creation");
                 }
             }
             

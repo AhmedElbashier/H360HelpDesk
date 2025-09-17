@@ -22,20 +22,30 @@ export class AuthService {
 
   public isAuthenticated(): boolean {
     const token = localStorage.getItem("token");
-    if (!token) {
-      console.log('AuthService: No token found');
+    const user = localStorage.getItem("user");
+    
+    if (!token || !user) {
+      console.log('AuthService: No token or user found');
       return false;
     }
     
-    const isExpired = this.jwtHelper.isTokenExpired(token);
-    if (isExpired) {
-      console.log('AuthService: Token is expired, clearing storage');
+    // For this API, we'll use a simple token validation
+    // The token is a JWT but we'll check if it exists and user exists
+    try {
+      const isExpired = this.jwtHelper.isTokenExpired(token);
+      if (isExpired) {
+        console.log('AuthService: Token is expired, clearing storage');
+        this.clearAuthData();
+        return false;
+      }
+      
+      console.log('AuthService: Token is valid');
+      return true;
+    } catch (error) {
+      console.log('AuthService: Error validating token, treating as invalid');
       this.clearAuthData();
       return false;
     }
-    
-    console.log('AuthService: Token is valid');
-    return true;
   }
 
   public clearAuthData(): void {
