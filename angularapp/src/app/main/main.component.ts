@@ -152,13 +152,14 @@ export class MainComponent {
     // Clear all authentication data
     localStorage.clear();
     sessionStorage.clear();
-    
+
     // Clear any cached data
-    this.user = null;
-    this.isAdministrator = false;
-    this.isAgent = false;
-    this.isSuperVisor = false;
-    this.isBackOffice = false;
+    if (this.user) {
+      this.user.isAdministrator = false;
+      this.user.isAgent = false;
+      this.user.isSuperVisor = false;
+      this.user.isBackOffice = false;
+    }
     
     // Force navigation to login and prevent back navigation
     this.router.navigateByUrl('/login', { replaceUrl: true }).then(() => {
