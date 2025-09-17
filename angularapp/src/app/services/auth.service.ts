@@ -29,6 +29,15 @@ export class AuthService {
       return false;
     }
     
+    // Check if user data is valid JSON
+    try {
+      JSON.parse(user);
+    } catch (error) {
+      console.log('AuthService: Invalid user data in localStorage, clearing storage');
+      this.clearAuthData();
+      return false;
+    }
+    
     // For this API, we'll use a more lenient token validation
     // Check if token exists and user exists, with a grace period for expiration
     try {
@@ -62,8 +71,12 @@ export class AuthService {
   }
 
   public clearAuthData(): void {
+    console.log('AuthService: Clearing all authentication data');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('userLogs');
+    // Also clear sessionStorage for good measure
+    sessionStorage.clear();
   }
 
   public getToken(): string | null {

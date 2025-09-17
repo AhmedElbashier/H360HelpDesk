@@ -82,9 +82,12 @@ export class MainComponent {
     
     this.checkAndClearLogs();
     this.SMTP();
-    this.getLicense();
-    this.getUsersCount();
+    // Only call getLicense if user is administrator (license is only needed for admin features)
     this.user = JSON.parse(localStorage.getItem("user") || "{}") as User;
+    if (this.user.isAdministrator) {
+      this.getLicense();
+    }
+    this.getUsersCount();
     console.log('MainComponent: User loaded from localStorage:', this.user);
     
     const currentDate = new Date();
@@ -137,12 +140,20 @@ export class MainComponent {
     this.isCollapsed = !this.isCollapsed;
   }
   async logout() {
+    console.log('MainComponent: Logout initiated');
     const currentDate = new Date();
     // this.userService.updateLastLogout(this.user.user_Id, currentDate);
     // this.userService.updateLastSeen(this.user.user_Id, currentDate);
     // this.userService.updateStatus(this.user.user_Id, "Offline");
+    
+    // Clear all authentication data
     localStorage.clear();
-    this.router.navigate(["login"]);
+    sessionStorage.clear();
+    
+    // Navigate to login and prevent back navigation
+    this.router.navigateByUrl('/login', { replaceUrl: true }).then(() => {
+      console.log('MainComponent: Successfully logged out and redirected to login');
+    });
   }
   checkAndClearLogs(): void {
     const storedTimestamp = localStorage.getItem('userLogs');
@@ -157,12 +168,28 @@ export class MainComponent {
     }
   }
   getLicense() {
+    console.log('MainComponent: Getting license details');
     this.settingService.getLicense().subscribe(
       (res: any) => {
+        console.log('MainComponent: License details loaded successfully');
         this.license = res;
       },
       (error) => {
-       
+        console.error('MainComponent: Error loading license details:', error);
+        // Set default license structure to prevent UI errors
+        this.license = {
+          licenseFile: '',
+          licenseInfo: {
+            key: '',
+            company: 'Default Company',
+            vendor: 'Vocalcom',
+            adminsLimit: 0,
+            agentsLimit: 0,
+            supervisorsLimit: 0,
+            backOfficeLimit: 0,
+            expirationDate: '',
+          },
+        };
       }
     );
   }
