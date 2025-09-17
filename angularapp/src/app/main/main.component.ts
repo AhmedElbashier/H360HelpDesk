@@ -71,11 +71,14 @@ export class MainComponent {
   @ViewChild('op2') profilePanel: any;
 
   async ngOnInit(): Promise<void> {
+    console.log('MainComponent: ngOnInit started');
     this.checkAndClearLogs();
     this.SMTP();
     this.getLicense();
     this.getUsersCount();
     this.user = JSON.parse(localStorage.getItem("user") || "{}") as User;
+    console.log('MainComponent: User loaded from localStorage:', this.user);
+    
     const currentDate = new Date();
     //await this.userService.updateLastSeen(this.user.user_Id, currentDate);
     //await this.userService.updateStatus(this.user.user_Id, "Online");
@@ -95,17 +98,31 @@ export class MainComponent {
       },
     ]
     await this.AddMenuItemsByRoles();
+    
+    console.log('MainComponent: Checking user roles');
+    console.log('MainComponent: isAdministrator =', this.user.isAdministrator);
+    console.log('MainComponent: isAgent =', this.user.isAgent);
+    console.log('MainComponent: isSuperVisor =', this.user.isSuperVisor);
+    console.log('MainComponent: isBackOffice =', this.user.isBackOffice);
+    
     if (this.user.isAdministrator) {
+      console.log('MainComponent: Redirecting administrator to /main/admin/users');
       this.router.navigate(["/main/admin/users"]);
     }
     else if (this.user.isAgent) {
+      console.log('MainComponent: Redirecting agent to /main/agent/tickets/dashboard');
       this.router.navigate(["/main/agent/tickets/dashboard"]);
     }
     else if (this.user.isSuperVisor) {
+      console.log('MainComponent: Redirecting supervisor to /main/supervisor/tickets/dashboard');
       this.router.navigate(["/main/supervisor/tickets/dashboard"]);
     }
     else if (this.user.isBackOffice) {
+      console.log('MainComponent: Redirecting backoffice to /main/backoffice/tickets/dashboard');
       this.router.navigate(["/main/backoffice/tickets/dashboard"]);
+    }
+    else {
+      console.log('MainComponent: No role match found, user will stay on /main');
     }
   }
   toggleCollapsed(): void {

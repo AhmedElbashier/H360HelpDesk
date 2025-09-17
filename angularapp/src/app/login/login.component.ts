@@ -67,10 +67,12 @@ export class LoginComponent {
   }
 
   Login() {
+    console.log('Login: Starting login process');
     //this.route.navigateByUrl('/main/agent/dashboard');
 
     this.login.login(this.username, this.password).subscribe(
       (token: any) => {
+        console.log('Login: Received token response', token);
 
         this.tokenData = token["token"];
         this.userInfo = token["user"];
@@ -79,6 +81,9 @@ export class LoginComponent {
         this.userInfo.status = "Online";
         localStorage.setItem("token", this.tokenData);
         localStorage.setItem("user", JSON.stringify(this.userInfo));
+        
+        console.log('Login: Stored token and user data, navigating to /main');
+        console.log('Login: User info:', this.userInfo);
         this.route.navigateByUrl('/main');
       },
       (error) => {

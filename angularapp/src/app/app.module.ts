@@ -281,7 +281,7 @@ const JWT_Module_Options: JwtModuleOptions = {
     }),
     RouterModule.forRoot([
       { path: '', pathMatch: 'full', redirectTo: "/login" },
-      { path: 'login', component: LoginComponent, canActivate: [AuthGuard] },
+      { path: 'login', component: LoginComponent },
       { path: 'error', component: ErrorComponent },
       { path: 'access', component: AccessComponent },
       { path: 'notfound', component: NotfoundComponent },
