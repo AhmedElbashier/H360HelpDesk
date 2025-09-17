@@ -79,12 +79,22 @@ export class LoginComponent {
         this.userInfo.ipAddress = this.clientInfo.ipAddress;
         this.userInfo.hostName = this.clientInfo.hostname;
         this.userInfo.status = "Online";
+        
+        // Store token and user data
         localStorage.setItem("token", this.tokenData);
         localStorage.setItem("user", JSON.stringify(this.userInfo));
         
         console.log('Login: Stored token and user data, navigating to /main');
         console.log('Login: User info:', this.userInfo);
-        this.route.navigateByUrl('/main');
+        console.log('Login: Token stored:', this.tokenData);
+        
+        // Verify authentication before navigation
+        if (this.auth.isAuthenticated()) {
+          console.log('Login: Authentication verified, navigating to /main');
+          this.route.navigateByUrl('/main');
+        } else {
+          console.log('Login: Authentication failed after login, staying on login page');
+        }
       },
       (error) => {
         if (error.status === 401) {

@@ -22,8 +22,34 @@ export class AuthService {
 
   public isAuthenticated(): boolean {
     const token = localStorage.getItem("token");
-    if (!token) return false;
-    return !this.jwtHelper.isTokenExpired(token);
+    if (!token) {
+      console.log('AuthService: No token found');
+      return false;
+    }
+    
+    const isExpired = this.jwtHelper.isTokenExpired(token);
+    if (isExpired) {
+      console.log('AuthService: Token is expired, clearing storage');
+      this.clearAuthData();
+      return false;
+    }
+    
+    console.log('AuthService: Token is valid');
+    return true;
+  }
+
+  public clearAuthData(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+
+  public getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  public getUser(): User | null {
+    const userItem = localStorage.getItem('user');
+    return userItem ? JSON.parse(userItem) : null;
   }
 
 

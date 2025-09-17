@@ -4,6 +4,7 @@ import { APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, ErrorHandler, NgModule } from 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import { ErrorInterceptor } from './error.interceptor';
+import { JwtInterceptor } from './services/jwt.interceptor';
 import { RouterModule } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -339,6 +340,7 @@ const JWT_Module_Options: JwtModuleOptions = {
 
     //{ provide: ErrorHandler, useClass: GlobalErrorHandler },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: LocationStrategy, useClass: HashLocationStrategy },
     MessageService, ConfirmationService, AuthGuardService, NgxImageCompressService
   ],

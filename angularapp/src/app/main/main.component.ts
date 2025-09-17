@@ -4,7 +4,7 @@ import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 //import { fail } from 'assert';
 import { MenuItem, MessageService } from 'primeng/api';
-import { Role } from '../services/auth.service';
+import { Role, AuthService } from '../services/auth.service';
 import { LoggerService } from '../services/logger.service';
 import { LoginService } from '../services/login.service';
 import { User, UserService } from '../services/user.service';
@@ -18,7 +18,7 @@ import { SettingsService, SmtpSettings, EmailRequest, EscalationTimer, License }
   styleUrls: ['./main.component.css']
 })
 export class MainComponent {
-  constructor(private settingService: SettingsService, private router: Router, private userService: UserService, private login: LoginService, private messageService: MessageService, private loggerService: LoggerService, private translate: TranslateService) {
+  constructor(private settingService: SettingsService, private router: Router, private userService: UserService, private login: LoginService, private messageService: MessageService, private loggerService: LoggerService, private translate: TranslateService, private auth: AuthService) {
   }
   user!: User;
   role!: Role;
@@ -72,6 +72,14 @@ export class MainComponent {
 
   async ngOnInit(): Promise<void> {
     console.log('MainComponent: ngOnInit started');
+    
+    // Check authentication first
+    if (!this.auth.isAuthenticated()) {
+      console.log('MainComponent: User not authenticated, redirecting to login');
+      this.router.navigate(['/login']);
+      return;
+    }
+    
     this.checkAndClearLogs();
     this.SMTP();
     this.getLicense();
