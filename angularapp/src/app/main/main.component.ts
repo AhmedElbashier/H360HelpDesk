@@ -95,7 +95,10 @@ export class MainComponent {
       },
     ]
     await this.AddMenuItemsByRoles();
-    if (this.user.isAgent) {
+    if (this.user.isAdministrator) {
+      this.router.navigate(["/main/admin/users"]);
+    }
+    else if (this.user.isAgent) {
       this.router.navigate(["/main/agent/tickets/dashboard"]);
     }
     else if (this.user.isSuperVisor) {
