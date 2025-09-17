@@ -107,11 +107,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         Console.WriteLine("Configuring Railway PostgreSQL database");
         Console.WriteLine($"Host: {host}, Port: {port}, Database: {database}, Username: {username}");
         
-        // Configure PostgreSQL with timezone handling
-        options.UseNpgsql(npgsqlConnectionString, npgsqlOptions =>
-        {
-            npgsqlOptions.EnableLegacyTimestampBehavior();
-        });
+        // Configure PostgreSQL
+        options.UseNpgsql(npgsqlConnectionString);
     }
     else
     {
